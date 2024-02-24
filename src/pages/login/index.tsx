@@ -4,13 +4,18 @@ import TpeDigitalLoginDesktop from "../../assets/tpe-digital-login-desktop.svg";
 import RectangleBlue from "../../assets/rectangle-blue.svg";
 import RectangleGray from "../../assets/rectangle-gray.svg";
 import MackbookTpeLogin from "../../assets/mackbook-iphone-login.png";
+import { http } from "../../infra";
 import { Button, Input } from "@material-tailwind/react";
+import { useNavigate } from "react-router-dom";
+import { useCookies } from "../../lib";
 
 export function Login() {
   const [inputLogin, setInputLogin] = useState({
     cpf: "",
     password: "",
   });
+  const navigate = useNavigate();
+  const cookies = useCookies();
 
   const updateCPF = (e: React.ChangeEvent<HTMLInputElement>) => {
     const cpfRaw = e.target.value;
@@ -20,9 +25,19 @@ export function Login() {
     setInputLogin({ ...inputLogin, cpf });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    alert(JSON.stringify(inputLogin, null, 2));
+    try {
+      const { data } = await http.post("/dev/login", {
+        cpf: inputLogin.cpf.replace(/\D/g, ""),
+        password: inputLogin.password,
+      });
+      const token = data.token;
+      cookies.setCookie("token", token, { secure: true });
+      navigate("/hello");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const haveEmptyFields = !inputLogin.cpf || !inputLogin.password;
