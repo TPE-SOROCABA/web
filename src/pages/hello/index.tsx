@@ -1,4 +1,4 @@
-export function App() {
+export function Hello() {
   return (
     <>
       <h1>Bem vindo ao TPE-SOROCABA</h1>
