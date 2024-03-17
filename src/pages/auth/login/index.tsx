@@ -1,13 +1,10 @@
 import { useState } from "react";
-import TpeDigitalCircle from "../../assets/tpe-digital-circle.svg";
-import TpeDigitalLoginDesktop from "../../assets/tpe-digital-login-desktop.svg";
-import RectangleBlue from "../../assets/rectangle-blue.svg";
-import RectangleGray from "../../assets/rectangle-gray.svg";
-import MackbookTpeLogin from "../../assets/mackbook-iphone-login.png";
-import { http } from "../../infra";
+import { http } from "../../../infra";
 import { Button, Input } from "@material-tailwind/react";
-import { useNavigate } from "react-router-dom";
-import { useCookies } from "../../lib";
+import { Link, useNavigate } from "react-router-dom";
+import { useCookies, useToast } from "../../../lib";
+import { AuthLayout } from "../components";
+import { AxiosError } from "axios";
 
 export function Login() {
   const [inputLogin, setInputLogin] = useState({
@@ -16,6 +13,7 @@ export function Login() {
   });
   const navigate = useNavigate();
   const cookies = useCookies();
+  const toast = useToast();
 
   const updateCPF = (e: React.ChangeEvent<HTMLInputElement>) => {
     const cpfRaw = e.target.value;
@@ -28,47 +26,24 @@ export function Login() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const { data } = await http.post("/dev/login", {
+      const { data } = await http.post("/login", {
         cpf: inputLogin.cpf.replace(/\D/g, ""),
         password: inputLogin.password,
       });
       const token = data.token;
-      cookies.setCookie("token", token, { secure: true });
+      cookies.set("token", token, { secure: true });
       navigate("/hello");
-    } catch (error) {
-      console.log(error);
+    } catch (e) {
+      if (e instanceof AxiosError && e.response?.status === 401) {
+        return toast.error("CPF ou senha inválidos");
+      }
+      toast.error("Algo deu errado, tente novamente mais tarde");
     }
   };
 
   const haveEmptyFields = !inputLogin.cpf || !inputLogin.password;
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="md:h-screen sm:h-[96vh] h-[95vh] w-full flex flex-col md:flex-row items-center justify-center"
-    >
-      <div className="h-2/6 relative flex justify-center items-center md:w-1/2 md:h-full">
-        <img src={TpeDigitalCircle} alt="TPE Digital" className="md:hidden" />
-        <img
-          src={MackbookTpeLogin}
-          alt="Mackbook TPE"
-          className="hidden md:block z-30"
-        />
-        <img
-          src={RectangleBlue}
-          alt="Rectangle Blue"
-          className="hidden md:block absolute h-full z-20 left-0 top-0"
-        />
-        <img
-          src={RectangleGray}
-          alt="Rectangle Gray"
-          className="hidden md:block absolute h-full z-10 left-0 top-0"
-        />
-        <img
-          src={TpeDigitalLoginDesktop}
-          alt="TPE Digital"
-          className="hidden md:block absolute z-30 top-[15%] right-32"
-        />
-      </div>
+    <AuthLayout onSubmit={handleSubmit}>
       <div className="h-4/6 flex flex-col md:w-1/2 md:justify-center">
         <div className="md:h-40 h-4/5 flex flex-col justify-evenly items-center">
           <h1 className="font-bold text-xl text-gray-800 md:hidden">
@@ -104,18 +79,21 @@ export function Login() {
             />
           </div>
         </div>
-        <div className="h-1/5 flex justify-center items-center">
+        <div className="h-1/5 flex flex-col justify-center items-center gap-4">
           <Button
             placeholder={"Entrar ou Login"}
             disabled={haveEmptyFields}
             type="submit"
-            className="md:w-96 md:rounded-xl bg-primary-600"
+            className="md:w-96 w-40 md:rounded-xl bg-primary-600"
             size={window?.innerWidth < 768 ? "md" : "lg"}
           >
             Entrar
           </Button>
+          <div className="md:w-96 w-40 flex justify-center md:justify-end text-gray-700 md:text-base text-sm">
+            <Link to="/forgot-password">Esqueci minha senha</Link>
+          </div>
         </div>
       </div>
-    </form>
+    </AuthLayout>
   );
 }

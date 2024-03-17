@@ -4,21 +4,19 @@ import { useCookies as useReactCookie } from "react-cookie";
 export const useCookies = () => {
   const [cookies, setReactCookie, removeReactCookie] = useReactCookie();
 
-  const setCookie = (
-    name: string,
-    value: string,
-    options?: CookieSetOptions
-  ) => {
+  const set = (name: Key, value: string, options?: CookieSetOptions) => {
     setReactCookie(name, value, options);
   };
 
-  const getCookie = (name: string) => {
+  const get = (name: Key) => {
     return cookies[name];
   };
 
-  const eraseCookie = (name: string) => {
+  const erase = (name: Key) => {
     removeReactCookie(name);
   };
 
-  return { setCookie, getCookie, eraseCookie };
+  return { set, get, erase };
 };
+
+type Key = "token";

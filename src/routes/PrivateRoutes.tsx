@@ -4,6 +4,6 @@ import { useCookies } from "../lib";
 export function PrivateRoute() {
   const cookie = useCookies();
 
-  if (!cookie.getCookie("token")) return <Navigate to="/" />;
+  if (!cookie.get("token")) return <Navigate to="/" />;
   return <Outlet />;
 }
