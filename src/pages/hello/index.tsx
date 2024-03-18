@@ -1,6 +1,3 @@
-import { useEffect, useState } from "react";
-import { useHttp } from "../../lib";
-
 export function Hello() {
   // const [users, setUsers] = useState<any[]>([]);
   // const http = useHttp();
@@ -19,6 +16,7 @@ export function Hello() {
     <>
       <h1>Bem vindo ao TPE-SOROCABA</h1>
       <p>versao WEB</p>
+      <p>teste de pipeline</p>
       {/* <div>
         <h2>Usuarios</h2>
         <ul>
