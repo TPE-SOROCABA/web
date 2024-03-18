@@ -1,9 +1,9 @@
 import { Navigate, Outlet } from "react-router-dom";
+import { useCookies } from "../lib";
 
 export function PrivateRoute() {
-  const isEven = new Date().getSeconds() % 2 === 0;
-  if (isEven) {
-    return <Navigate to="/" />;
-  }
+  const cookie = useCookies();
+
+  if (!cookie.get("token")) return <Navigate to="/" />;
   return <Outlet />;
 }
