@@ -1,14 +1,13 @@
-name: Serverless Framework CloudFront Deployment
+name: Serverless Framework CloudFront Deployment - Dev
 
 on:
   push:
-    branches: [ "dev", "hmg", "main" ]
+    branches: [ "dev" ]
   pull_request:
-    branches: [ "dev", "hmg", "main" ]
+    branches: [ "dev" ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -16,15 +15,6 @@ jobs:
         node-version: [20.x]
 
     steps:
-    - name: Set environment variables based on branch
-      run: |
-        if [[ ${{ github.ref }} == 'refs/heads/dev' ]]; then
-          echo "NODE_ENV=dev" >> $GITHUB_ENV
-        elif [[ ${{ github.ref }} == 'refs/heads/hmg' ]]; then
-          echo "NODE_ENV=hmg" >> $GITHUB_ENV
-        elif [[ ${{ github.ref }} == 'refs/heads/main' ]]; then
-          echo "NODE_ENV=prod" >> $GITHUB_ENV
-        fi
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
@@ -40,6 +30,4 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
     - name: Serverless Framework deploy
-      run: NODE_ENV=$GITHUB_ENV npm run deploy
-      env:
-        NODE_ENV: ${{ env.NODE_ENV }}
+      run: npm run deploy:dev
