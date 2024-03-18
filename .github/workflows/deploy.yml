@@ -40,6 +40,6 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
     - name: Serverless Framework deploy
-      run: npm run deploy
+      run: NODE_ENV=$GITHUB_ENV npm run deploy
       env:
         NODE_ENV: ${{ env.NODE_ENV }}
