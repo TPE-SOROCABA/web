@@ -16,6 +16,7 @@ export function Hello() {
     <>
       <h1>Bem vindo ao TPE-SOROCABA</h1>
       <p>versao WEB</p>
+      <p>teste de pipeline</p>
       {/* <div>
         <h2>Usuarios</h2>
         <ul>
