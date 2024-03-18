@@ -1,0 +1,26 @@
+service: web-tpe-digital
+
+plugins:
+  - serverless-frontend-plugin
+
+custom:
+  serverless-frontend-plugin:
+    distDir: dist
+    build:
+      command:
+        - npm
+        - run
+        - build
+    distribution:
+      acmCertificateArn: arn:aws:acm:us-east-1:533267195262:certificate/a82301ce-6a92-4d84-a4ea-bba8628f4137
+      dnsName: review.tpedigital.com.br # Route53 record value
+      hostedZoneName: tpedigital.com.br # Route53 Hosted Zone Name
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  stage: ${opt:stage}
+  profile: tpe
+  stackName: web-tpe-digital-${opt:stage}
+
