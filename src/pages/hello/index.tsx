@@ -1,6 +1,3 @@
-import { useEffect, useState } from "react";
-import { useHttp } from "../../lib";
-
 export function Hello() {
   // const [users, setUsers] = useState<any[]>([]);
   // const http = useHttp();
