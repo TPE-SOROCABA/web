@@ -1,3 +1,6 @@
+import { Button } from "@material-tailwind/react";
+import { Link } from "react-router-dom";
+
 export function Hello() {
   // const [users, setUsers] = useState<any[]>([]);
   // const http = useHttp();
@@ -17,6 +20,15 @@ export function Hello() {
       <h1>Bem vindo ao TPE-SOROCABA</h1>
       <p>versao WEB</p>
       <p>teste de pipeline</p>
+      <Link to="/lista-designacao">
+        <Button
+          placeholder="ir para lista de desiganação"
+          className="md:w-96 w-40 md:rounded-xl bg-primary-600"
+          type="button"
+        >
+          Lista de Designação
+        </Button>
+      </Link>
       {/* <div>
         <h2>Usuarios</h2>
         <ul>

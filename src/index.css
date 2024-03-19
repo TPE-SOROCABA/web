@@ -47,5 +47,6 @@ body {
 @media (max-width: 640px) {
   body {
     padding: 12px 8px;
+    height: 98vh;
   }
 }

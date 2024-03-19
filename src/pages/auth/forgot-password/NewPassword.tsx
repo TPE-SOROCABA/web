@@ -66,7 +66,7 @@ export function NewPassword() {
               label="Senha"
               type="password"
               variant={window?.innerWidth < 768 ? "outlined" : "static"}
-              size={window?.innerWidth < 768 ? "md" : "lg"}
+              size="lg"
             />
             <Input
               crossOrigin={false}
@@ -80,7 +80,7 @@ export function NewPassword() {
               label="Confirmar Senha"
               type="password"
               variant={window?.innerWidth < 768 ? "outlined" : "static"}
-              size={window?.innerWidth < 768 ? "md" : "lg"}
+              size="lg"
             />
           </div>
         </div>
@@ -89,7 +89,7 @@ export function NewPassword() {
             placeholder="Recuperar senha"
             type="submit"
             className="md:w-96 w-40 md:rounded-xl bg-primary-600"
-            size={window?.innerWidth < 768 ? "md" : "lg"}
+            size="lg"
           >
             Salvar Senha
           </Button>

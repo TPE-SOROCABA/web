@@ -32,7 +32,7 @@ export function Login() {
       });
       const token = data.token;
       cookies.set("token", token, { secure: true });
-      navigate("/hello");
+      navigate("/dashboard");
     } catch (e) {
       if (e instanceof AxiosError && e.response?.status === 401) {
         return toast.error("CPF ou senha inválidos");
@@ -62,7 +62,7 @@ export function Login() {
               minLength={14}
               pattern="\d{3}\.\d{3}\.\d{3}-\d{2}"
               variant={window?.innerWidth < 768 ? "outlined" : "static"}
-              size={window?.innerWidth < 768 ? "md" : "lg"}
+              size="lg"
             />
             <Input
               crossOrigin
@@ -75,7 +75,7 @@ export function Login() {
               type="password"
               minLength={6}
               variant={window?.innerWidth < 768 ? "outlined" : "static"}
-              size={window?.innerWidth < 768 ? "md" : "lg"}
+              size="lg"
             />
           </div>
         </div>
@@ -85,7 +85,7 @@ export function Login() {
             disabled={haveEmptyFields}
             type="submit"
             className="md:w-96 w-40 md:rounded-xl bg-primary-600"
-            size={window?.innerWidth < 768 ? "md" : "lg"}
+            size="lg"
           >
             Entrar
           </Button>
