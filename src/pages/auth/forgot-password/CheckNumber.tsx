@@ -71,7 +71,7 @@ export function CheckNumberCode() {
             disabled={code.length < 6}
             type="submit"
             className="md:w-96 w-40 md:rounded-xl bg-primary-600"
-            size={window?.innerWidth < 768 ? "md" : "lg"}
+            size="lg"
           >
             Enviar
           </Button>

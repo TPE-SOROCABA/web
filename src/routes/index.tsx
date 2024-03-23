@@ -3,6 +3,7 @@ import {
   CheckNumberCode,
   ForgotPassword,
   Hello,
+  ListaDesignacao,
   Login,
   NewPassword,
 } from "../pages";
@@ -20,7 +21,8 @@ export function RoutesApp() {
         />
         <Route path="/forgot-password/new-password" element={<NewPassword />} />
         <Route element={<PrivateRoute />}>
-          <Route path="/hello" element={<Hello />} />
+          <Route path="/dashboard" element={<Hello />} />
+          <Route path="/lista-designacao" element={<ListaDesignacao />} />
         </Route>
       </Routes>
     </BrowserRouter>

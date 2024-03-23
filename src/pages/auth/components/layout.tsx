@@ -20,7 +20,7 @@ export const AuthLayout = ({
     <form
       onSubmit={onSubmit}
       className={`
-         md:h-screen sm:h-[96vh] h-[95vh] w-full flex flex-col md:flex-row items-center justify-center
+         md:h-screen sm:h-[96vh] h-[90vh] w-full flex flex-col md:flex-row items-center justify-center
          ${className}
       `}
       {...rest}

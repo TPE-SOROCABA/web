@@ -81,7 +81,7 @@ export const ForgotPassword = () => {
               minLength={14}
               pattern="\d{3}\.\d{3}\.\d{3}-\d{2}"
               variant={window?.innerWidth < 768 ? "outlined" : "static"}
-              size={window?.innerWidth < 768 ? "md" : "lg"}
+              size="lg"
             />
             {/* <Input
               crossOrigin
@@ -92,7 +92,7 @@ export const ForgotPassword = () => {
               minLength={14}
               maxLength={15}
               variant={window?.innerWidth < 768 ? "outlined" : "static"}
-              size={window?.innerWidth < 768 ? "md" : "lg"}
+              size="lg"
             /> */}
           </div>
         </div>
@@ -102,7 +102,7 @@ export const ForgotPassword = () => {
             disabled={haveEmptyFields}
             type="submit"
             className="md:w-96 w-40 md:rounded-xl bg-primary-600"
-            size={window?.innerWidth < 768 ? "md" : "lg"}
+            size="lg"
           >
             Enviar
           </Button>
