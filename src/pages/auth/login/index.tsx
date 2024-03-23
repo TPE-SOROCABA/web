@@ -26,7 +26,7 @@ export function Login() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const { data } = await http.post("/login", {
+      const { data } = await http.post("/auth/login", {
         cpf: inputLogin.cpf.replace(/\D/g, ""),
         password: inputLogin.password,
       });
