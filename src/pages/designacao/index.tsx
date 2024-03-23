@@ -14,16 +14,14 @@ export function Designar() {
 
   const getParticipants = useCallback(async () => {
     try {
-      const { data } = await http.get("/users", {});
+      const groupId = "65f9c426559715b69403e28a";
+      const { data } = await http.get("/participants", {
+        params: {
+          groupId,
+        },
+      });
 
-      const dataParsed = data.map((participant: IParticipant) => ({
-        _id: participant._id,
-        phone: participant.phone,
-        name: participant.name,
-        email: participant.email,
-        cpf: participant.cpf,
-      })) as IParticipant[];
-      setParticipants(dataParsed);
+      setParticipants(data);
     } catch (error) {
       console.error(error);
     }
@@ -36,24 +34,29 @@ export function Designar() {
     <>
       <BoxScreen>
         <FilterText toSearch="Pesquisar Voluntários" />
-        <div className="flex flex-wrap gap-8 justify-between">
+        <div
+          className="flex flex-wrap gap-8 justify-between"
+          hidden={!participants?.length}
+        >
           <BoxGroup pointName="Esfiha do principe" pointCars="3, 4">
             <Participant.Root name={participants[0]?.name}>
-              <Participant.Button>
-                {({ showButton }) => (
-                  <Button
-                    placeholder="Botão de ausência"
-                    className={`
-                           flex justify-center items-center h-full w-40 absolute top-0 rounded-r-lg rounded-l-none z-50 pointer-events-none bg-primary-600 border border-primary-600
-                           ${showButton ? "right-0" : "-right-44"}
-                        `}
-                    type="button"
-                  >
-                    <Trash stroke="#FFF" />
-                    Ausente
-                  </Button>
-                )}
-              </Participant.Button>
+              {() => (
+                <Participant.Button>
+                  {({ showButton }) => (
+                    <Button
+                      placeholder="Botão de ausência"
+                      className={`
+                            flex justify-center items-center h-full w-40 absolute top-0 rounded-r-lg rounded-l-none z-50 pointer-events-none bg-primary-600 border border-primary-600
+                            ${showButton ? "right-0" : "-right-44"}
+                         `}
+                      type="button"
+                    >
+                      <Trash stroke="#FFF" />
+                      Ausente
+                    </Button>
+                  )}
+                </Participant.Button>
+              )}
             </Participant.Root>
             <InputParticipant crossOrigin participants={participants} />
           </BoxGroup>

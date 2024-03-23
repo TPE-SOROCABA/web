@@ -16,19 +16,14 @@ export function ListaDesignacao() {
   const getParticipants = useCallback(async () => {
     try {
       const groupId = "65f9c426559715b69403e28a";
-      const url = search
-        ? `/participants/${groupId}?filter=${search}`
-        : "/users";
-      const { data } = await http.get(url);
+      const { data } = await http.get(`/participants`, {
+        params: {
+          groupId,
+          filter: search,
+        },
+      });
 
-      const dataParsed = data.map((participant: IParticipant) => ({
-        _id: participant._id,
-        phone: participant.phone,
-        name: participant.name,
-        email: participant.email,
-        cpf: participant.cpf,
-      })) as IParticipant[];
-      setParticipants(dataParsed);
+      setParticipants(data);
     } catch (error) {
       console.error(error);
     }
@@ -61,35 +56,47 @@ export function ListaDesignacao() {
           </Button>
         </Link>
       </div>
-      <div className="flex flex-wrap gap-8 justify-between">
+      <div
+        className="flex flex-wrap gap-8 justify-between"
+        hidden={!participants.length}
+      >
         {participants.map((participant, index) => (
-          <Participant.Root key={participant._id} name={participant.name}>
-            {/* {({ showMore, setShowMore }) => ( */}
-            <Participant.Tag show={index % 2 === 0} tagTitle="Ausente" />
-            {/* <Participant.Eye
+          <Participant.Root
+            key={participant.id}
+            name={participant.name}
+            avatar={`https://source.unsplash.com/random/${40 + index}x${
+              40 + index
+            }`}
+          >
+            {({ showMore, setShowMore }) => (
+              <>
+                <Participant.Tag show={index % 2 === 0} tagTitle="Ausente" />
+
+                <Participant.Button>
+                  {({ showButton }) => {
+                    console.log(showButton);
+                    return (
+                      <Button
+                        placeholder="Botão de ausência"
+                        className={`
+                        flex justify-center items-center h-full w-40 absolute top-0 rounded-r-lg rounded-l-none z-50 pointer-events-none bg-primary-600 border border-primary-600
+                        ${showButton ? "right-0" : "-right-44"}
+                      `}
+                        type="button"
+                      >
+                        Ausente
+                      </Button>
+                    );
+                  }}
+                </Participant.Button>
+                <Participant.Eye
                   show
                   showMore={showMore}
                   setShowMore={setShowMore}
                   moreText="Motivos de ausencia aqui"
-                /> */}
-            <Participant.Button>
-              {({ showButton }) => {
-                console.log(showButton);
-                return (
-                  <Button
-                    placeholder="Botão de ausência"
-                    className={`
-                      flex justify-center items-center h-full w-40 absolute top-0 rounded-r-lg rounded-l-none z-50 pointer-events-none bg-primary-600 border border-primary-600
-                      ${showButton ? "right-0" : "-right-44"}
-                    `}
-                    type="button"
-                  >
-                    Ausente
-                  </Button>
-                );
-              }}
-            </Participant.Button>
-            {/* )} */}
+                />
+              </>
+            )}
           </Participant.Root>
         ))}
       </div>

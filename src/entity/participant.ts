@@ -1,7 +1,8 @@
 export interface IParticipant {
-  _id: string;
-  phone: string;
+  id: string;
   name: string;
-  email: string;
-  cpf: string;
+  phone: string;
+  profile_photo: string;
+  profile: string;
+  incident_history: string;
 }

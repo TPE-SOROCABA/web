@@ -10,8 +10,7 @@ interface InputParticipantProps extends InputProps {
   participants: IParticipant[];
 }
 
-const defaultAvatar =
-  "https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=612x612&w=0&k=20&c=gkvLDCgsHH-8HeQe7JsjhlOY6vRBJk_sKW9lyaLgmLo=";
+const defaultAvatar = "https://source.unsplash.com/random/WIDTHxHEIGHT";
 export function InputParticipant({
   avatar = defaultAvatar,
   crossOrigin,
@@ -67,7 +66,7 @@ export function InputParticipant({
                 name={participant.name}
                 avatar={avatar}
               >
-                <Participant.Button absent>
+                <Participant.Button>
                   {(showButton) => (
                     <Button placeholder="Selecionar participante">
                       selecionar
