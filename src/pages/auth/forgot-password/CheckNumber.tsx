@@ -25,7 +25,7 @@ export function CheckNumberCode() {
     e.preventDefault();
     const toastId = toast.loading("Verificando código");
     try {
-      const { data } = await http.post("/login-code", {
+      const { data } = await http.post("/auth/login-code", {
         cpf: cpf.replace(/\D/g, ""),
         code,
       });
