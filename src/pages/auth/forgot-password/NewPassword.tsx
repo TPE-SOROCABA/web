@@ -27,7 +27,7 @@ export function NewPassword() {
     }
     const toastId = toast.loading("Salvando nova senha");
     try {
-      await http.post("/reset-password", {
+      await http.post("/auth/reset-password", {
         cpf: cpf.replace(/\D/g, ""),
         password: password.value,
       });

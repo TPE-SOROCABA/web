@@ -18,7 +18,7 @@ export const ForgotPassword = () => {
     e.preventDefault();
     const toastId = toast.loading("Enviando código de recuperação");
     try {
-      await http.post("/recover-password", {
+      await http.post("/auth/recover-password", {
         cpf: inputForgotPassword.cpf.replace(/\D/g, ""),
         // cellphone: inputForgotPassword.cellphone.replace(/\D/g, ""),
       });
