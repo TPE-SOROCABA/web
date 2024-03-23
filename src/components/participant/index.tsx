@@ -1,12 +1,19 @@
 import { Button } from "@material-tailwind/react";
 import { Eye, Trash } from "lucide-react";
-import { useState } from "react";
+import { Children, Dispatch, ReactNode, SetStateAction, useState } from "react";
 import { tv } from "tailwind-variants";
 
+type ChildrenProps = {
+  showMore: boolean;
+  setShowMore: Dispatch<SetStateAction<boolean>>;
+};
+
 interface ParticipantProps {
-  avatar: string;
+  avatar?: string;
   name: string;
   absent?: Absent;
+  // children: (p: ChildrenProps) => JSX.Element;
+  children: ReactNode;
 }
 
 interface Absent {
@@ -35,7 +42,15 @@ const participant = tv({
   },
 });
 
-export function Participant({ avatar, name, absent }: ParticipantProps) {
+const defaultAvatar =
+  "https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=612x612&w=0&k=20&c=gkvLDCgsHH-8HeQe7JsjhlOY6vRBJk_sKW9lyaLgmLo=";
+
+function ParticipantComponent({
+  avatar = defaultAvatar,
+  name,
+  absent,
+  children: Children,
+}: ParticipantProps) {
   const [showReason, setShowReason] = useState(false);
   return (
     <>
@@ -53,9 +68,9 @@ export function Participant({ avatar, name, absent }: ParticipantProps) {
         <p className="text-primary-700 text-lg font-medium text-nowrap truncate max-w-40">
           {name}
         </p>
-        <TagAbsent absent={absent?.reason} />
-        <EyeAbsent absent={absent} />
-        <AbsentButton absent={!!absent} />
+        {/* {Children && (
+          <Children showMore={showReason} setShowMore={setShowReason} />
+        )} */}
       </div>
       {absent && showReason && (
         <div
@@ -65,86 +80,105 @@ export function Participant({ avatar, name, absent }: ParticipantProps) {
       )}
     </>
   );
+}
 
-  function EyeAbsent({ absent }: { absent?: Absent }) {
-    if (!absent) return null;
+interface EyeComponentProps {
+  show?: boolean;
+  showMore: boolean;
+  setShowMore: Dispatch<SetStateAction<boolean>>;
+  moreText: string;
+}
+function EyeComponent({
+  show,
+  showMore,
+  setShowMore,
+  moreText,
+}: EyeComponentProps) {
+  if (!show) return null;
 
-    return (
-      <>
-        <div
-          onClick={() => {
-            console.log("click");
-            setShowReason((old) => !old);
-          }}
-          className="flex justify-center items-center text-primary-600 fill-current h-7 w-7 hover:scale-105 cursor-pointer transition-all ease-in-out duration-300 hover:drop-shadow-lg z-50"
-        >
-          <Eye />
-        </div>
-        <div
-          className={`
-               absolute top-[105%] left-0 w-72 p-2 bg-white rounded-bl-lg rounded-br-lg shadow-2xl drop-shadow-2xl z-50
-               flex items-center flex-col gap-2
-               ${showReason ? "block" : "hidden"}
-            `}
-        >
-          <p className="text-primary-600 text-md">{absent.reason}</p>
-          <div className="flex flex-row justify-around items-center w-full">
-            <Button
-              variant="outlined"
-              className="w-2/5 border-primary-300 flex justify-center items-center text-sm p-2"
-              placeholder="Histórico do participante"
-            >
-              Histórico
-            </Button>
-            <Button
-              variant="outlined"
-              className="w-2/5 border-primary-300 flex justify-center items-center text-sm p-2"
-              placeholder="Editar participante"
-            >
-              Editar
-            </Button>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  function TagAbsent({ absent }: { absent?: string }) {
-    if (!absent) return null;
-    return (
-      <>
-        <div className="flex justify-center items-center border border-primary-400 text-gray-700 h-7 w-fit p-0.5 rounded-lg">
-          Ausente
-        </div>
-      </>
-    );
-  }
-
-  function AbsentButton({ absent }: { absent: boolean }) {
-    const [showButton, setShowButton] = useState(false);
-    if (absent) return null;
-    return (
-      <>
-        <div
-          className="absolute top-0 left-0 z-40 w-full h-full transition-all ease-in-out duration-300"
-          onMouseEnter={() => setShowButton(true)}
-          onMouseLeave={() => setShowButton(false)}
-        >
+  return (
+    <>
+      <div
+        onClick={() => {
+          console.log("click");
+          setShowMore((old) => !old);
+        }}
+        className="flex justify-center items-center text-primary-600 fill-current h-7 w-7 hover:scale-105 cursor-pointer transition-all ease-in-out duration-300 hover:drop-shadow-lg z-50"
+      >
+        <Eye />
+      </div>
+      <div
+        className={`
+             absolute top-[105%] left-0 w-72 p-2 bg-white rounded-bl-lg rounded-br-lg shadow-2xl drop-shadow-2xl z-50
+             flex items-center flex-col gap-2
+             ${showMore ? "block" : "hidden"}
+          `}
+      >
+        <p className="text-primary-600 text-md">{moreText}</p>
+        <div className="flex flex-row justify-around items-center w-full">
           <Button
-            placeholder="Botão de ausência"
-            className={`
-               flex justify-center items-center h-full w-40 absolute top-0 rounded-r-lg rounded-l-none z-50
-               ${
-                 !absent ? "w-3/5 bg-primary-600 border border-primary-600" : ""
-               }
-               ${showButton ? "right-0" : "-right-44"}
-            `}
+            variant="outlined"
+            className="w-2/5 border-primary-300 flex justify-center items-center text-sm p-2"
+            placeholder="Histórico do participante"
           >
-            <Trash stroke="#FFF" />
-            Ausente
+            Histórico
+          </Button>
+          <Button
+            variant="outlined"
+            className="w-2/5 border-primary-300 flex justify-center items-center text-sm p-2"
+            placeholder="Editar participante"
+          >
+            Editar
           </Button>
         </div>
-      </>
-    );
-  }
+      </div>
+    </>
+  );
 }
+
+interface TagComponentProps {
+  show?: boolean;
+  tagTitle: string;
+}
+
+function TagComponent({ show = true, tagTitle }: TagComponentProps) {
+  if (!show) return null;
+  return (
+    <>
+      <div className="flex justify-center items-center border border-primary-400 text-gray-700 h-7 w-fit p-0.5 rounded-lg">
+        {tagTitle}
+      </div>
+    </>
+  );
+}
+
+interface ButtonComponentProps {
+  show?: boolean;
+  children: ({ showButton }: { showButton: boolean }) => JSX.Element;
+}
+function ButtonComponent({
+  show = true,
+  children: Children,
+}: ButtonComponentProps) {
+  const [showButton, setShowButton] = useState(false);
+  console.log("button component", showButton);
+  if (!show) return null;
+  return (
+    <>
+      <div
+        className="absolute top-0 left-0 z-40 w-full h-full transition-all ease-in-out duration-300"
+        onMouseEnter={() => setShowButton(true)}
+        onMouseLeave={() => setShowButton(false)}
+      >
+        <Children showButton={showButton} />
+      </div>
+    </>
+  );
+}
+
+export const Participant = {
+  Root: ParticipantComponent,
+  Eye: EyeComponent,
+  Tag: TagComponent,
+  Button: ButtonComponent,
+};
