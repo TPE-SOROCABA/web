@@ -1,5 +1,5 @@
 import { Button } from "@material-tailwind/react";
-import { Participant } from "../../../components";
+import { Participant } from "../../../components/index";
 import { useCallback, useEffect, useState } from "react";
 import { useHttp } from "../../../lib";
 import { FilterText } from "../../../components/filter";
@@ -69,9 +69,14 @@ export function ListaDesignacao() {
             }`}
           >
             {({ showMore, setShowMore }) => (
-              <>
+              <div className="flex items-center justify-end w-40 gap-2">
                 <Participant.Tag show={index % 2 === 0} tagTitle="Ausente" />
-
+                <Participant.Eye
+                  show
+                  showMore={showMore}
+                  setShowMore={setShowMore}
+                  moreText="Motivos de ausencia aqui"
+                />
                 <Participant.Button>
                   {({ showButton }) => {
                     console.log(showButton);
@@ -89,13 +94,7 @@ export function ListaDesignacao() {
                     );
                   }}
                 </Participant.Button>
-                <Participant.Eye
-                  show
-                  showMore={showMore}
-                  setShowMore={setShowMore}
-                  moreText="Motivos de ausencia aqui"
-                />
-              </>
+              </div>
             )}
           </Participant.Root>
         ))}

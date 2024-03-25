@@ -11,6 +11,7 @@ interface ParticipantProps {
   name: string;
   absent?: Absent;
   children: (p: ChildrenProps) => JSX.Element;
+  className?: HTMLElement["className"];
   // children: ReactNode;
 }
 
@@ -23,7 +24,7 @@ interface Absent {
 }
 
 const participant = tv({
-  base: "flex items-center relative border h-12 w-72 p-2 rounded-lg gap-4 shadow-md transition-all ease-in-out duration-300 hover:shadow-lg",
+  base: "flex items-center justify-between relative border h-12 w-72 p-2 rounded-lg shadow-md transition-all ease-in-out duration-300 hover:shadow-lg z-10",
   variants: {
     absent: {
       yes: "border-primary-400 shadow-primary-100",
@@ -46,6 +47,7 @@ export function ParticipantComponent({
   name,
   absent,
   children: Children,
+  className,
 }: ParticipantProps) {
   const [showReason, setShowReason] = useState(false);
   return (
@@ -54,16 +56,19 @@ export function ParticipantComponent({
         className={participant({
           absent: absent ? "yes" : "no",
           showReason: showReason ? "yes" : "no",
+          className: className,
         })}
       >
-        <img
-          src={avatar}
-          alt="Foto de perfil"
-          className="rounded-full h-9 w-9"
-        />
-        <p className="text-primary-700 text-lg font-medium text-nowrap truncate max-w-40">
-          {name}
-        </p>
+        <div className="max-w-48 gap-2 flex justify-start items-center">
+          <img
+            src={avatar}
+            alt="Foto de perfil"
+            className="rounded-full h-9 w-9"
+          />
+          <p className="text-primary-700 text-lg font-medium text-nowrap truncate max-w-40">
+            {name}
+          </p>
+        </div>
         {Children && (
           <Children showMore={showReason} setShowMore={setShowReason} />
         )}

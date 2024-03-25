@@ -9,12 +9,11 @@ export function ButtonComponent({
   children: Children,
 }: ButtonComponentProps) {
   const [showButton, setShowButton] = useState(false);
-  console.log("button component", showButton);
   if (!show) return null;
   return (
     <>
       <div
-        className="absolute top-0 left-0 z-40 w-full h-full transition-all ease-in-out duration-300"
+        className="absolute top-0 left-0 z-30 w-full h-full transition-all ease-in-out duration-300"
         onMouseEnter={() => setShowButton(true)}
         onMouseLeave={() => setShowButton(false)}
       >
