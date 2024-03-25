@@ -63,11 +63,9 @@ export function Designar() {
   const getParticipants = useCallback(async (random = false) => {
     try {
       const groupId = "65fe068c81870be5412f90fd";
+      const params = random ? { groupId, random: true } : { groupId }
       const { data } = await http.get<Desigantion>("/designations/week", {
-        params: {
-          groupId,
-          random
-        },
+        params,
       });
 
       setAssignments(
