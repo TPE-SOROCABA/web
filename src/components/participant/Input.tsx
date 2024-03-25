@@ -6,7 +6,7 @@ import defaultAvatar from "../../assets/avatar.png";
 
 type InputProps = React.ComponentProps<typeof Input>;
 
-interface InputParticipantProps extends InputProps {
+interface InputParticipantProps {
   avatar?: string;
   participants: IParticipant[];
   positionList: "top" | "bottom";
@@ -21,7 +21,7 @@ export function InputParticipant({
   positionList,
   onSelect,
   ...rest
-}: InputParticipantProps) {
+}: InputParticipantProps & InputProps) {
   const [showParticipants, setShowParticipants] = useState(false);
   const [ignoreBlur, setIgnoreBlur] = useState(false);
   const [search, setSearch] = useState("");

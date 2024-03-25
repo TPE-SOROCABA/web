@@ -55,7 +55,7 @@ export function Designar() {
   const toast = useToastHot();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [participants, setParticipants] = useState<IParticipant[]>([]);
-  const [desigantion, setDesigantion] = useState<Omit<
+  const [, setDesignation] = useState<Omit<
     Desigantion,
     "assignments" | "participants"
   > | null>();
@@ -81,7 +81,7 @@ export function Designar() {
           data.participants
         )
       );
-      setDesigantion({
+      setDesignation({
         id: data.id,
         group: data.group,
         status: data.status,
