@@ -54,6 +54,10 @@ export function Designar() {
   const http = useHttp();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [participants, setParticipants] = useState<IParticipant[]>([]);
+  const [desigantion, setDesigantion] = useState<Omit<
+    Desigantion,
+    "assignments" | "participants"
+  > | null>();
 
   const getParticipants = useCallback(async () => {
     try {
@@ -71,7 +75,16 @@ export function Designar() {
           }))
         )
       );
-      setParticipants(addFakeImage(data.participants));
+      setParticipants(
+        addFakeImage(
+          data.participants.concat(data.participants).concat(data.participants)
+        )
+      );
+      setDesigantion({
+        id: data.id,
+        group: data.group,
+        status: data.status,
+      });
     } catch (error) {
       console.error(error);
     }
@@ -94,8 +107,13 @@ export function Designar() {
     <>
       <BoxScreen>
         <div className="w-full justify-between items-center flex gap-4">
-          <FilterText toSearch="Pesquisar Voluntários" />
-          <ParticipantsToAssign participants={participants} />
+          <div className="flex justify-between items-center w-2/3">
+            <FilterText toSearch="Pesquisar Voluntários" />
+            <ParticipantsToAssign participants={participants} />
+          </div>
+          <Button placeholder={"Designar Automaticamente"}>
+            Designação Automática
+          </Button>
         </div>
         <div
           className="flex flex-wrap gap-8 justify-between w-full duration-300 ease-in-out transition-transform transform"
@@ -214,6 +232,7 @@ function ParticipantsToAssign({
               `https://ui-avatars.com/api/?name=${participant.name}`
             }
             alt={participant.name}
+            title={participant.name}
             className={participantstoAssign({
               noFirst: index !== 0 ? "yes" : undefined,
               className: `${"z-"[zIndex - 10]}`,
