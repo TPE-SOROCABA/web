@@ -6,8 +6,9 @@ import { InputParticipant } from "../../components/participant/Input";
 import { IParticipant } from "../../entity";
 import { useHttp, useToastHot } from "../../lib";
 import { Button } from "@material-tailwind/react";
-import { Trash } from "lucide-react";
+import { ArrowRightLeft, Trash } from "lucide-react";
 import { tv } from "tailwind-variants";
+import { addFakeImage } from "../../lib/addFakeImage";
 
 interface Desigantion {
   id: string;
@@ -155,17 +156,53 @@ export function Designar() {
                       {() => (
                         <Participant.Button>
                           {({ showButton }) => (
-                            <Button
-                              placeholder="Botão de ausência"
-                              className={`
-                              flex justify-center items-center h-full w-40 absolute top-0 rounded-r-lg rounded-l-none z-50 pointer-events-none bg-primary-600 border border-primary-600
-                              ${showButton ? "right-0" : "-right-44"}
-                           `}
-                              type="button"
-                            >
-                              <Trash stroke="#FFF" />
-                              Ausente
-                            </Button>
+                            <>
+                              <Button
+                                onClick={() => {
+                                  setParticipants((prev) => [...prev, participant]);
+                                  setAssignments((prev) =>
+                                    prev.map((a) =>
+                                      a.point.id === assignment.point.id
+                                        ? {
+                                          ...a,
+                                          participants: a.participants.filter(
+                                            (p) => p.id !== participant.id
+                                          ),
+                                        }
+                                        : a
+                                    )
+                                  );
+                                }}
+                                placeholder="Botão de ausência"
+                                className={`
+                                    flex items-center gap-2
+                                    h-full w-40 
+                                    absolute top-0
+                                    rounded-l-lg rounded-r-none bg-gray-600 border border-gray-600 cursor-pointer
+                                    ${showButton ? "left-0" : "-left-44"}
+                                `}
+                                type="button"
+                              >
+                                <ArrowRightLeft stroke="#FFF" />
+                                Trocar
+                              </Button>
+                              <Button
+                                placeholder="Botão de ausência"
+                                className={`
+                                    flex items-center gap-2
+                                    h-full w-40 z-20
+                                    absolute top-0 
+                                    rounded-r-lg rounded-l-none bg-primary-600 border border-primary-600
+                                    ${showButton ? "right-0" : "-right-44"}
+                                `}
+                                type="button"
+                              >
+                                <Trash stroke="#FFF" />
+                                Ausente
+                              </Button>
+
+
+                            </>
                           )}
                         </Participant.Button>
                       )}
@@ -177,13 +214,25 @@ export function Designar() {
                         crossOrigin
                         participants={participants}
                         placeholder="Adicionar voluntário"
-                        positionList={
-                          assignment.participants?.length >= 1
-                            ? "top"
-                            : "bottom"
-                        }
                         onSelect={(participantId) => {
-                          console.log(participantId);
+                          setAssignments((prev) =>
+                            prev.map((a) =>
+                              a.point.id === assignment.point.id
+                                ? {
+                                  ...a,
+                                  participants: [
+                                    ...a.participants,
+                                    participants.find(
+                                      (p) => p.id === participantId
+                                    )!,
+                                  ],
+                                }
+                                : a
+                            )
+                          );
+                          setParticipants((prev) =>
+                            prev.filter((p) => p.id !== participantId)
+                          );
                         }}
                       />
                     )}
@@ -205,16 +254,7 @@ export function Designar() {
   );
 }
 
-const addFakeImage = (participants: IParticipant[]): IParticipant[] => {
-  return participants.map((participant) => {
 
-    if (!participant.profile_photo) {
-      participant.profile_photo = `https://ui-avatars.com/api/?name=${participant.name}&background=2d3477&color=fff`;
-    }
-
-    return participant;
-  });
-};
 
 const participantstoAssign = tv({
   base: "w-8 h-8 rounded-full object-cover sticky",
@@ -232,7 +272,7 @@ function ParticipantsToAssign({
   // return a list with the images of the participants, the images is a circle with the first letter of the name of the participant or your image
   return (
     <div className="flex justify-start items-center relative">
-      {participants.map((participant, index) => {
+      {addFakeImage(participants).map((participant, index) => {
         const zIndex = 10;
         if (index > 5) return null;
         if (index === 5)
@@ -250,10 +290,7 @@ function ParticipantsToAssign({
         return (
           <img
             key={participant.id}
-            src={
-              participant.profile_photo ||
-              `https://ui-avatars.com/api/?name=${participant.name}&background=2d3477&color=fff`
-            }
+            src={participant.profile_photo}
             alt={participant.name}
             title={participant.name}
             className={participantstoAssign({

@@ -7,7 +7,7 @@ interface BoxGroupProps {
 export function BoxGroup({ children, pointName, pointCars }: BoxGroupProps) {
   return (
     <>
-      <div className="w-80 h-64 flex flex-col items-center justify-start gap-5 p-4 rounded-lg border border-primary-200 shadow-lg drop-shadow-lg">
+      <div className="w-80 h-64 flex flex-col items-center justify-start gap-5 p-4 rounded-lg border border-primary-200 shadow-lg">
         <div className="flex justify-around items-center w-full gap-2">
           <span
             className="font-bold text-base truncate w-[62%]"
