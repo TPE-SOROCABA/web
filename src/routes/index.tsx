@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import {
   CheckNumberCode,
+  Designar,
   ForgotPassword,
   Hello,
   ListaDesignacao,
@@ -23,6 +24,7 @@ export function RoutesApp() {
         <Route element={<PrivateRoute />}>
           <Route path="/dashboard" element={<Hello />} />
           <Route path="/lista-designacao" element={<ListaDesignacao />} />
+          <Route path="/designar" element={<Designar />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -1,5 +1,6 @@
 import { useCookies } from ".";
 import { http } from "../infra";
+
 export const useHttp = () => {
   const cookie = useCookies();
 
