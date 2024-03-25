@@ -2,6 +2,7 @@ import { Button, Input } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import { Participant } from ".";
 import { IParticipant } from "../../entity";
+import defaultAvatar from "../../assets/avatar.png";
 
 type InputProps = React.ComponentProps<typeof Input>;
 
@@ -12,9 +13,8 @@ interface InputParticipantProps extends InputProps {
   onSelect: (participantId: IParticipant["id"]) => void;
 }
 
-const defaultAvatar = "https://source.unsplash.com/random/WIDTHxHEIGHT";
 export function InputParticipant({
-  avatar = defaultAvatar,
+  avatar,
   crossOrigin,
   className,
   participants,
@@ -42,7 +42,7 @@ export function InputParticipant({
       <div className="flex justify-between items-center w-full gap-2 pr-2 border border-primary-300 rounded-lg relative">
         <div className="flex justify-center items-center w-16">
           <img
-            src={avatar}
+            src={avatar || defaultAvatar}
             alt="Foto de perfil"
             className="rounded-full h-9 w-9"
           />

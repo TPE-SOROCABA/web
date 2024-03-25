@@ -4,7 +4,7 @@ import { BoxGroup, BoxScreen } from "../../components/box";
 import { FilterText } from "../../components/filter";
 import { InputParticipant } from "../../components/participant/Input";
 import { IParticipant } from "../../entity";
-import { useHttp, useCookies } from "../../lib";
+import { useHttp, useToastHot } from "../../lib";
 import { Button } from "@material-tailwind/react";
 import { Trash } from "lucide-react";
 import { tv } from "tailwind-variants";
@@ -52,6 +52,7 @@ interface Group {
 
 export function Designar() {
   const http = useHttp();
+  const toast = useToastHot();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [participants, setParticipants] = useState<IParticipant[]>([]);
   const [desigantion, setDesigantion] = useState<Omit<
@@ -59,25 +60,25 @@ export function Designar() {
     "assignments" | "participants"
   > | null>();
 
-  const getParticipants = useCallback(async () => {
+  const getParticipants = useCallback(async (random = false) => {
     try {
       const groupId = "65fe068c81870be5412f90fd";
       const { data } = await http.get<Desigantion>("/designations/week", {
         params: {
           groupId,
+          random
         },
       });
+
       setAssignments(
-        sortAssignments(
-          data.assignments.map((a) => ({
-            ...a,
-            participants: addFakeImage(a.participants),
-          }))
-        )
+        data.assignments.map((a) => ({
+          ...a,
+          participants: addFakeImage(a.participants),
+        }))
       );
       setParticipants(
         addFakeImage(
-          data.participants.concat(data.participants).concat(data.participants)
+          data.participants
         )
       );
       setDesigantion({
@@ -89,29 +90,41 @@ export function Designar() {
       console.error(error);
     }
   }, [http]);
+
   useEffect(() => {
     getParticipants();
   }, [getParticipants]);
 
-  const sortAssignments = (assignments: Assignment[]) => {
-    // assignments when this assignment.config.max > assignment.participants?.length is true is first
-
-    return assignments.sort((a, b) => {
-      if (a.config.max > a.participants?.length) return -1;
-      if (b.config.max > b.participants?.length) return 1;
-      return 0;
+  const handleRandom = async () => {
+    await toast.promise(getParticipants(true), {
+      loading: "Designando automaticamente...",
+      success: "Designação automática realizada com sucesso",
+      error: "Erro ao designar automaticamente",
     });
-  };
+  }
+
+  // const handleUpdate = async () => {
+  //   const input: any = {
+  //     ...desigantion,
+  //     assignments: assignments,
+  //     participants: participants,
+  //   };
+  //   console.log(input);
+  // }
+
 
   return (
     <>
       <BoxScreen>
         <div className="w-full justify-between items-center flex gap-4">
-          <div className="flex justify-between items-center w-2/3">
+          <div className="flex justify-between items-center w-2/3 gap-4">
             <FilterText toSearch="Pesquisar Voluntários" />
             <ParticipantsToAssign participants={participants} />
           </div>
-          <Button placeholder={"Designar Automaticamente"}>
+          <Button
+            className="bg-primary-600 text-white"
+            placeholder={"Designar Automaticamente"}
+            onClick={handleRandom}>
             Designação Automática
           </Button>
         </div>
@@ -180,6 +193,14 @@ export function Designar() {
               </div>
             );
           })}
+
+          <div className="w-full flex justify-center items-center">
+            {/* <Button
+              className="bg-primary-600 text-white"
+              placeholder={"Atualizar"}
+              onClick={handleUpdate}>Atualizar
+            </Button> */}
+          </div>
         </div>
       </BoxScreen>
     </>
@@ -187,10 +208,14 @@ export function Designar() {
 }
 
 const addFakeImage = (participants: IParticipant[]): IParticipant[] => {
-  return participants.map((participant) => ({
-    ...participant,
-    profile_photo: `https://source.unsplash.com/random/40x40?sig=${participant.id}`,
-  }));
+  return participants.map((participant) => {
+
+    if (!participant.profile_photo) {
+      participant.profile_photo = `https://ui-avatars.com/api/?name=${participant.name}&background=2d3477&color=fff`;
+    }
+
+    return participant;
+  });
 };
 
 const participantstoAssign = tv({
@@ -229,7 +254,7 @@ function ParticipantsToAssign({
             key={participant.id}
             src={
               participant.profile_photo ||
-              `https://ui-avatars.com/api/?name=${participant.name}`
+              `https://ui-avatars.com/api/?name=${participant.name}&background=2d3477&color=fff`
             }
             alt={participant.name}
             title={participant.name}

@@ -13,3 +13,7 @@ export const useToast = (): Toaster => {
   const toast = isMobile ? toastMobile : toastDesktop;
   return toast;
 };
+
+export const useToastHot = () => {
+  return toastMobile;
+}
