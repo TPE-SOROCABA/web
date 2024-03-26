@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 
 type FilterText = {
   toSearch: string;
-  handleSearchEvent: (event: string) => void;
+  handleSearchEvent?: (event: string) => void;
 };
 
 /**
@@ -21,14 +21,14 @@ export function FilterText({ toSearch, handleSearchEvent }: FilterText) {
     event.preventDefault();
     if (!search) return setSearchParams({});
     setSearchParams({ search });
-    handleSearchEvent(search);
+    handleSearchEvent && handleSearchEvent(search);
   };
 
   const updateSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setSearch((old) => {
       if (Boolean(old) && !value) setSearchParams({});
-      handleSearchEvent(value);
+      handleSearchEvent && handleSearchEvent(value);
       return value;
     });
   };
