@@ -16,6 +16,8 @@ interface Desigantion {
   status: "OPEN" | "CLOSED";
   assignments: Assignment[];
   participants: IParticipant[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface Assignment {
@@ -51,20 +53,26 @@ interface Group {
   };
 }
 
+let timeout: NodeJS.Timeout;
+
 export function Designar() {
   const http = useHttp();
   const toast = useToastHot();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [participants, setParticipants] = useState<IParticipant[]>([]);
-  const [, setDesignation] = useState<Omit<
+  const [desigantion, setDesignation] = useState<Omit<
     Desigantion,
     "assignments" | "participants"
   > | null>();
 
-  const getParticipants = useCallback(async (random = false) => {
+  const getParticipants = useCallback(async (props?: { random?: boolean; filter?: string }) => {
     try {
       const groupId = "65fe068c81870be5412f90fd";
-      const params = random ? { groupId, random: true } : { groupId }
+      const params = {
+        groupId,
+        filter: props?.filter ?? undefined,
+        random: props?.random ?? undefined
+      }
       const { data } = await http.get<Desigantion>("/designations/week", {
         params,
       });
@@ -84,6 +92,8 @@ export function Designar() {
         id: data.id,
         group: data.group,
         status: data.status,
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
       });
     } catch (error) {
       console.error(error);
@@ -95,29 +105,59 @@ export function Designar() {
   }, [getParticipants]);
 
   const handleRandom = async () => {
-    await toast.promise(getParticipants(true), {
+    await toast.promise(getParticipants({ random: true }), {
       loading: "Designando automaticamente...",
       success: "Designação automática realizada com sucesso",
       error: "Erro ao designar automaticamente",
     });
   }
 
-  // const handleUpdate = async () => {
-  //   const input: any = {
-  //     ...desigantion,
-  //     assignments: assignments,
-  //     participants: participants,
-  //   };
-  //   console.log(input);
-  // }
+  const handleSearch = async (search: string) => {
+    timeout && clearTimeout(timeout);
+    if (!search) return getParticipants();
+    timeout = setTimeout(async () => {
+      await toast.promise(getParticipants({ filter: search }), {
+        loading: "Buscando participantes e pontos...",
+        success: "Busca realizada com sucesso",
+        error: "Erro ao buscar participantes e pontos",
+      });
+    }, 800);
+  }
 
+  const handleUpdate = async (assignments: Assignment[], participants: IParticipant[]) => {
+    timeout && clearTimeout(timeout);
+    const body = {
+      ...desigantion,
+      assignments: assignments,
+      participants: participants,
+    };
+    timeout = setTimeout(async () => {
+      // eslint-disable-next-line no-async-promise-executor
+      await toast.promise(new Promise(async (resolve, reject) => {
+        try {
+
+          await http.put<Desigantion>("/designations/" + desigantion?.id, body);
+          await getParticipants();
+          resolve(true)
+        } catch (error) {
+          console.error(error);
+          reject(false);
+        }
+      }
+      ), {
+        loading: "Atualizando designação...",
+        success: "Designação atualizada com sucesso",
+        error: "Erro ao atualizar designação",
+      });
+    }, 300);
+  }
 
   return (
     <>
-      <BoxScreen>
+      <BoxScreen loader={!assignments.length}>
         <div className="w-full justify-between items-center flex gap-4">
           <div className="flex justify-between items-center w-2/3 gap-4">
-            <FilterText toSearch="Pesquisar Voluntários" />
+            <FilterText toSearch="Pesquisar Voluntários" handleSearchEvent={handleSearch} />
             <ParticipantsToAssign participants={participants} />
           </div>
           <Button
@@ -139,13 +179,52 @@ export function Designar() {
 
             return (
               <div
-                // hidden={!assignment.participants?.length}
                 id={assignment.point.id}
                 key={assignment.point.id}
               >
                 <BoxGroup
                   pointName={assignment.point.name}
                   pointCars={perPoint}
+                  pointStatus={assignment.point.status}
+                  boxGroupEvent={(value) => {
+                    setAssignments((prev) => {
+                      const data = prev.map((a) => {
+                        if (a.point.id === assignment.point.id) {
+                          // verifica se é para desativar o ponto
+                          if (!value) {
+                            setParticipants((prev) => [
+                              ...prev,
+                              ...a.participants,
+                            ]);
+                            return {
+                              ...a,
+                              point: {
+                                ...a.point,
+                                status: false,
+                              },
+                              participants: [],
+                            };
+                          } else {
+                            // verifica se é para ativar o ponto
+                            return {
+                              ...a,
+                              point: {
+                                ...a.point,
+                                status: true,
+                              },
+                            }
+                          }
+                        }
+                        // se não for o ponto que está sendo alterado, retorna o ponto sem alterações
+                        return a;
+                      }
+                      )
+                      handleUpdate(data, participants)
+                      return data
+                    }
+                    );
+
+                  }}
                 >
                   {assignment.participants.map((participant) => (
                     <Participant.Root
@@ -212,6 +291,7 @@ export function Designar() {
                     participants?.length && (
                       <InputParticipant
                         crossOrigin
+                        disabled={!assignment.point.status}
                         participants={participants}
                         placeholder="Adicionar voluntário"
                         onSelect={(participantId) => {
@@ -241,12 +321,19 @@ export function Designar() {
             );
           })}
 
-          <div className="w-full flex justify-center items-center">
-            {/* <Button
+          <div className="w-full flex justify-end">
+            <Button
               className="bg-primary-600 text-white"
-              placeholder={"Atualizar"}
-              onClick={handleUpdate}>Atualizar
-            </Button> */}
+              placeholder={"Disparar designação"}
+              onClick={async () => {
+                await toast.promise(http.post<Desigantion>("/designations/send/" + desigantion?.id), {
+                  loading: "Disparando designação...",
+                  success: "Designação disparada com sucesso",
+                  error: "Erro ao disparar designação",
+                });
+              }}>
+              Disparar designação
+            </Button>
           </div>
         </div>
       </BoxScreen>
