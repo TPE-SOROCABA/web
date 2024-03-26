@@ -126,16 +126,17 @@ export function Designar() {
   }
 
   const handleUpdate = async () => {
-    const body = {
-      ...desigantion,
-      assignments,
-      participants,
-    };
-    await toast.promise(http.put<Desigantion>("/designations/" + desigantion?.id, body), {
-      loading: "Atualizando designação...",
-      success: "Designação atualizada com sucesso",
-      error: (error) => error?.response?.data?.message || "Erro ao atualizar designação",
-    })
+    // está com bug, mudar a forma de salvar as alterações de ponto
+    // const body = {
+    //   ...desigantion,
+    //   assignments,
+    //   participants,
+    // };
+    // await toast.promise(http.put<Desigantion>("/designations/" + desigantion?.id, body), {
+    //   loading: "Atualizando designação...",
+    //   success: "Designação atualizada com sucesso",
+    //   error: (error) => error?.response?.data?.message || "Erro ao atualizar designação",
+    // })
   }
 
 
