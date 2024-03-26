@@ -64,40 +64,40 @@ export function Designar() {
     Desigantion,
     "assignments" | "participants"
   > | null>();
+  const [isUpdate, setIsUpdate] = useState(false);
 
   const getParticipants = useCallback(async (props?: { random?: boolean; filter?: string }) => {
-    try {
-      const groupId = "65fe068c81870be5412f90fd";
-      const params = {
-        groupId,
-        filter: props?.filter ?? undefined,
-        random: props?.random ?? undefined
-      }
-      const { data } = await http.get<Desigantion>("/designations/week", {
-        params,
-      });
 
-      setAssignments(
-        data.assignments.map((a) => ({
-          ...a,
-          participants: addFakeImage(a.participants),
-        }))
-      );
-      setParticipants(
-        addFakeImage(
-          data.participants
-        )
-      );
-      setDesignation({
-        id: data.id,
-        group: data.group,
-        status: data.status,
-        createdAt: data.createdAt,
-        updatedAt: data.updatedAt,
-      });
-    } catch (error) {
-      console.error(error);
+    const groupId = "65fe068c81870be5412f90fd";
+    const params = {
+      groupId,
+      filter: props?.filter ?? undefined,
+      random: props?.random ?? undefined
     }
+    const { data } = await http.get<Desigantion>("/designations/week", {
+      params,
+    });
+
+    setAssignments(
+      data.assignments.map((a) => ({
+        ...a,
+        participants: addFakeImage(a.participants),
+      }))
+    );
+    setParticipants(
+      addFakeImage(
+        data.participants
+      )
+    );
+    setDesignation({
+      id: data.id,
+      group: data.group,
+      status: data.status,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+    });
+    setIsUpdate(false);
+
   }, [http]);
 
   useEffect(() => {
@@ -105,10 +105,11 @@ export function Designar() {
   }, [getParticipants]);
 
   const handleRandom = async () => {
+    isUpdate && await handleUpdate()
     await toast.promise(getParticipants({ random: true }), {
       loading: "Designando automaticamente...",
       success: "Designação automática realizada com sucesso",
-      error: "Erro ao designar automaticamente",
+      error: (error) => error?.response?.data?.message || "Erro ao designar automaticamente",
     });
   }
 
@@ -124,33 +125,19 @@ export function Designar() {
     }, 800);
   }
 
-  const handleUpdate = async (assignments: Assignment[], participants: IParticipant[]) => {
-    timeout && clearTimeout(timeout);
+  const handleUpdate = async () => {
     const body = {
       ...desigantion,
-      assignments: assignments,
-      participants: participants,
+      assignments,
+      participants,
     };
-    timeout = setTimeout(async () => {
-      // eslint-disable-next-line no-async-promise-executor
-      await toast.promise(new Promise(async (resolve, reject) => {
-        try {
-
-          await http.put<Desigantion>("/designations/" + desigantion?.id, body);
-          await getParticipants();
-          resolve(true)
-        } catch (error) {
-          console.error(error);
-          reject(false);
-        }
-      }
-      ), {
-        loading: "Atualizando designação...",
-        success: "Designação atualizada com sucesso",
-        error: "Erro ao atualizar designação",
-      });
-    }, 300);
+    await toast.promise(http.put<Desigantion>("/designations/" + desigantion?.id, body), {
+      loading: "Atualizando designação...",
+      success: "Designação atualizada com sucesso",
+      error: (error) => error?.response?.data?.message || "Erro ao atualizar designação",
+    })
   }
+
 
   return (
     <>
@@ -219,11 +206,10 @@ export function Designar() {
                         return a;
                       }
                       )
-                      handleUpdate(data, participants)
                       return data
                     }
                     );
-
+                    setIsUpdate(true);
                   }}
                 >
                   {assignment.participants.map((participant) => (
@@ -329,7 +315,7 @@ export function Designar() {
                 await toast.promise(http.post<Desigantion>("/designations/send/" + desigantion?.id), {
                   loading: "Disparando designação...",
                   success: "Designação disparada com sucesso",
-                  error: "Erro ao disparar designação",
+                  error: (error) => error?.response?.data?.message || "Erro ao disparar designação",
                 });
               }}>
               Disparar designação
