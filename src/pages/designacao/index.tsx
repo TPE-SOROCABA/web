@@ -64,7 +64,6 @@ export function Designar() {
     Desigantion,
     "assignments" | "participants"
   > | null>();
-  const [isUpdate, setIsUpdate] = useState(false);
 
   const getParticipants = useCallback(async (props?: { random?: boolean; filter?: string }) => {
 
@@ -96,8 +95,6 @@ export function Designar() {
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     });
-    setIsUpdate(false);
-
   }, [http]);
 
   useEffect(() => {
@@ -105,7 +102,6 @@ export function Designar() {
   }, [getParticipants]);
 
   const handleRandom = async () => {
-    isUpdate && await handleUpdate()
     await toast.promise(getParticipants({ random: true }), {
       loading: "Designando automaticamente...",
       success: "Designação automática realizada com sucesso",
@@ -125,18 +121,14 @@ export function Designar() {
     }, 800);
   }
 
-  const handleUpdate = async () => {
-    // está com bug, mudar a forma de salvar as alterações de ponto
-    // const body = {
-    //   ...desigantion,
-    //   assignments,
-    //   participants,
-    // };
-    // await toast.promise(http.put<Desigantion>("/designations/" + desigantion?.id, body), {
-    //   loading: "Atualizando designação...",
-    //   success: "Designação atualizada com sucesso",
-    //   error: (error) => error?.response?.data?.message || "Erro ao atualizar designação",
-    // })
+  const handleUpdatePoint = async (pointId:string, status:boolean) => {
+    await toast.promise(http.patch<Desigantion>(`/designations/${desigantion!.id}/points/${pointId}`, {
+      status
+    }), {
+      loading: "Atualizando ponto...",
+      success: "Ponto atualizado com sucesso",
+      error: (error) => error?.response?.data?.message || "Erro ao atualizar ponto",
+    })
   }
 
 
@@ -175,6 +167,7 @@ export function Designar() {
                   pointCars={perPoint}
                   pointStatus={assignment.point.status}
                   boxGroupEvent={(value) => {
+                    handleUpdatePoint(assignment.point.id, value);
                     setAssignments((prev) => {
                       const data = prev.map((a) => {
                         if (a.point.id === assignment.point.id) {
@@ -210,7 +203,7 @@ export function Designar() {
                       return data
                     }
                     );
-                    setIsUpdate(true);
+                   
                   }}
                 >
                   {assignment.participants.map((participant) => (
