@@ -107,7 +107,7 @@ export function InputParticipant({
                 key={participant.id}
                 name={participant.name}
                 avatar={participant.profile_photo || avatar}
-                incident_history={Boolean(participant.incident_history) || false}
+                incident_history={Boolean(participant?.incident_history) || false}
               >
                 {() => (
                   <>
