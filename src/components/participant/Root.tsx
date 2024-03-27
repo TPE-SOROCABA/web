@@ -8,6 +8,7 @@ type ChildrenProps = {
 
 interface ParticipantProps {
   avatar?: string;
+  incident_history?: boolean;
   name: string;
   absent?: Absent;
   children: (p: ChildrenProps) => JSX.Element;
@@ -48,6 +49,7 @@ export function ParticipantComponent({
   absent,
   children: Children,
   className,
+  incident_history
 }: ParticipantProps) {
   const [showReason, setShowReason] = useState(false);
   return (
@@ -59,7 +61,7 @@ export function ParticipantComponent({
           className: className,
         })}
       >
-        <div className="max-w-48 gap-2 flex justify-start items-center">
+        <div className={`max-w-48 gap-2 flex justify-start items-center ${incident_history ? " opacity-40" : ""}`}>
           <img
             src={avatar}
             alt="Foto de perfil"

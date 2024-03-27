@@ -16,6 +16,7 @@ interface Desigantion {
   status: "OPEN" | "CLOSED";
   assignments: Assignment[];
   participants: IParticipant[];
+  incidents: IParticipant[];
   createdAt: string;
   updatedAt: string;
 }
@@ -62,7 +63,7 @@ export function Designar() {
   const [participants, setParticipants] = useState<IParticipant[]>([]);
   const [desigantion, setDesignation] = useState<Omit<
     Desigantion,
-    "assignments" | "participants"
+    "assignments" | "participants" | "incidents"
   > | null>();
 
   const getParticipants = useCallback(async (props?: { random?: boolean; filter?: string }) => {
@@ -85,9 +86,10 @@ export function Designar() {
     );
     setParticipants(
       addFakeImage(
-        data.participants
+        [...data.participants, ...data.incidents]
       )
     );
+    
     setDesignation({
       id: data.id,
       group: data.group,
@@ -129,6 +131,27 @@ export function Designar() {
       success: "Ponto atualizado com sucesso",
       error: (error) => error?.response?.data?.message || "Erro ao atualizar ponto",
     })
+  }
+
+  const handleUpdatePointParticipants = async (pointId:string, participantIds:string[]) => {
+    await toast.promise(http.put<Desigantion>(`/designations/${desigantion!.id}/points/${pointId}/participants`, {
+      participants: participantIds
+    }), {
+      loading: "Atualizando participantes do ponto...",
+      success: "Ponto atualizado com sucesso",
+      error: (error) => error?.response?.data?.message || "Erro ao atualizar ponto",
+    })
+  }
+
+  const createIncidentParticipants = async (participantId:string) => {
+    await toast.promise(http.post<Desigantion>(`/participants/${participantId}/incidences`, {
+      reason: "Gerado automaticamente"
+    }), {
+      loading: "Atualizando participantes do ponto...",
+      success: "Ponto atualizado com sucesso",
+      error: (error) => error?.response?.data?.message || "Erro ao atualizar ponto",
+    })
+    await getParticipants()
   }
 
 
@@ -231,6 +254,7 @@ export function Designar() {
                                         : a
                                     )
                                   );
+                                  handleUpdatePointParticipants(assignment.point.id, assignment.participants.filter(p => p.id !== participant.id).map(p => p.id));
                                 }}
                                 placeholder="Botão de ausência"
                                 className={`
@@ -254,6 +278,22 @@ export function Designar() {
                                     rounded-r-lg rounded-l-none bg-primary-600 border border-primary-600
                                     ${showButton ? "right-0" : "-right-44"}
                                 `}
+                                onClick={async () => {
+                                  setParticipants((prev) => [...prev, participant]);
+                                  setAssignments((prev) =>
+                                    prev.map((a) =>
+                                      a.point.id === assignment.point.id
+                                        ? {
+                                          ...a,
+                                          participants: a.participants.filter(
+                                            (p) => p.id !== participant.id
+                                          ),
+                                        }
+                                        : a
+                                    )
+                                  );
+                                  await createIncidentParticipants(participant.id);
+                                }}
                                 type="button"
                               >
                                 <Trash stroke="#FFF" />
@@ -293,6 +333,14 @@ export function Designar() {
                           setParticipants((prev) =>
                             prev.filter((p) => p.id !== participantId)
                           );
+                          handleUpdatePointParticipants(assignment.point.id, [...assignment.participants.map(p => p.id), participantId as string]);
+                        }}
+                        cb={async () => {
+                          await toast.promise(getParticipants(), {
+                            loading: "Atualizando participantes e pontos...",
+                            success: "Participante adicionado com sucesso",
+                            error: "Erro ao adicionar participante",
+                          });
                         }}
                       />
                     )}
@@ -362,7 +410,7 @@ function ParticipantsToAssign({
             title={participant.name}
             className={participantstoAssign({
               noFirst: index !== 0 ? "yes" : undefined,
-              className: `${"z-"[zIndex - 10]}`,
+              className: `${"z-"[zIndex - 10]} ${participant.incident_history ? " cursor-not-allowed opacity-40" : ""}`,
             })}
           />
         );

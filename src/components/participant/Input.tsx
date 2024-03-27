@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { Participant } from ".";
 import { IParticipant } from "../../entity";
 import defaultAvatar from "../../assets/avatar.png";
+import toast from "react-hot-toast";
+import { http } from "../../infra";
 
 type InputProps = React.ComponentProps<typeof Input>;
 
@@ -10,6 +12,7 @@ interface InputParticipantProps {
   avatar?: string;
   participants: IParticipant[];
   onSelect: (participantId: IParticipant["id"]) => void;
+  cb?: () => void;
 }
 
 export function InputParticipant({
@@ -18,6 +21,7 @@ export function InputParticipant({
   className,
   participants,
   onSelect,
+  cb,
   ...rest
 }: InputParticipantProps & InputProps) {
   const [showParticipants, setShowParticipants] = useState(false);
@@ -34,7 +38,7 @@ export function InputParticipant({
 
   const participantsToRender = participants.filter((participant) =>
     participant.name.toLowerCase().includes(search.toLowerCase())
-  );
+  ).sort((_,b) => b.incident_history ? -1 : 1)
 
   const close = () => {
     setShowParticipants(false)
@@ -103,26 +107,53 @@ export function InputParticipant({
                 key={participant.id}
                 name={participant.name}
                 avatar={participant.profile_photo || avatar}
+                incident_history={Boolean(participant.incident_history) || false}
               >
                 {() => (
-                  <Participant.Button>
-                    {({ showButton }) => (
-                      <Button
-                        placeholder="Selecionar participante"
-                        className={`
-                          flex justify-center items-center h-full w-40 absolute top-0 rounded-r-lg rounded-l-none z-10 bg-primary-600 border border-primary-600 cursor-pointer
-                          ${showButton ? "right-0" : "-right-44"}
+                  <>
+
+                    {!participant.incident_history ? (
+                      <Participant.Button>
+                        {({ showButton }) => (
+                          <Button
+                            placeholder="Selecionar participante"
+                            className={`
+                        flex justify-center items-center h-full w-40 absolute top-0 rounded-r-lg rounded-l-none z-10 bg-primary-600 border border-primary-600 cursor-pointer
+                        ${showButton ? "right-0" : "-right-44"}
+                          `}
+                            onClick={() => {
+                              onSelect(participant.id);
+                              setParticipantSelected(participant);
+                              close()
+                            }}
+                          >
+                            selecionar
+                          </Button>
+                        )}
+                      </Participant.Button>
+                    ) : (<Participant.Button>
+                      {({ showButton }) => (
+                        <Button
+                          placeholder="Selecionar participante"
+                          className={`
+                      flex justify-center items-center h-full w-40 absolute top-0 rounded-r-lg opacity-100 rounded-l-none z-50 bg-green-400 border border-green-400 cursor-pointer
+                      ${showButton ? "right-0" : "-right-44"}
                         `}
-                        onClick={() => {
-                          onSelect(participant.id);
-                          setParticipantSelected(participant);
-                          close()
-                        }}
-                      >
-                        selecionar
-                      </Button>
-                    )}
-                  </Participant.Button>
+                          onClick={async () => {
+                            close()
+                            await toast.promise(http.put(`/participants/${participant.id}/incidences/${participant.incident_history['id']}`,{ status: "IGNORED"}), {
+                              loading: "Ativando participante",
+                              success: "Participante ativado",
+                              error: "Erro ao ativar participante"
+                            });
+                            cb && cb()
+                          }}
+                        >
+                          ativar
+                        </Button>
+                      )}
+                    </Participant.Button>)}
+                  </>
                 )}
               </Participant.Root>
             ))

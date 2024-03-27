@@ -4,5 +4,8 @@ export interface IParticipant {
   phone: string;
   profile_photo: string;
   profile: string;
-  incident_history: string;
+  incident_history: {
+    reason: string;
+    id: string;
+  };
 }
