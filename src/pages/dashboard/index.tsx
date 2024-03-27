@@ -1,9 +1,8 @@
-import { Menu } from "../../components"
-
 export const Dashboard = () => {
-  return(
+  return (
     <div>
-      <Menu />
+      <h1>Dashboard</h1>
+      <p>Seja bem vindo ao dashboard</p>
     </div>
-  )
-}
+  );
+};

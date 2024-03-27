@@ -76,13 +76,13 @@ export function Participant({ avatar, name, absent }: ParticipantProps) {
             console.log("click");
             setShowReason((old) => !old);
           }}
-          className="flex justify-center items-center text-primary-600 fill-current h-7 w-7 hover:scale-105 cursor-pointer transition-all ease-in-out duration-300 hover:drop-shadow-lg z-50"
+          className="flex justify-center items-center text-primary-600 fill-current h-7 w-7 hover:scale-105 cursor-pointer transition-all ease-in-out duration-300 z-50"
         >
           <Eye />
         </div>
         <div
           className={`
-               absolute top-[105%] left-0 w-72 p-2 bg-white rounded-bl-lg rounded-br-lg shadow-2xl drop-shadow-2xl z-50
+               absolute top-[105%] left-0 w-72 p-2 bg-white rounded-bl-lg rounded-br-lg shadow-2xl z-50
                flex items-center flex-col gap-2
                ${showReason ? "block" : "hidden"}
             `}

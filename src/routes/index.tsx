@@ -5,9 +5,10 @@ import {
   ListaDesignacao,
   Login,
   NewPassword,
-  Dashboard
+  Dashboard,
 } from "../pages";
 import { PrivateRoute } from "./PrivateRoutes";
+import { Menu } from "../components";
 
 export function RoutesApp() {
   return (
@@ -20,9 +21,11 @@ export function RoutesApp() {
           element={<CheckNumberCode />}
         />
         <Route path="/forgot-password/new-password" element={<NewPassword />} />
-        <Route element={<PrivateRoute />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/lista-designacao" element={<ListaDesignacao />} />
+        <Route element={<Menu />}>
+          <Route element={<PrivateRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/lista-designacao" element={<ListaDesignacao />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
