@@ -7,9 +7,9 @@ interface BoxScreenProps {
 
 export function BoxScreen({ children, loader }: BoxScreenProps) {
   return (
-    <div className="h-screen w-full bg-gray-200 p-8">
+    <div className="h-full w-full bg-gray-200 m-8">
       <div className="bg-white rounded-lg min-h-full flex flex-col gap-10 p-9">
-        { loader ? <Loader /> :  children}
+        {loader ? <Loader /> : children}
       </div>
     </div>
   );
