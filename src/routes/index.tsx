@@ -9,6 +9,7 @@ import {
   NewPassword,
 } from "../pages";
 import { PrivateRoute } from "./PrivateRoutes";
+import { WeekDesignation } from "../pages/WeekDesignation";
 
 export function RoutesApp() {
   return (
@@ -26,6 +27,7 @@ export function RoutesApp() {
           <Route path="/lista-designacao" element={<ListaDesignacao />} />
           <Route path="/designar" element={<Designar />} />
         </Route>
+        <Route path="/week-designation" element={<WeekDesignation />} />
       </Routes>
     </BrowserRouter>
   );
