@@ -2,10 +2,10 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import {
   CheckNumberCode,
   ForgotPassword,
-  Hello,
   ListaDesignacao,
   Login,
   NewPassword,
+  Dashboard
 } from "../pages";
 import { PrivateRoute } from "./PrivateRoutes";
 
@@ -21,7 +21,7 @@ export function RoutesApp() {
         />
         <Route path="/forgot-password/new-password" element={<NewPassword />} />
         <Route element={<PrivateRoute />}>
-          <Route path="/dashboard" element={<Hello />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/lista-designacao" element={<ListaDesignacao />} />
         </Route>
       </Routes>
