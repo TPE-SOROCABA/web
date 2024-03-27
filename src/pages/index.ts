@@ -1,4 +1,5 @@
-export * from "./hello";
 export * from "./auth";
+export * from "./dashboard";
 export * from "./designacao/lista";
-export * from "./dashboard"
+export * from "./designacao";
+export * from "./hello";
