@@ -4,22 +4,18 @@ import { FilterText } from "../../components/filter";
 import { InputParticipant } from "../../components/participant/Input";
 import { useHttp, useToastHot } from "../../lib";
 import { Button } from "@material-tailwind/react";
-import { ArrowRightLeft, Trash } from "lucide-react";
+import { ArrowRightLeft } from "lucide-react";
 import { Designation } from "./interfaces";
 import { ParticipantsToAssign } from "./components/ParticipantsToAssign";
 import { useDesignation } from "./useDesignation";
+import { AlertAbsentParticipant } from "./components/AlertAbsentParticipant";
 
 export function Designar() {
   const http = useHttp();
   const toast = useToastHot();
   const hook = useDesignation();
-  const {
-    assignments,
-    participants,
-    desigantion,
-    handleRandom,
-    handleSearch,
-  } = hook
+  const { assignments, participants, desigantion, handleRandom, handleSearch } =
+    hook;
 
   return (
     <>
@@ -27,13 +23,17 @@ export function Designar() {
         {/*  Filtros e botão de designação automática */}
         <div className="w-full justify-between items-center flex gap-4">
           <div className="flex justify-between items-center w-2/3 gap-4">
-            <FilterText toSearch="Pesquisar Voluntários" handleSearchEvent={handleSearch} />
+            <FilterText
+              toSearch="Pesquisar Voluntários"
+              handleSearchEvent={handleSearch}
+            />
             <ParticipantsToAssign participants={participants} />
           </div>
           <Button
             className="bg-primary-600 text-white"
             placeholder={"Designar Automaticamente"}
-            onClick={handleRandom}>
+            onClick={handleRandom}
+          >
             Designação Automática
           </Button>
         </div>
@@ -51,12 +51,20 @@ export function Designar() {
               className="bg-primary-600 text-white"
               placeholder={"Disparar designação"}
               onClick={async () => {
-                await toast.promise(http.post<Designation>("/designations/send/" + desigantion?.id), {
-                  loading: "Disparando designação...",
-                  success: "Designação disparada com sucesso",
-                  error: (error) => error?.response?.data?.message || "Erro ao disparar designação",
-                });
-              }}>
+                await toast.promise(
+                  http.post<Designation>(
+                    "/designations/send/" + desigantion?.id
+                  ),
+                  {
+                    loading: "Disparando designação...",
+                    success: "Designação disparada com sucesso",
+                    error: (error) =>
+                      error?.response?.data?.message ||
+                      "Erro ao disparar designação",
+                  }
+                );
+              }}
+            >
               Disparar designação
             </Button>
           </div>
@@ -67,17 +75,22 @@ export function Designar() {
   );
 }
 
-
-export function DesignationAssignments({ hook }: { hook: ReturnType<typeof useDesignation> }) {
+export function DesignationAssignments({
+  hook,
+}: {
+  hook: ReturnType<typeof useDesignation>;
+}) {
   const toast = useToastHot();
-  const { assignments,
+  const {
+    assignments,
     participants,
     getParticipants,
     handleUpdatePoint,
     handleUpdatePointParticipants,
     createIncidentParticipants,
     setAssignments,
-    setParticipants } = hook
+    setParticipants,
+  } = hook;
 
   return assignments.map((assignment) => {
     const perPoint =
@@ -86,10 +99,7 @@ export function DesignationAssignments({ hook }: { hook: ReturnType<typeof useDe
         : `${assignment.config.min} - ${assignment.config.max}`;
 
     return (
-      <div
-        id={assignment.point.id}
-        key={assignment.point.id}
-      >
+      <div id={assignment.point.id} key={assignment.point.id}>
         <BoxGroup
           pointName={assignment.point.name}
           pointCars={perPoint}
@@ -101,10 +111,7 @@ export function DesignationAssignments({ hook }: { hook: ReturnType<typeof useDe
                 if (a.point.id === assignment.point.id) {
                   // verifica se é para desativar o ponto
                   if (!value) {
-                    setParticipants((prev) => [
-                      ...prev,
-                      ...a.participants,
-                    ]);
+                    setParticipants((prev) => [...prev, ...a.participants]);
                     return {
                       ...a,
                       point: {
@@ -121,17 +128,14 @@ export function DesignationAssignments({ hook }: { hook: ReturnType<typeof useDe
                         ...a.point,
                         status: true,
                       },
-                    }
+                    };
                   }
                 }
                 // se não for o ponto que está sendo alterado, retorna o ponto sem alterações
                 return a;
-              }
-              )
-              return data
-            }
-            );
-
+              });
+              return data;
+            });
           }}
         >
           {assignment.participants.map((participant) => (
@@ -151,15 +155,20 @@ export function DesignationAssignments({ hook }: { hook: ReturnType<typeof useDe
                             prev.map((a) =>
                               a.point.id === assignment.point.id
                                 ? {
-                                  ...a,
-                                  participants: a.participants.filter(
-                                    (p) => p.id !== participant.id
-                                  ),
-                                }
+                                    ...a,
+                                    participants: a.participants.filter(
+                                      (p) => p.id !== participant.id
+                                    ),
+                                  }
                                 : a
                             )
                           );
-                          handleUpdatePointParticipants(assignment.point.id, assignment.participants.filter(p => p.id !== participant.id).map(p => p.id));
+                          handleUpdatePointParticipants(
+                            assignment.point.id,
+                            assignment.participants
+                              .filter((p) => p.id !== participant.id)
+                              .map((p) => p.id)
+                          );
                         }}
                         placeholder="Botão de ausência"
                         className={`
@@ -174,39 +183,17 @@ export function DesignationAssignments({ hook }: { hook: ReturnType<typeof useDe
                         <ArrowRightLeft stroke="#FFF" />
                         Trocar
                       </Button>
-                      <Button
-                        placeholder="Botão de ausência"
-                        className={`
-                            flex items-center gap-2
-                            h-full w-40 z-20
-                            absolute top-0 
-                            rounded-r-lg rounded-l-none bg-primary-600 border border-primary-600
-                            ${showButton ? "right-0" : "-right-44"}
-                        `}
-                        onClick={async () => {
-                          setParticipants((prev) => [...prev, participant]);
-                          setAssignments((prev) =>
-                            prev.map((a) =>
-                              a.point.id === assignment.point.id
-                                ? {
-                                  ...a,
-                                  participants: a.participants.filter(
-                                    (p) => p.id !== participant.id
-                                  ),
-                                }
-                                : a
-                            )
-                          );
-                          await createIncidentParticipants(participant.id);
-                          await handleUpdatePointParticipants(assignment.point.id, assignment.participants.filter(p => p.id !== participant.id).map(p => p.id));
-                        }}
-                        type="button"
-                      >
-                        <Trash stroke="#FFF" />
-                        Ausente
-                      </Button>
-
-
+                      <AlertAbsentParticipant
+                        showButton={showButton}
+                        setParticipants={setParticipants}
+                        setAssignments={setAssignments}
+                        participant={participant}
+                        assignment={assignment}
+                        createIncidentParticipants={createIncidentParticipants}
+                        handleUpdatePointParticipants={
+                          handleUpdatePointParticipants
+                        }
+                      />
                     </>
                   )}
                 </Participant.Button>
@@ -225,21 +212,22 @@ export function DesignationAssignments({ hook }: { hook: ReturnType<typeof useDe
                     prev.map((a) =>
                       a.point.id === assignment.point.id
                         ? {
-                          ...a,
-                          participants: [
-                            ...a.participants,
-                            participants.find(
-                              (p) => p.id === participantId
-                            )!,
-                          ],
-                        }
+                            ...a,
+                            participants: [
+                              ...a.participants,
+                              participants.find((p) => p.id === participantId)!,
+                            ],
+                          }
                         : a
                     )
                   );
                   setParticipants((prev) =>
                     prev.filter((p) => p.id !== participantId)
                   );
-                  handleUpdatePointParticipants(assignment.point.id, [...assignment.participants.map(p => p.id), participantId as string]);
+                  handleUpdatePointParticipants(assignment.point.id, [
+                    ...assignment.participants.map((p) => p.id),
+                    participantId as string,
+                  ]);
                 }}
                 cb={async () => {
                   await toast.promise(getParticipants(), {
@@ -253,6 +241,5 @@ export function DesignationAssignments({ hook }: { hook: ReturnType<typeof useDe
         </BoxGroup>
       </div>
     );
-  })
+  });
 }
-
