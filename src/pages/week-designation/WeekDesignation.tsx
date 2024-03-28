@@ -66,7 +66,7 @@ export const WeekDesignation = () => {
             return (<div className='w-10 relative'><LoaderSmall /></div>)
         case 'screen':
             return (<div className="flex flex-col justify-center items-center relative gap-2 max-w-[500px] m-auto">
-                <img src={ellipse} alt="ellipse" className="w-full -z-10 -top-6 md:hidden" />
+                <img src={ellipse} alt="ellipse" className="w-full -z-10 -mt-11 md:hidden" />
                 <div className='flex flex-col justify-center items-center -mt-28 gap-4'>
                     <div className="text-gray-50">Bem-vindo(a) ao TPE DIGITAL</div>
                     <img src={logo} alt="logo" className="w-1/2" />
