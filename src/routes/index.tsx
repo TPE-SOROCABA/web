@@ -27,7 +27,7 @@ export function RoutesApp() {
           <Route path="/lista-designacao" element={<ListaDesignacao />} />
           <Route path="/designar" element={<Designar />} />
         </Route>
-        <Route path="/week-designation" element={<WeekDesignation />} />
+        <Route path="/week-designation/:id" element={<WeekDesignation />} />
       </Routes>
     </BrowserRouter>
   );
