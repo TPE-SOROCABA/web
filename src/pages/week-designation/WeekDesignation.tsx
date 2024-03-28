@@ -92,9 +92,11 @@ export const WeekDesignation = () => {
                                 <div key={index} className="flex flex-col gap-1">
                                     <div className="">Evento: <strong>{designation.event}</strong></div>
                                     <div className="flex gap-2">Ponto: <strong>{designation.point}</strong>
-                                        <span>Carrinhos: <strong>({designation.publication_carts.map((publicationCart, index) => (
-                                            <span key={index}>{publicationCart}</span>
-                                        ))})</strong></span>
+                                        {designation.publication_carts.length > 0 && (
+                                            <span>Carrinhos: <strong>({designation.publication_carts.map((publicationCart, index) => (
+                                                <span key={index}>{publicationCart}</span>
+                                            ))})</strong></span>
+                                        )}
                                     </div>
                                     <div className="flex flex-col gap-2 pl-2">
                                         {designation.participants.map((participant, index) => (
@@ -142,5 +144,4 @@ export const WeekDesignation = () => {
         default:
             return null;
     }
-
 }
