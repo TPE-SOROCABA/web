@@ -3,13 +3,14 @@ import {
   CheckNumberCode,
   Designar,
   ForgotPassword,
-  Hello,
   ListaDesignacao,
   Login,
   NewPassword,
+  Dashboard,
 } from "../pages";
 import { PrivateRoute } from "./PrivateRoutes";
 import { WeekDesignation } from "../pages/WeekDesignation";
+import { Menu } from "../components";
 
 export function RoutesApp() {
   return (
@@ -22,10 +23,12 @@ export function RoutesApp() {
           element={<CheckNumberCode />}
         />
         <Route path="/forgot-password/new-password" element={<NewPassword />} />
-        <Route element={<PrivateRoute />}>
-          <Route path="/dashboard" element={<Hello />} />
-          <Route path="/lista-designacao" element={<ListaDesignacao />} />
-          <Route path="/designar" element={<Designar />} />
+        <Route element={<Menu />}>
+          <Route element={<PrivateRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/lista-designacao" element={<ListaDesignacao />} />
+            <Route path="/designar" element={<Designar />} />
+          </Route>
         </Route>
         <Route path="/week-designation/:id" element={<WeekDesignation />} />
       </Routes>
