@@ -9,6 +9,7 @@ import {
   Dashboard,
 } from "../pages";
 import { PrivateRoute } from "./PrivateRoutes";
+import { WeekDesignation } from "../pages/WeekDesignation";
 import { Menu } from "../components";
 
 export function RoutesApp() {
@@ -29,6 +30,7 @@ export function RoutesApp() {
             <Route path="/designar" element={<Designar />} />
           </Route>
         </Route>
+        <Route path="/week-designation/:id" element={<WeekDesignation />} />
       </Routes>
     </BrowserRouter>
   );
