@@ -35,7 +35,7 @@ export const Menu = () => {
       </header>
       <div className="flex items-start relative">
         <Sidebar />
-        <div className="flex justify-start items-start p-4 ml-[65px]">
+        <div className="flex justify-start items-start p-2 ml-[65px]">
           <Outlet />
         </div>
       </div>

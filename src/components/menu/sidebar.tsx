@@ -34,29 +34,32 @@ export function Sidebar() {
     <div
       className={`${
         open ? "w-[254px] left-0 z-[1999]" : "min-w-[65px] -left-[68px]"
-      } top-0 fixed md:left-0 h-full min-h-[calc(100vh_-_64px)] max-w-[254px] bg-gradient-to-b from-primary-900 to-primary-500 pt-5 transition-all flex flex-col justify-between `}
+      } top-0 fixed md:left-0 h-full min-h-[calc(100vh_-_64px)] max-w-[254px] bg-gradient-to-b from-primary-900 to-primary-500 pt-5 transition-all flex flex-col`}
     >
-      <div className="flex flex-col justify-center gap-5 w-full items-center">
-        <button
-          onClick={changeMenu}
-          className="flex justify-center items-center w-full"
-        >
-          {open ? <X color="#fff" /> : <AlignJustify color="#fff" />}
-        </button>
-        <ul className="flex flex-col gap-3">
-          {pages.map((page) => (
-            <Link
-              key={page.name}
-              to={page.path}
-              className={menuTw({ menu: open ? "open" : "close" })}
-            >
-              <img src={page.icon} alt={page.altName} className="w-6" />
-              {open && <h2 className="text-white">{page.name}</h2>}
-            </Link>
-          ))}
-        </ul>
-      </div>
-      <ul className="flex items-center flex-col gap-9 pb-10">
+      <button
+        onClick={changeMenu}
+        className="flex justify-center items-center w-[65px] h-11"
+      >
+        {open ? <X color="#fff" /> : <AlignJustify color="#fff" />}
+      </button>
+      <ul className="flex flex-col gap-3">
+        {pages.map((page) => (
+          <Link
+            key={page.name}
+            to={page.path}
+            className={menuTw({ menu: open ? "open" : "close" })}
+          >
+            <img src={page.icon} alt={page.altName} className="w-6" />
+            {open && <h2 className="text-white">{page.name}</h2>}
+          </Link>
+        ))}
+      </ul>
+      <ul
+        className={`
+        ${open ? "w-[254px]" : "w-[65px]"}
+        flex items-center justify-center flex-col gap-9 fixed bottom-0
+      `}
+      >
         {open && <img src={tpeDigital} alt="tpe" />}
         <li
           onClick={logout}
