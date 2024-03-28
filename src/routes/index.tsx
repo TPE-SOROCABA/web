@@ -9,7 +9,7 @@ import {
   Dashboard,
 } from "../pages";
 import { PrivateRoute } from "./PrivateRoutes";
-import { WeekDesignation } from "../pages/WeekDesignation";
+import { WeekDesignation } from "../pages/week-designation/WeekDesignation";
 import { Menu } from "../components";
 
 export function RoutesApp() {
