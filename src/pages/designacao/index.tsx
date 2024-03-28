@@ -146,8 +146,8 @@ export function DesignationAssignments({
             >
               {() => (
                 <Participant.Button>
-                  {({ showButton }) => (
-                    <>
+                  {({ showButton, hidden }) => (
+                    <div className="flex justify-between w-full items-center">
                       <Button
                         onClick={() => {
                           setParticipants((prev) => [...prev, participant]);
@@ -172,11 +172,10 @@ export function DesignationAssignments({
                         }}
                         placeholder="Botão de ausência"
                         className={`
-                            flex items-center gap-2
-                            h-full w-40 
-                            absolute top-0
+                            items-center gap-2
+                            h-full w-1/2 
                             rounded-l-lg rounded-r-none bg-gray-600 border border-gray-600 cursor-pointer
-                            ${showButton ? "left-0" : "-left-44"}
+                            ${showButton ? "flex" : "hidden"}
                         `}
                         type="button"
                       >
@@ -193,8 +192,9 @@ export function DesignationAssignments({
                         handleUpdatePointParticipants={
                           handleUpdatePointParticipants
                         }
+                        onBlur={hidden}
                       />
-                    </>
+                    </div>
                   )}
                 </Participant.Button>
               )}

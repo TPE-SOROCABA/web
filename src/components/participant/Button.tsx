@@ -1,8 +1,13 @@
 import { useState } from "react";
 
+interface ChildrenProps {
+  showButton: boolean;
+  hidden: () => void;
+}
+
 interface ButtonComponentProps {
   show?: boolean;
-  children: ({ showButton }: { showButton: boolean }) => JSX.Element;
+  children: (p: ChildrenProps) => JSX.Element;
 }
 export function ButtonComponent({
   show = true,
@@ -17,7 +22,7 @@ export function ButtonComponent({
         onMouseEnter={() => setShowButton(true)}
         onMouseLeave={() => setShowButton(false)}
       >
-        <Children showButton={showButton} />
+        <Children showButton={showButton} hidden={() => setShowButton(false)} />
       </div>
     </>
   );
