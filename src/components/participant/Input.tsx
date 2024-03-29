@@ -36,32 +36,33 @@ export function InputParticipant({
     }
   }, [participantSelected]);
 
-  const participantsToRender = participants.filter((participant) =>
-    participant.name.toLowerCase().includes(search.toLowerCase())
-  ).sort((_,b) => b.incident_history ? -1 : 1)
+  const participantsToRender = participants
+    .filter((participant) =>
+      participant.name.toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((_, b) => (b.incident_history ? -1 : 1));
 
   const close = () => {
-    setShowParticipants(false)
+    setShowParticipants(false);
     setParticipantSelected(null);
     setSearch("");
-  }
+  };
 
   return (
     <>
-      <div
-        className="flex justify-between items-center w-full gap-2 border border-primary-300 rounded-lg relative">
+      <div className="flex justify-between items-center w-full gap-2 border border-primary-300 rounded-lg relative">
         {showParticipants && (
           <>
             <div
               onMouseEnter={close}
               onClick={close}
-              className="absolute w-[100px] h-screen -left-24">
-            </div>
+              className="absolute w-[100px] h-screen -left-24"
+            ></div>
             <div
               onMouseEnter={close}
               onClick={close}
-              className="absolute w-[100px] h-screen -right-24">
-            </div>
+              className="absolute w-[100px] h-screen -right-24"
+            ></div>
           </>
         )}
         <div className="flex justify-center items-center w-16">
@@ -86,9 +87,12 @@ export function InputParticipant({
           onClick={() => setShowParticipants(true)}
           onBlur={() => {
             if (ignoreBlur) return;
-            close
+            close;
           }}
-          onChange={(e) => { setSearch(e.target.value); setShowParticipants(true) }}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setShowParticipants(true);
+          }}
           value={search}
         />
         <div
@@ -107,52 +111,68 @@ export function InputParticipant({
                 key={participant.id}
                 name={participant.name}
                 avatar={participant.profile_photo || avatar}
-                incident_history={Boolean(participant?.incident_history) || false}
+                incident_history={
+                  Boolean(participant?.incident_history) || false
+                }
               >
                 {() => (
                   <>
-
                     {!participant.incident_history ? (
+                      <Participant.Button>
+                        {({ showButton }) => (
+                          <div
+                            className={`
+                              absolute ${
+                                showButton ? "right-0" : "-right-44"
+                              } top-0 w-1/2 h-full transition-all ease-in-out duration-300
+                            `}
+                          >
+                            <Button
+                              placeholder="Selecionar participante"
+                              className={`
+                              justify-center items-center h-full w-full rounded-r-lg rounded-l-none z-10 bg-primary-600 border border-primary-600 cursor-pointer
+                            `}
+                              onClick={() => {
+                                onSelect(participant.id);
+                                setParticipantSelected(participant);
+                                close();
+                              }}
+                            >
+                              selecionar
+                            </Button>
+                          </div>
+                        )}
+                      </Participant.Button>
+                    ) : (
                       <Participant.Button>
                         {({ showButton }) => (
                           <Button
                             placeholder="Selecionar participante"
                             className={`
-                        flex justify-center items-center h-full w-40 absolute top-0 rounded-r-lg rounded-l-none z-10 bg-primary-600 border border-primary-600 cursor-pointer
-                        ${showButton ? "right-0" : "-right-44"}
-                          `}
-                            onClick={() => {
-                              onSelect(participant.id);
-                              setParticipantSelected(participant);
-                              close()
-                            }}
-                          >
-                            selecionar
-                          </Button>
-                        )}
-                      </Participant.Button>
-                    ) : (<Participant.Button>
-                      {({ showButton }) => (
-                        <Button
-                          placeholder="Selecionar participante"
-                          className={`
                       flex justify-center items-center h-full w-40 absolute top-0 rounded-r-lg opacity-100 rounded-l-none z-50 bg-green-400 border border-green-400 cursor-pointer
                       ${showButton ? "right-0" : "-right-44"}
                         `}
-                          onClick={async () => {
-                            close()
-                            await toast.promise(http.put(`/participants/${participant.id}/incidences/${participant.incident_history['id']}`,{ status: "IGNORED"}), {
-                              loading: "Ativando participante",
-                              success: "Participante ativado",
-                              error: "Erro ao ativar participante"
-                            });
-                            cb && cb()
-                          }}
-                        >
-                          ativar
-                        </Button>
-                      )}
-                    </Participant.Button>)}
+                            onClick={async () => {
+                              close();
+                              await toast.promise(
+                                http.put(
+                                  `/participants/${participant.id}/incidences/${participant.incident_history["id"]}`,
+                                  { status: "IGNORED" }
+                                ),
+                                {
+                                  loading: "Ativando participante",
+                                  success: "Participante ativado",
+                                  error: "Erro ao ativar participante",
+                                }
+                              );
+                              cb && cb();
+                            }}
+                          >
+                            ativar
+                          </Button>
+                        )}
+                      </Participant.Button>
+                    )}
                   </>
                 )}
               </Participant.Root>

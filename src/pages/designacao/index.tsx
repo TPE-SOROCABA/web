@@ -22,10 +22,11 @@ export function Designar() {
       <BoxScreen loader={!assignments.length}>
         {/*  Filtros e botão de designação automática */}
         <div className="w-full justify-between items-center flex gap-4">
-          <div className="flex justify-between items-center w-2/3 gap-4">
+          <div className="flex justify-between items-center w-2/5 gap-4">
             <FilterText
               toSearch="Pesquisar Voluntários"
               handleSearchEvent={handleSearch}
+              showButton={false}
             />
             <ParticipantsToAssign participants={participants} />
           </div>
@@ -148,40 +149,46 @@ export function DesignationAssignments({
                 <Participant.Button>
                   {({ showButton, hidden }) => (
                     <div className="flex justify-between w-full items-center">
-                      <Button
-                        onClick={() => {
-                          setParticipants((prev) => [...prev, participant]);
-                          setAssignments((prev) =>
-                            prev.map((a) =>
-                              a.point.id === assignment.point.id
-                                ? {
-                                    ...a,
-                                    participants: a.participants.filter(
-                                      (p) => p.id !== participant.id
-                                    ),
-                                  }
-                                : a
-                            )
-                          );
-                          handleUpdatePointParticipants(
-                            assignment.point.id,
-                            assignment.participants
-                              .filter((p) => p.id !== participant.id)
-                              .map((p) => p.id)
-                          );
-                        }}
-                        placeholder="Botão de ausência"
+                      <div
                         className={`
-                            items-center gap-2
-                            h-full w-1/2 
-                            rounded-l-lg rounded-r-none bg-gray-600 border border-gray-600 cursor-pointer
-                            ${showButton ? "flex" : "hidden"}
-                        `}
-                        type="button"
+                              absolute ${
+                                showButton ? "left-0" : "-left-44"
+                              } top-0 w-1/2 h-full transition-all ease-in-out duration-300
+                            `}
                       >
-                        <ArrowRightLeft stroke="#FFF" />
-                        Trocar
-                      </Button>
+                        <Button
+                          onClick={() => {
+                            setParticipants((prev) => [...prev, participant]);
+                            setAssignments((prev) =>
+                              prev.map((a) =>
+                                a.point.id === assignment.point.id
+                                  ? {
+                                      ...a,
+                                      participants: a.participants.filter(
+                                        (p) => p.id !== participant.id
+                                      ),
+                                    }
+                                  : a
+                              )
+                            );
+                            handleUpdatePointParticipants(
+                              assignment.point.id,
+                              assignment.participants
+                                .filter((p) => p.id !== participant.id)
+                                .map((p) => p.id)
+                            );
+                          }}
+                          placeholder="Botão de ausência"
+                          className={`
+                            flex items-center gap-2 h-full w-full 
+                            rounded-l-lg rounded-r-none bg-gray-600 border border-gray-600 cursor-pointer
+                          `}
+                          type="button"
+                        >
+                          <ArrowRightLeft stroke="#FFF" />
+                          Trocar
+                        </Button>
+                      </div>
                       <AlertAbsentParticipant
                         showButton={showButton}
                         setParticipants={setParticipants}
