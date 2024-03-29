@@ -42,20 +42,26 @@ export function AlertAbsentParticipant({
   };
   return (
     <>
-      <Button
-        placeholder="Botão de ausência"
+      <div
         className={`
-          items-center gap-2
-          h-full w-1/2 z-20
-          rounded-r-lg rounded-l-none bg-primary-600 border border-primary-600
-          ${showButton ? "flex" : "hidden"}
+          absolute ${
+            showButton ? "right-0" : "-right-44"
+          } top-0 w-1/2 h-full transition-all ease-in-out duration-300
         `}
-        onClick={() => setShowAlert(true)}
-        type="button"
       >
-        <Trash stroke="#FFF" />
-        Ausente
-      </Button>
+        <Button
+          placeholder="Botão de ausência"
+          className={`
+          flex items-center gap-2
+          h-full w-full rounded-r-lg rounded-l-none bg-primary-600 border border-primary-600
+        `}
+          onClick={() => setShowAlert(true)}
+          type="button"
+        >
+          <Trash stroke="#FFF" />
+          Ausente
+        </Button>
+      </div>
       <Alert show={showAlert} close={close}>
         <div className="flex justify-between items-center flex-col gap-2 bg-white p-4 rounded-lg min-w-[20vw] max-w-96">
           <h6 className="text-lg font-bold text-left w-full">Nota</h6>
