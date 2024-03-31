@@ -12,17 +12,17 @@ export const useHttp = () => {
     return config;
   });
 
-  http.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      if (error.response?.status === 400){
-        return Promise.reject(error);
-      }
+  // http.interceptors.response.use(
+  //   (response) => response,
+  //   (error) => {
+  //     if (error.response?.status === 400){
+  //       return Promise.reject(error);
+  //     }
 
-      cookie.erase("token")
-      return Promise.reject(error);
-    }
-  );
+  //     cookie.erase("token")
+  //     return Promise.reject(error);
+  //   }
+  // );
 
   return http;
 };
