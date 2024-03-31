@@ -9,6 +9,9 @@ import { Designation } from "./interfaces";
 import { ParticipantsToAssign } from "./components/ParticipantsToAssign";
 import { useDesignation } from "./useDesignation";
 import { AlertAbsentParticipant } from "./components/AlertAbsentParticipant";
+import { IParticipant } from "../../entity";
+
+const isAbsent = (participant: IParticipant) => participant.incident_history?.status === "OPEN";
 
 export function Designar() {
   const http = useHttp();
@@ -144,6 +147,7 @@ export function DesignationAssignments({
               name={participant.name}
               key={participant.id}
               avatar={participant.profile_photo}
+              incident_history={isAbsent(participant)}
             >
               {() => (
                 <Participant.Button>
