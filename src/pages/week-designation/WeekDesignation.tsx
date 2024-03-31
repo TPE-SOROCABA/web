@@ -8,6 +8,12 @@ import { useHttp, useToastHot } from '../../lib'
 import { LoaderSmall } from '../../components/loadder/LoaderSmall'
 import { AlertAbsentParticipant } from './AlertAbsentParticipant'
 
+enum DesignationStatus {
+    OPEN = "OPEN",
+    CANCELLED = "CANCELLED",
+    CLOSED = "CLOSED",
+    IN_PROGRESS = "IN_PROGRESS",
+}
 interface IWeekDesignationModel {
     event: string;
     point: string;
@@ -17,11 +23,19 @@ interface IWeekDesignationModel {
     updatedAt: Date;
     expirationDate: Date;
     incident_history: IncidentHistory;
+    status: DesignationStatus;
 }
 
 interface IncidentHistory {
     reason: string;
     status: string;
+}
+
+const DesignationStatusMap = {
+    OPEN: 'Aberto',
+    CANCELLED: 'Cancelado',
+    CLOSED: 'Fechado',
+    IN_PROGRESS: 'Em Progresso',
 }
 
 export const WeekDesignation = () => {
@@ -90,7 +104,23 @@ export const WeekDesignation = () => {
                             const isListLast = index === designations.length - 1;
                             return (
                                 <div key={index} className="flex flex-col gap-1">
-                                    <div className="">Evento: <strong>{designation.event}</strong></div>
+                                    <div className="flex justify-between">
+                                        <div>
+                                            Evento: <strong>{designation.event}</strong>
+                                        </div>
+                                        <div>
+                                            <span className={
+                                                `text-xs px-2 py-1 rounded-full 
+                                        ${designation.status === "OPEN" ? "border-blue-700 text-blue-700 bg-blue-100" : ""}
+                                        ${designation.status === "CANCELLED" ? "border-red-700 text-red-700 bg-red-100" : ""}
+                                        ${designation.status === "CLOSED" ? "border-green-700 text-green-700 bg-green-100" : ""}
+                                        ${designation.status === "IN_PROGRESS" ? "border-yellow-700 text-yellow-700 bg-yellow-100" : ""}
+                                        `
+                                            }>
+                                                {DesignationStatusMap[designation.status]}
+                                            </span>
+                                        </div>
+                                    </div>
                                     <div className="flex gap-2">Ponto: <strong>{designation.point}</strong>
                                         {designation.publication_carts.length > 0 && (
                                             <span>Carrinhos: <strong>({designation.publication_carts.map((publicationCart, index) => (
