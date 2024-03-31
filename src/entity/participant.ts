@@ -7,5 +7,6 @@ export interface IParticipant {
   incident_history: {
     reason: string;
     id: string;
+    status: 'IGNORED' | 'OPEN' | 'CLOSED'
   };
 }

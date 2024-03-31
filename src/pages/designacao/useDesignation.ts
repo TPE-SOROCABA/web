@@ -1,12 +1,15 @@
 import { useState, useCallback, useEffect } from "react";
 import { IParticipant } from "../../entity";
-import { useHttp, useToastHot } from "../../lib";
+import { useCookies, useHttp, useToastHot } from "../../lib";
 import { addFakeImage } from "../../lib/addFakeImage";
 import { Assignment, Designation } from "./interfaces";
 let timeout: NodeJS.Timeout;
+
 export const useDesignation = () => {
   const http = useHttp();
   const toast = useToastHot();
+  const cookie = useCookies()
+  const groupId = cookie.decodeToken()?.groupId
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [participants, setParticipants] = useState<IParticipant[]>([]);
   const [desigantion, setDesignation] = useState<Omit<
@@ -16,38 +19,40 @@ export const useDesignation = () => {
 
   const getParticipants = useCallback(
     async (props?: { random?: boolean; filter?: string }) => {
-      const groupId = "65fe068c81870be5412f90fd";
+      if(!groupId ) return console.log('groupId not found')
       const params = {
         groupId,
         filter: props?.filter ?? undefined,
         random: props?.random ?? undefined,
       };
-      const { data } = await http.get<Designation>("/designations/week", {
-        params,
-      });
+        const { data } = await http.get<Designation>("/designations/week", {
+          params,
+        });
 
-      setAssignments(
-        data.assignments.map((a) => ({
-          ...a,
-          participants: addFakeImage(a.participants),
-        }))
-      );
-      setParticipants(addFakeImage([...data.participants, ...data.incidents]));
-
-      setDesignation({
-        id: data.id,
-        group: data.group,
-        status: data.status,
-        createdAt: data.createdAt,
-        updatedAt: data.updatedAt,
-      });
+        setAssignments(
+          data.assignments.map((a) => ({
+            ...a,
+            participants: addFakeImage(a.participants),
+          }))
+        );
+        setParticipants(addFakeImage([...data.participants, ...data.incidents]));
+  
+        setDesignation({
+          id: data.id,
+          group: data.group,
+          status: data.status,
+          createdAt: data.createdAt,
+          updatedAt: data.updatedAt,
+        });
     },
-    [http]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   );
 
   useEffect(() => {
     getParticipants();
-  }, [getParticipants]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleRandom = async () => {
     await toast.promise(getParticipants({ random: true }), {

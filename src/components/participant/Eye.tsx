@@ -1,57 +1,64 @@
-import { Button } from "@material-tailwind/react";
+// import { Button } from "@material-tailwind/react";
+import { Button, Popover, PopoverContent, PopoverHandler } from "@material-tailwind/react";
 import { Eye } from "lucide-react";
-import { Dispatch, SetStateAction } from "react";
 
 interface EyeComponentProps {
-  show?: boolean;
-  showMore: boolean;
-  setShowMore: Dispatch<SetStateAction<boolean>>;
   moreText: string;
+  buttonEvent: () => void;
 }
 export function EyeComponent({
-  show,
-  showMore,
-  setShowMore,
   moreText,
+  buttonEvent
 }: EyeComponentProps) {
-  if (!show) return null;
 
   return (
-    <>
-      <div
-        onClick={() => {
-          console.log("click");
-          setShowMore((old) => !old);
-        }}
-        className="flex justify-center items-center text-primary-600 fill-current h-7 w-7 hover:scale-105 cursor-pointer transition-all ease-in-out duration-300 hover:drop-shadow-lg z-50"
+    <div className=" relative">
+      <Popover
+        placement="bottom-end"
       >
-        <Eye />
-      </div>
-      <div
-        className={`
-              absolute top-[105%] left-0 w-72 p-2 bg-white rounded-bl-lg rounded-br-lg shadow-2xl drop-shadow-2xl z-50
-              flex items-center flex-col gap-2
-              ${showMore ? "block" : "hidden"}
-           `}
-      >
-        <p className="text-primary-600 text-md">{moreText}</p>
-        <div className="flex flex-row justify-around items-center w-full">
-          <Button
-            variant="outlined"
-            className="w-2/5 border-primary-300 flex justify-center items-center text-sm p-2"
-            placeholder="Histórico do participante"
-          >
-            Histórico
-          </Button>
-          <Button
-            variant="outlined"
-            className="w-2/5 border-primary-300 flex justify-center items-center text-sm p-2"
-            placeholder="Editar participante"
-          >
-            Editar
-          </Button>
-        </div>
-      </div>
-    </>
+        <PopoverHandler
+          animate={{
+            mount: { scale: 1, y: 0 },
+            unmount: { scale: 0, y: 25 },
+          }}
+        >
+          <div className="flex justify-center items-center text-primary-600 fill-current h-7 w-7 hover:scale-105 cursor-pointer transition-all ease-in-out duration-300 hover:drop-shadow-lg z-50">
+            <Eye />
+          </div>
+        </PopoverHandler>
+        <PopoverContent
+          className="mt-1 flex flex-col gap-4 border-b border-blue-gray-50 p-4 z-50 w-[270px]"
+          placeholder={"Motivos de ausência"}
+        >
+          <div>{moreText}</div>
+          <div className="flex gap-2">
+            <Button
+              placeholder="Botão de ausência"
+              className={`
+                flex items-center justify-center gap-2
+                h-full w-1/2 rounded-r-lg 
+              `}
+              disabled
+              type="button"
+              variant="outlined"
+            >
+              Histórico
+            </Button>
+            <Button
+              placeholder="Botão de ausência"
+              className={`
+                flex items-center justify-center gap-2
+                h-full w-1/2 rounded-r-lg bg-green-400 border border-green-400
+              `}
+              onClick={buttonEvent}
+              type="button"
+            >
+              Ativar
+            </Button>
+          </div>
+
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 }

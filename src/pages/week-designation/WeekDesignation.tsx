@@ -42,7 +42,7 @@ export const WeekDesignation = () => {
             }
             setPage('screen');
         } catch (error) {
-            console.error(error);
+            setPage('not-found');
         }
     }, [http, id]);
 

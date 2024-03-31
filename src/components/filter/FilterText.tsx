@@ -67,7 +67,7 @@ export function FilterText({
         value={search}
         onChange={updateSearch}
       />
-      <Button
+      {!handleSearchEvent && (<Button
         variant="outlined"
         className="border border-primary-600 rounded-3xl"
         placeholder="Filtrar"
@@ -75,7 +75,7 @@ export function FilterText({
         hidden={!showButton}
       >
         Filtrar
-      </Button>
+      </Button>)}
     </form>
   );
 }

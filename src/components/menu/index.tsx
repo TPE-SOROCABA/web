@@ -49,7 +49,7 @@ export const Menu = () => {
           open={open}
           closeDrawer={closeDrawer}
         />
-        <div className="flex justify-start items-start p-2">
+        <div className="flex justify-start items-start p-2 w-full">
           <Outlet />
         </div>
       </div>

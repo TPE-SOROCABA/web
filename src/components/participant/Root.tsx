@@ -8,7 +8,7 @@ type ChildrenProps = {
 
 interface ParticipantProps {
   avatar?: string;
-  incident_history?: boolean;
+  incident_history: boolean;
   name: string;
   absent?: Absent;
   children: (p: ChildrenProps) => JSX.Element;
@@ -61,13 +61,16 @@ export function ParticipantComponent({
           className: className,
         })}
       >
-        <div className={`max-w-48 gap-2 flex justify-start items-center ${incident_history ? " opacity-40" : ""}`}>
+        <div className={`gap-2 flex justify-start items-center`}>
           <img
             src={avatar}
             alt="Foto de perfil"
             className="rounded-full h-9 w-9"
           />
-          <p className="text-primary-700 text-lg font-medium text-nowrap truncate max-w-40">
+          <p className={`
+          text-primary-700 text-lg font-medium text-nowrap truncate
+            ${incident_history ? "w-40" : "w-52"}
+          `}>
             {name}
           </p>
         </div>

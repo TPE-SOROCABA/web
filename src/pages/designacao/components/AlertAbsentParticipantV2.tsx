@@ -1,52 +1,35 @@
 import { Button, Textarea } from "@material-tailwind/react";
 import { Trash } from "lucide-react";
-import { IParticipant } from "../../../entity";
-import { Assignment } from "../interfaces";
 import { useState } from "react";
 import { Alert } from "../../../components";
-import toast from "react-hot-toast";
 
 type AlertAbsentParticipantProps = {
   showButton: boolean;
-  setParticipants: React.Dispatch<React.SetStateAction<IParticipant[]>>;
-  setAssignments: React.Dispatch<React.SetStateAction<Assignment[]>>;
-  participant: IParticipant;
-  assignment: Assignment;
-  createIncidentParticipants: (
-    participantId: string,
-    reason: string
-  ) => Promise<void>;
-  handleUpdatePointParticipants: (
-    pointId: string,
-    participantsId: string[]
-  ) => Promise<void>;
-  onBlur: () => void;
+  submitReason: (reason: string) => void;
+  closeComponent: () => void;
 };
 
-export function AlertAbsentParticipant({
+export function AlertAbsentParticipantV2({
   showButton,
-  setParticipants,
-  setAssignments,
-  participant,
-  assignment,
-  createIncidentParticipants,
-  handleUpdatePointParticipants,
-  onBlur,
+  submitReason,
+  closeComponent
 }: AlertAbsentParticipantProps) {
   const [showAlert, setShowAlert] = useState(false);
   const [reason, setReason] = useState("");
 
   const close = () => {
     setShowAlert(false);
-    onBlur();
+    setReason("");
+    closeComponent()
   };
+
   return (
     <>
       <div
         className={`
           absolute ${
             showButton ? "right-0" : "-right-44"
-          } top-0 w-1/2 h-full transition-all ease-in-out duration-300
+          } top-0 w-1/2 h-full transition-all ease-in-out duration-300 z-0
         `}
       >
         <Button
@@ -83,29 +66,9 @@ export function AlertAbsentParticipant({
             </Button>
             <Button
               placeholder="Botão de ausência"
-              onClick={async () => {
-                if (!reason) return toast.error("Informe o motivo da ausência");
-                setParticipants((prev) => [...prev, participant]);
-                setAssignments((prev) =>
-                  prev.map((a) =>
-                    a.point.id === assignment.point.id
-                      ? {
-                          ...a,
-                          participants: a.participants.filter(
-                            (p) => p.id !== participant.id
-                          ),
-                        }
-                      : a
-                  )
-                );
-                await createIncidentParticipants(participant.id, reason);
-                await handleUpdatePointParticipants(
-                  assignment.point.id,
-                  assignment.participants
-                    .filter((p) => p.id !== participant.id)
-                    .map((p) => p.id)
-                );
-                close();
+              onClick={() => {
+                submitReason(reason)
+                close()
               }}
               className="w-32 bg-primary-500 rounded-3xl"
             >
