@@ -111,9 +111,14 @@ export function Sidebar({ open, closeDrawer }: SidebarProps) {
         </div>
       </Drawer>
       {!open && (
-        <div className="flex flex-col items-center justify-between w-16 bg-gradient-to-b from-primary-900 to-primary-600 h-[calc(100vh_-_4rem)] p-4 pt-0">
-          <Options />
-        </div>
+        <>
+          <div className="flex flex-col items-center justify-between w-16 bg-gradient-to-b from-primary-900 to-primary-600 h-[calc(100vh_-_4rem)] p-4 pt-0 fixed">
+            <Options />
+          </div>
+          <div className="invisible w-16 h-[calc(100vh_-_4rem)] bg-gradient-to-b from-primary-900 to-primary-600">
+            {/* <Options /> */}
+          </div>
+        </>
       )}
     </>
   );

@@ -19,10 +19,10 @@ export const Menu = () => {
 
   const path = location.pathname;
   const currentPage = pages.find((page) => page.path === path);
-  
+
   return (
     <div>
-      <header className="flex flex-row justify-between bg-gradient-to-r from-primary-900 to-primary-500 h-16 px-4 sticky ">
+      <header className="flex flex-row justify-between bg-gradient-to-r from-primary-900 to-primary-500 h-16 px-4 fixed w-full z-[9999]">
         <div className="flex flex-row items-center gap-5">
           <button
             onClick={openDrawer}
@@ -33,7 +33,9 @@ export const Menu = () => {
           <h2 className="text-white text-1xl">{currentPage?.name || ""}</h2>
         </div>
         <div className="flex flex-row items-center gap-3">
-         {token && <CountdownTimer targetDate={token.designation.expiration} /> }
+          {token && (
+            <CountdownTimer targetDate={token.designation.expiration} />
+          )}
           <h2 className="text-white text-1xl hidden md:block">Coordenador</h2>
           <Bell color="#fff" />
           <Avatar
@@ -44,11 +46,9 @@ export const Menu = () => {
           />
         </div>
       </header>
+      <div className="h-16 invisible"></div>
       <div className="flex items-start">
-        <Sidebar
-          open={open}
-          closeDrawer={closeDrawer}
-        />
+        <Sidebar open={open} closeDrawer={closeDrawer} />
         <div className="flex justify-start items-start p-2 w-full">
           <Outlet />
         </div>
