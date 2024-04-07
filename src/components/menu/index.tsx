@@ -23,7 +23,7 @@ export const Menu = () => {
 
   return (
     <div className="relative">
-      <header className="flex flex-row justify-between bg-gradient-to-r from-primary-900 to-primary-500 h-16 px-4 fixed w-full z-[9999]">
+      <header className="flex flex-row justify-between bg-gradient-to-r from-primary-900 to-primary-500 h-16 px-4 fixed w-full z-[100]">
         <div className="flex flex-row items-center gap-5">
           <button
             onClick={openDrawer}

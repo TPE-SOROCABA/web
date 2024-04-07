@@ -11,7 +11,8 @@ import { useDesignation } from "./useDesignation";
 import { AlertAbsentParticipant } from "./components/AlertAbsentParticipant";
 import { IParticipant } from "../../entity";
 
-const isAbsent = (participant: IParticipant) => participant.incident_history?.status === "OPEN";
+const isAbsent = (participant: IParticipant) =>
+  participant.incident_history?.status === "OPEN";
 
 export function Designar() {
   const http = useHttp();
@@ -97,10 +98,9 @@ export function DesignationAssignments({
   } = hook;
 
   return assignments.map((assignment) => {
-    const perPoint =
-      assignment.config.min === assignment.config.max
-        ? assignment.config.min.toString()
-        : `${assignment.config.min} - ${assignment.config.max}`;
+    const perPoint = assignment.publication_carts
+      .map((cart) => cart.name)
+      .join(", ");
 
     return (
       <div id={assignment.point.id} key={assignment.point.id}>

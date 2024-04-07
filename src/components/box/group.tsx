@@ -7,7 +7,13 @@ interface BoxGroupProps {
   boxGroupEvent: (value: boolean) => void;
 }
 
-export function BoxGroup({ children, pointName, pointCars, pointStatus, boxGroupEvent }: BoxGroupProps) {
+export function BoxGroup({
+  children,
+  pointName,
+  pointCars,
+  pointStatus,
+  boxGroupEvent,
+}: BoxGroupProps) {
   return (
     <>
       <div className="w-80 h-72 flex flex-col items-center justify-start gap-4 p-4 rounded-lg border border-primary-200 shadow-lg relative">
@@ -19,20 +25,19 @@ export function BoxGroup({ children, pointName, pointCars, pointStatus, boxGroup
             {pointName}
           </span>
           <span className="text-base text-end w-[38%]" title={pointCars}>
-            Carrinho: {pointCars}
+            {pointCars.includes(",") ? "Carrinhos" : "Carrinho"}: {pointCars}
           </span>
-
         </div>
-        <div className="flex flex-col items-center gap-4">
-          {children}
-        </div>
+        <div className="flex flex-col items-center gap-4">{children}</div>
         <div className="p-2 absolute bottom-2 left-3">
           <Switch
             className="h-full w-full checked:bg-primary-700"
             defaultChecked={pointStatus}
             crossOrigin={""}
             label={pointStatus ? "Ponto Ativo" : "Ponto Inativo"}
-            onChange={(e) => { boxGroupEvent(e.target.checked); }}
+            onChange={(e) => {
+              boxGroupEvent(e.target.checked);
+            }}
           />
         </div>
       </div>
