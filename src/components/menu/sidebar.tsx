@@ -15,6 +15,10 @@ const menuTw = tv({
       open: "border-b-[1px]",
       close: "justify-center",
     },
+    link: {
+      open: "w-full",
+      close: "w-16",
+    },
   },
 });
 
@@ -35,25 +39,58 @@ export function Sidebar({ open, closeDrawer }: SidebarProps) {
       <Link
         key={page.name}
         to={page.path}
-        className={menuTw({ menu: open ? "open" : "close" })}
+        className={menuTw({
+          menu: open ? "open" : "close",
+          link: open ? "open" : "close",
+        })}
       >
         <img src={page.icon} alt={page.altName} className="w-6" />
-        <h2 className="text-white">{page.name}</h2>
+        {open && <h2 className="text-white">{page.name}</h2>}
       </Link>
-    ))
-  }
+    ));
+  };
 
+  const Options = () => (
+    <div className="pt-0 p-4">
+      <ul className="flex flex-col gap-3 items-center">
+        <Pages />
+      </ul>
+      <ul
+        className={`
+          ${open ? "w-[254px]" : "w-16"}
+          flex items-center justify-center flex-col gap-9 fixed bottom-0
+        `}
+      >
+        <img src={tpeDigital} alt="tpe" />
+        <li
+          onClick={logout}
+          className={menuTw({
+            menu: open ? "open" : "close",
+            link: open ? "open" : "close",
+          })}
+        >
+          <img src={sairIcon} alt="sair" className="w-6" />
+          {open && <h2 className="text-white">Sair</h2>}
+        </li>
+      </ul>
+    </div>
+  );
 
   return (
     <>
       <Drawer open={open} onClose={closeDrawer} placeholder={""}>
         <div
-          className={`w-full h-full bg-gradient-to-b from-primary-900 to-primary-500 pt-5  flex flex-col`}
+          className={`w-full h-full bg-gradient-to-b from-primary-900 to-primary-500 pt-5 flex flex-col`}
         >
           <div className="flex items-center justify-between p-4 pt-0">
             <h2 className="text-white">TPE - Digital</h2>
 
-            <IconButton variant="text" color="white" onClick={closeDrawer} placeholder={undefined}>
+            <IconButton
+              variant="text"
+              color="white"
+              onClick={closeDrawer}
+              placeholder={undefined}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -70,23 +107,14 @@ export function Sidebar({ open, closeDrawer }: SidebarProps) {
               </svg>
             </IconButton>
           </div>
-          <ul className="flex flex-col gap-3">
-            <Pages />
-          </ul>
-          <ul
-            className={"w-[254px] flex items-center justify-center flex-col gap-9 fixed bottom-0"}
-          >
-            <img src={tpeDigital} alt="tpe" />
-            <li
-              onClick={logout}
-              className={menuTw({ menu: open ? "open" : "close" })}
-            >
-              <img src={sairIcon} alt="sair" className="w-6" />
-              <h2 className="text-white">Sair</h2>
-            </li>
-          </ul>
+          <Options />
         </div>
       </Drawer>
+      {!open && (
+        <div className="flex flex-col items-center justify-between w-16 bg-gradient-to-b from-primary-900 to-primary-600 h-[calc(100vh_-_4rem)] p-4 pt-0">
+          <Options />
+        </div>
+      )}
     </>
   );
 }
