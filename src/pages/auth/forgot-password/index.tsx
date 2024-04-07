@@ -35,6 +35,9 @@ export const ForgotPassword = () => {
         if (status === 400) {
           return toast.error("CPF ou telefone inválidos");
         }
+        return toast.error(
+          "Ops! Um erro inesperado ocorreu ao enviar o seu código"
+        );
       }
     } finally {
       toast.dismiss(toastId as string);

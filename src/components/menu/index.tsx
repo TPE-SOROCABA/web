@@ -5,8 +5,9 @@ import { Outlet, useLocation } from "react-router-dom";
 import CountdownTimer from "./time";
 import { Sidebar } from "./sidebar";
 import { pages } from "./const";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { useCookies } from "../../lib";
+import { version } from "../../../package.json";
 
 export const Menu = () => {
   const cookie = useCookies();
@@ -21,7 +22,7 @@ export const Menu = () => {
   const currentPage = pages.find((page) => page.path === path);
 
   return (
-    <div>
+    <div className="relative">
       <header className="flex flex-row justify-between bg-gradient-to-r from-primary-900 to-primary-500 h-16 px-4 fixed w-full z-[9999]">
         <div className="flex flex-row items-center gap-5">
           <button
@@ -53,6 +54,15 @@ export const Menu = () => {
           <Outlet />
         </div>
       </div>
+      <BadgeOutline>{version}</BadgeOutline>
     </div>
+  );
+};
+
+const BadgeOutline = ({ children }: { children: ReactNode }) => {
+  return (
+    <span className="flex items-center justify-center w-5 h-5 bg-primary-100 text-primary-700 text-xs rounded-full bottom-0 right-1.5 fixed">
+      {children}
+    </span>
   );
 };
