@@ -216,7 +216,7 @@ export function DesignationAssignments({
               <InputParticipant
                 crossOrigin
                 disabled={!assignment.point.status}
-                participants={participants}
+                participants={participants.filter((p) => !p.incident_history)}
                 placeholder="Adicionar voluntário"
                 onSelect={async (participantId) => {
                   setAssignments((prev) =>
