@@ -16,7 +16,12 @@ export function BoxGroup({
 }: BoxGroupProps) {
   return (
     <>
-      <div className="w-80 h-72 flex flex-col items-center justify-start gap-4 p-4 rounded-lg border border-primary-200 shadow-lg relative">
+      <div
+        className={`
+        w-80 h-72 flex flex-col items-center justify-start gap-4 p-4 rounded-lg border border-primary-200 shadow-lg relative
+        ${!pointName && "invisible"}
+      `}
+      >
         <div className="flex justify-around items-center w-full gap-2">
           <span
             className="font-bold text-base truncate w-[62%]"

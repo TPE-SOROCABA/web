@@ -25,7 +25,7 @@ export const useDesignation = () => {
       if (!groupId) return console.log("groupId not found");
       const params = {
         groupId,
-        filter: props?.filter ?? undefined,
+        filter: props?.filter ?? "bradesco",
         random: props?.random ?? undefined,
       };
       const { data } = await http.get<Designation>("/designations/week", {
@@ -33,18 +33,22 @@ export const useDesignation = () => {
       });
 
       setAssignments(
-        data.assignments.map((a) => ({
-          ...a,
-          participants: addFakeImage(a.participants),
-        }))
+        shadowCards(
+          data.assignments.map((a) => ({
+            ...a,
+            participants: addFakeImage(a.participants),
+          }))
+        )
       );
       setParticipants(addFakeImage([...data.participants, ...data.incidents]));
 
       setFilteredAssignments(
-        data.assignmentsFiltered.map((a) => ({
-          ...a,
-          participants: addFakeImage(a.participants),
-        }))
+        shadowCards(
+          data.assignmentsFiltered.map((a) => ({
+            ...a,
+            participants: addFakeImage(a.participants),
+          }))
+        )
       );
 
       setDesignation({
@@ -61,8 +65,55 @@ export const useDesignation = () => {
 
   useEffect(() => {
     getParticipants();
+
+    const resize = () => {
+      setAssignments((a) => shadowCards(a));
+      setFilteredAssignments((a) => shadowCards(a));
+    };
+
+    addEventListener("resize", resize);
+
+    return () => {
+      removeEventListener("resize", resize);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const shadowCards = (assignments: Assignment[]): Assignment[] => {
+    const CARD_WIDTH = 330;
+    const SIDE_BAR_WIDTH = 64;
+    const WINDOW_WIDTH = window.innerWidth - SIDE_BAR_WIDTH - 208;
+
+    const quantityCards = assignments.filter((a) => a.point.id).length;
+    const cardsByRow = Math.floor(WINDOW_WIDTH / CARD_WIDTH);
+
+    type LineRaw = Assignment[];
+    type Line = LineRaw[];
+
+    const lines: Line = [];
+    let currentLine = 0;
+    Array.from({ length: quantityCards }).forEach((_, index) => {
+      if (lines[currentLine]?.length === cardsByRow) {
+        currentLine++;
+      }
+      if (!lines[currentLine]?.length) {
+        lines[currentLine] = [];
+      }
+      lines[currentLine].push(assignments[index]);
+    });
+
+    const lastLine = lines.at(-1);
+    const lastLineLength = lastLine?.length || 0;
+    if (lastLineLength < cardsByRow && lastLine) {
+      const emptyCards = cardsByRow - lastLineLength;
+      Array.from({ length: emptyCards }).forEach(() => {
+        lastLine.push(SHADOW_ASSIGNMENT);
+      });
+    }
+
+    const newAssignments = lines.flat();
+    return newAssignments;
+  };
 
   const handleRandom = async () => {
     await toast.promise(getParticipants({ random: true }), {
@@ -155,4 +206,18 @@ export const useDesignation = () => {
     setParticipants,
     setFilteredAssignments,
   };
+};
+
+const SHADOW_ASSIGNMENT: Assignment = {
+  point: {
+    id: "",
+    name: "",
+    status: false,
+  },
+  publication_carts: [],
+  participants: [],
+  config: {
+    max: 0,
+    min: 0,
+  },
 };
