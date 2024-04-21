@@ -4,21 +4,26 @@ import { AuthLayout } from "../components";
 import { useState } from "react";
 import { useCookies, useHttp, useToast } from "../../../lib";
 import { AxiosError } from "axios";
+import { jwtDecode } from "jwt-decode";
 
 export function CheckNumberCode() {
-  const [code, setCode] = useState("");
-  const navigate = useNavigate();
   const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const jwtCode = query.get("code") as string;
+  const { cpf: cpfJWT, code } = decode(jwtCode);
+  const { cpf: cpfLocation } = location.state as { cpf?: string };
+  const cpf = cpfLocation || cpfJWT;
+  const [codeInput, setCodeInput] = useState(code);
+  const navigate = useNavigate();
   const cookie = useCookies();
   const http = useHttp();
   const toast = useToast();
-  const { cpf } = location.state as { cpf: string };
 
   const updateCode = (e: React.ChangeEvent<HTMLInputElement>) => {
     const valueRaw = e.target.value;
     const value = valueRaw.replace(/\D/g, "");
     if (value.length > 6) return;
-    setCode(value);
+    setCodeInput(value);
   };
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -27,7 +32,7 @@ export function CheckNumberCode() {
     try {
       const { data } = await http.post("/auth/login-code", {
         cpf: cpf.replace(/\D/g, ""),
-        code,
+        code: codeInput.toString(),
       });
       cookie.set("token", data.token);
       navigate("/forgot-password/new-password", {
@@ -58,7 +63,7 @@ export function CheckNumberCode() {
             <Input
               crossOrigin={false}
               className="flex justify-between"
-              value={code}
+              value={codeInput}
               onChange={updateCode}
               placeholder="Digite o código de 6 dígitos"
               label="Código"
@@ -68,7 +73,7 @@ export function CheckNumberCode() {
         <div className="h-1/5 flex flex-col justify-center items-center gap-4">
           <Button
             placeholder={"Entrar ou Login"}
-            disabled={code.length < 6}
+            disabled={codeInput.length < 6}
             type="submit"
             className="md:w-96 w-40 md:rounded-xl bg-primary-600"
             size="lg"
@@ -83,3 +88,16 @@ export function CheckNumberCode() {
     </AuthLayout>
   );
 }
+
+const decode = (
+  str: string
+): {
+  code: string;
+  cpf: string;
+} => {
+  try {
+    return jwtDecode(str);
+  } catch (error) {
+    return { code: "", cpf: "" };
+  }
+};

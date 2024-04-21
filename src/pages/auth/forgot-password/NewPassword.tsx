@@ -31,7 +31,8 @@ export function NewPassword() {
         cpf: cpf.replace(/\D/g, ""),
         password: password.value,
       });
-      navigate("/");
+      // navigate("/dashboard");
+      navigate("/lista-designacao");
       toast.success("Senha salva com sucesso");
     } catch (error) {
       console.error(error);
