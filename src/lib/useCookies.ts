@@ -6,6 +6,7 @@ export interface IToken {
   id:          string;
   name:        string;
   profile:     string;
+  profile_photo?: string;
   groupId:     string;
   designation: Designation;
   iat:         number;

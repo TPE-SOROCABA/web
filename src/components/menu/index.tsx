@@ -21,6 +21,15 @@ export const Menu = () => {
   const path = location.pathname;
   const currentPage = pages.find((page) => page.path === path);
 
+  const PROFILE_BR = {
+    ["COORDINATOR"]: "Coordenador",
+    ["ASSISTANT_COORDINATOR"]: "Coordenador Assistente",
+    ["CAPTAIN"]: "Capitão",
+    ["ASSISTANT_CAPTAIN"]: "Capitão Assistente",
+    ["PARTICIPANT"]: "Participante",
+    ["ADMIN_ANALYST"]: "Analista Administrativo",
+  }
+
   return (
     <div className="relative">
       <header className="flex flex-row justify-between bg-gradient-to-r from-primary-900 to-primary-500 h-16 px-4 fixed w-full z-[100]">
@@ -37,14 +46,15 @@ export const Menu = () => {
           {token && (
             <CountdownTimer targetDate={token.designation.expiration} />
           )}
-          <h2 className="text-white text-1xl hidden md:block">Coordenador</h2>
+          <h2 className="text-white text-1xl hidden md:block">{PROFILE_BR[token?.profile as never] || ""}</h2>
           <Bell color="#fff" />
-          <Avatar
-            src="https://docs.material-tailwind.com/img/face-2.jpg"
-            alt="avatar"
-            size="sm"
-            placeholder="Avatar"
-          />
+          {token?.profile_photo && (
+            <Avatar
+              src={token?.profile_photo}
+              alt="avatar"
+              size="sm"
+              placeholder="Avatar"
+            />)}
         </div>
       </header>
       <div className="h-16 invisible"></div>

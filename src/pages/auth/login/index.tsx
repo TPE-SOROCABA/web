@@ -32,7 +32,8 @@ export function Login() {
       });
       const token = data.token;
       cookies.set("token", token, { secure: true });
-      navigate("/dashboard");
+      // navigate("/dashboard");
+      navigate("/lista-designacao")
     } catch (e) {
       if (e instanceof AxiosError && e.response?.status === 401) {
         return toast.error("CPF ou senha inválidos");
