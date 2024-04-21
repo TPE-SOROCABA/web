@@ -1,4 +1,5 @@
 import { Switch } from "@material-tailwind/react";
+import carSvg from "../../assets/car.svg";
 interface BoxGroupProps {
   children: React.ReactNode;
   pointName: string;
@@ -22,15 +23,9 @@ export function BoxGroup({
         ${!pointName && "invisible"}
       `}
       >
-        <div className="flex justify-around items-center w-full gap-2">
-          <span
-            className="font-bold text-base truncate w-[62%]"
-            title={pointName}
-          >
+        <div className="flex justify-start items-center w-full gap-2">
+          <span className="font-bold text-base truncate" title={pointName}>
             {pointName}
-          </span>
-          <span className="text-base text-end w-[38%]" title={pointCars}>
-            {pointCars.includes(",") ? "Carrinhos" : "Carrinho"}: {pointCars}
           </span>
         </div>
         <div className="flex flex-col items-center gap-4">{children}</div>
@@ -44,6 +39,12 @@ export function BoxGroup({
               boxGroupEvent(e.target.checked);
             }}
           />
+        </div>
+        <div className="absolute bottom-5 right-3">
+          <div className="flex items-end gap-2 h-fit" title={pointCars}>
+            <span className="text-base text-end -mb-1">{pointCars}</span>
+            <img className="w-3" src={carSvg} />
+          </div>
         </div>
       </div>
     </>
