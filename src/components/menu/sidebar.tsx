@@ -43,6 +43,7 @@ export function Sidebar({ open, closeDrawer }: SidebarProps) {
           menu: open ? "open" : "close",
           link: open ? "open" : "close",
         })}
+        title={page.name}
       >
         <img src={page.icon} alt={page.altName} className="w-6" />
         {open && <h2 className="text-white">{page.name}</h2>}
