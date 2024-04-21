@@ -8,42 +8,52 @@ let timeout: NodeJS.Timeout;
 export const useDesignation = () => {
   const http = useHttp();
   const toast = useToastHot();
-  const cookie = useCookies()
-  const groupId = cookie.decodeToken()?.groupId
+  const cookie = useCookies();
+  const groupId = cookie.decodeToken()?.groupId;
   const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const [filteredAssignments, setFilteredAssignments] = useState<Assignment[]>(
+    []
+  );
   const [participants, setParticipants] = useState<IParticipant[]>([]);
   const [desigantion, setDesignation] = useState<Omit<
     Designation,
-    "assignments" | "participants" | "incidents"
+    "assignments" | "participants" | "incidents" | "assignmentsFiltered"
   > | null>();
 
   const getParticipants = useCallback(
     async (props?: { random?: boolean; filter?: string }) => {
-      if(!groupId ) return console.log('groupId not found')
+      if (!groupId) return console.log("groupId not found");
       const params = {
         groupId,
         filter: props?.filter ?? undefined,
         random: props?.random ?? undefined,
       };
-        const { data } = await http.get<Designation>("/designations/week", {
-          params,
-        });
+      const { data } = await http.get<Designation>("/designations/week", {
+        params,
+      });
 
-        setAssignments(
-          data.assignments.map((a) => ({
-            ...a,
-            participants: addFakeImage(a.participants),
-          }))
-        );
-        setParticipants(addFakeImage([...data.participants, ...data.incidents]));
-  
-        setDesignation({
-          id: data.id,
-          group: data.group,
-          status: data.status,
-          createdAt: data.createdAt,
-          updatedAt: data.updatedAt,
-        });
+      setAssignments(
+        data.assignments.map((a) => ({
+          ...a,
+          participants: addFakeImage(a.participants),
+        }))
+      );
+      setParticipants(addFakeImage([...data.participants, ...data.incidents]));
+
+      setFilteredAssignments(
+        data.assignmentsFiltered.map((a) => ({
+          ...a,
+          participants: addFakeImage(a.participants),
+        }))
+      );
+
+      setDesignation({
+        id: data.id,
+        group: data.group,
+        status: data.status,
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
+      });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
@@ -51,7 +61,7 @@ export const useDesignation = () => {
 
   useEffect(() => {
     getParticipants();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleRandom = async () => {
@@ -131,6 +141,7 @@ export const useDesignation = () => {
   };
 
   return {
+    filteredAssignments,
     assignments,
     participants,
     desigantion,
@@ -142,5 +153,6 @@ export const useDesignation = () => {
     handleSearch,
     setAssignments,
     setParticipants,
+    setFilteredAssignments,
   };
 };

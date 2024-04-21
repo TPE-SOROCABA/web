@@ -17,9 +17,21 @@ const isAbsent = (participant: IParticipant) =>
 export function Designar() {
   const http = useHttp();
   const toast = useToastHot();
-  const hook = useDesignation();
-  const { assignments, participants, desigantion, handleRandom, handleSearch } =
-    hook;
+  const {
+    filteredAssignments,
+    assignments,
+    participants,
+    desigantion,
+    handleRandom,
+    handleSearch,
+    setFilteredAssignments,
+    getParticipants,
+    handleUpdatePoint,
+    handleUpdatePointParticipants,
+    createIncidentParticipants,
+    setAssignments,
+    setParticipants,
+  } = useDesignation();
 
   return (
     <>
@@ -47,8 +59,35 @@ export function Designar() {
           className="flex flex-wrap gap-8 justify-between w-full duration-300 ease-in-out transition-transform transform"
           hidden={!assignments?.length && !participants?.length}
         >
+          {/*  Filtrados */}
+          {!!filteredAssignments?.length && (
+            <>
+              <h2 className="text-2xl font-bold w-full">Filtrados</h2>
+              <DesignationAssignments
+                assignments={filteredAssignments}
+                participants={participants}
+                getParticipants={getParticipants}
+                handleUpdatePoint={handleUpdatePoint}
+                handleUpdatePointParticipants={handleUpdatePointParticipants}
+                createIncidentParticipants={createIncidentParticipants}
+                setAssignments={setFilteredAssignments}
+                setParticipants={setParticipants}
+              />
+              <hr className="w-full my-4" />
+            </>
+          )}
+          {/*  Filtrados */}
           {/*  Designação de pontos */}
-          <DesignationAssignments hook={hook} />
+          <DesignationAssignments
+            assignments={assignments}
+            participants={participants}
+            getParticipants={getParticipants}
+            handleUpdatePoint={handleUpdatePoint}
+            handleUpdatePointParticipants={handleUpdatePointParticipants}
+            createIncidentParticipants={createIncidentParticipants}
+            setAssignments={setAssignments}
+            setParticipants={setParticipants}
+          />
           {/*  Designação de pontos */}
           {/* Botão de disparar designação */}
           <div className="w-full flex justify-end">
@@ -80,22 +119,28 @@ export function Designar() {
   );
 }
 
+type Hook = ReturnType<typeof useDesignation>;
+
 export function DesignationAssignments({
-  hook,
+  assignments,
+  participants,
+  getParticipants,
+  handleUpdatePoint,
+  handleUpdatePointParticipants,
+  createIncidentParticipants,
+  setAssignments,
+  setParticipants,
 }: {
-  hook: ReturnType<typeof useDesignation>;
+  assignments: Hook["assignments"];
+  participants: Hook["participants"];
+  getParticipants: Hook["getParticipants"];
+  handleUpdatePoint: Hook["handleUpdatePoint"];
+  handleUpdatePointParticipants: Hook["handleUpdatePointParticipants"];
+  createIncidentParticipants: Hook["createIncidentParticipants"];
+  setAssignments: Hook["setAssignments"];
+  setParticipants: Hook["setParticipants"];
 }) {
   const toast = useToastHot();
-  const {
-    assignments,
-    participants,
-    getParticipants,
-    handleUpdatePoint,
-    handleUpdatePointParticipants,
-    createIncidentParticipants,
-    setAssignments,
-    setParticipants,
-  } = hook;
 
   return assignments.map((assignment) => {
     const perPoint = assignment.publication_carts

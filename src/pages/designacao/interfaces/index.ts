@@ -5,6 +5,7 @@ export interface Designation {
   group: Group;
   status: "OPEN" | "CLOSED";
   assignments: Assignment[];
+  assignmentsFiltered: Assignment[];
   participants: IParticipant[];
   incidents: IParticipant[];
   createdAt: string;
