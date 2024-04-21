@@ -25,7 +25,7 @@ export const useDesignation = () => {
       if (!groupId) return console.log("groupId not found");
       const params = {
         groupId,
-        filter: props?.filter ?? "bradesco",
+        filter: props?.filter ?? undefined,
         random: props?.random ?? undefined,
       };
       const { data } = await http.get<Designation>("/designations/week", {
