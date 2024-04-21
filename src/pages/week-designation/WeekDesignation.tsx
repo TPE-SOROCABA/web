@@ -121,7 +121,7 @@ export const WeekDesignation = () => {
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="flex gap-2">Ponto: <strong>{designation.point}</strong>
+                                    <div className="flex gap-2">Designação: <strong>{designation.point}</strong>
                                         {designation.publication_carts.length > 0 && (
                                             <span>Carrinhos: <strong>({designation.publication_carts.map((publicationCart, index) => (
                                                 <span key={index}>{publicationCart}</span>
