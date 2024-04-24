@@ -1,4 +1,4 @@
-service: web-tpe-digital
+service: web-tpe-digital-${opt:stage}
 useDotenv: true
 
 plugins:
