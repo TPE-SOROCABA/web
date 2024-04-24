@@ -1,4 +1,5 @@
 service: web-tpe-digital
+useDotenv: true
 
 plugins:
   - serverless-frontend-plugin
@@ -21,6 +22,5 @@ provider:
   runtime: nodejs20.x
   region: us-east-1
   stage: ${opt:stage}
-  profile: tpe
   stackName: web-tpe-digital-${opt:stage}
 
