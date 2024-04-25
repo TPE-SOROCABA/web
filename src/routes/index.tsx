@@ -30,7 +30,8 @@ export function RoutesApp() {
             <Route path="/designar" element={<Designar />} />
           </Route>
         </Route>
-        <Route path="/week-designation/:id" element={<WeekDesignation />} />
+        <Route path="/week-designation/:designationId" element={<WeekDesignation />} />
+        <Route path="/week-designation/:designationId/:participantId" element={<WeekDesignation />} />
       </Routes>
     </BrowserRouter>
   );
