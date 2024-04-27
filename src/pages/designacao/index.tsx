@@ -70,7 +70,7 @@ export function Designar() {
   const sendDesignation = async () => {
     await toast.promise(
       http.post<Designation>("/designations/send/" + desigantion?.id, {
-        isOptional,
+        optional: isOptional,
       }),
       {
         loading: "Disparando designação...",

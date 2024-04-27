@@ -5,6 +5,7 @@ import "./index.css";
 import { Toaster as ToasterMobile } from "react-hot-toast";
 import { ToastContainer as ToasterDesktop } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "rsuite/dist/rsuite-no-reset.min.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

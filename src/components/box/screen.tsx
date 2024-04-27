@@ -7,27 +7,37 @@ interface BoxScreenProps {
   children: React.ReactNode;
   loader?: boolean;
   rightContent?: React.ReactNode;
+  showBreadcrumbs?: boolean;
 }
 
-export function BoxScreen({ children, loader, rightContent }: BoxScreenProps) {
+export function BoxScreen({
+  children,
+  loader,
+  rightContent,
+  showBreadcrumbs,
+}: BoxScreenProps) {
   const location = useLocation();
   return (
     <div className="h-full w-full m-4">
       <div className="flex w-full justify-between items-center py-2">
         <Breadcrumbs placeholder>
-          {generateBreadcrumbs(location.pathname).map((breadcrumb, index) => {
-            const isLast =
-              index === generateBreadcrumbs(location.pathname).length - 1;
-            return (
-              <Link
-                key={breadcrumb.path}
-                to={breadcrumb.path}
-                className={`${!isLast ? "opacity-60" : ""}`}
-              >
-                {breadcrumb.breadcrumbName}
-              </Link>
-            );
-          })}
+          {showBreadcrumbs
+            ? generateBreadcrumbs(location.pathname).map(
+                (breadcrumb, index) => {
+                  const isLast =
+                    index === generateBreadcrumbs(location.pathname).length - 1;
+                  return (
+                    <Link
+                      key={breadcrumb.path}
+                      to={breadcrumb.path}
+                      className={`${!isLast ? "opacity-60" : ""}`}
+                    >
+                      {breadcrumb.breadcrumbName}
+                    </Link>
+                  );
+                }
+              )
+            : null}
         </Breadcrumbs>
         {rightContent}
       </div>

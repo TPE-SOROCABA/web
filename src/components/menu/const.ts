@@ -1,7 +1,7 @@
-import dashboardIcon from "../../assets/icons/menu/dashboard.svg";
+// import dashboardIcon from "../../assets/icons/menu/dashboard.svg";
 import searchIcon from "../../assets/icons/menu/search.svg";
 import designarIcon from "../../assets/icons/menu/designar.svg";
-import cadastrarIcon from "../../assets/icons/menu/cadastrar.svg";
+// import cadastrarIcon from "../../assets/icons/menu/cadastrar.svg";
 
 export type NamePage = "Dashboard" | "Consultar" | "Designar" | "Cadastrar";
 type Page = {
@@ -12,16 +12,16 @@ type Page = {
 };
 
 export const pages: Page[] = [
-  {
-    name: "Dashboard",
-    altName: "dashboard",
-    path: "/dashboard",
-    icon: dashboardIcon,
-  },
+  // {
+  //   name: "Dashboard",
+  //   altName: "dashboard",
+  //   path: "/dashboard",
+  //   icon: dashboardIcon,
+  // },
   {
     name: "Consultar",
     altName: "search",
-    path: "/lista-designacao",
+    path: "/consultar/historico",
     icon: searchIcon,
   },
   {
@@ -30,10 +30,10 @@ export const pages: Page[] = [
     path: "/lista-designacao",
     icon: designarIcon,
   },
-  {
-    name: "Cadastrar",
-    altName: "cadastrar",
-    path: "/lista-designacao",
-    icon: cadastrarIcon,
-  },
+  // {
+  //   name: "Cadastrar",
+  //   altName: "cadastrar",
+  //   path: "/lista-designacao",
+  //   icon: cadastrarIcon,
+  // },
 ];
