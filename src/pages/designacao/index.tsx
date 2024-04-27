@@ -1,16 +1,17 @@
-import { Participant } from "../../components";
+import { Alert, Participant } from "../../components";
 import { BoxGroup, BoxScreen } from "../../components/box";
 import { FilterText } from "../../components/filter";
 import { InputParticipant } from "../../components/participant/Input";
 import { useHttp, useToastHot } from "../../lib";
-import { Button } from "@material-tailwind/react";
-import { ArrowRightLeft } from "lucide-react";
+import { Button, Textarea } from "@material-tailwind/react";
+import { ArrowRightLeft, CheckIcon, CopyIcon, XIcon } from "lucide-react";
 import { Designation } from "./interfaces";
 import { ParticipantsToAssign } from "./components/ParticipantsToAssign";
 import { useDesignation } from "./useDesignation";
 import { AlertAbsentParticipant } from "./components/AlertAbsentParticipant";
 import { IParticipant } from "../../entity";
 import { statusDesignation } from "./const";
+import { useState } from "react";
 
 const isAbsent = (participant: IParticipant) =>
   participant.incident_history?.status === "OPEN";
@@ -33,6 +34,78 @@ export function Designar() {
     setAssignments,
     setParticipants,
   } = useDesignation();
+  const [copyStatus, setCopyStatus] = useState<"able" | "copied" | "error">(
+    "able"
+  );
+  const [handleCancel, setHandleCancel] = useState({
+    show: false,
+    justification: "",
+  });
+
+  const copyToClipboard = async () => {
+    if (!desigantion?.id) return;
+    const linkToCopy = `${window.location.origin}/week-designation/${desigantion.id}`;
+
+    try {
+      await navigator.clipboard.writeText(linkToCopy);
+      toast.success("Link copiado com sucesso");
+      setCopyStatus("copied");
+    } catch (error) {
+      toast.error("Erro ao copiar link");
+      setCopyStatus("error");
+    }
+
+    setTimeout(() => {
+      setCopyStatus("able");
+    }, 3000);
+  };
+
+  const CopyStatusIcon = {
+    able: <CopyIcon />,
+    copied: <CheckIcon color="green" />,
+    error: <XIcon color="red" />,
+  };
+
+  const sendDesignation = async () => {
+    await toast.promise(
+      http.post<Designation>("/designations/send/" + desigantion?.id),
+      {
+        loading: "Disparando designação...",
+        success: "Designação disparada com sucesso",
+        error: (error) =>
+          error?.response?.data?.message || "Erro ao disparar designação",
+      }
+    );
+  };
+
+  const cancelDesignation = async () => {
+    if (!desigantion?.id) return;
+    if (!handleCancel.justification) {
+      toast.error("Justificativa é obrigatória");
+      return;
+    }
+    if (handleCancel.justification.length < 3) {
+      toast.error("Justificativa deve ter no mínimo 3 caracteres");
+      return;
+    }
+    await toast.promise(
+      http.patch(`/designations/cancel/${desigantion.id}`, {
+        justification: "Cancelamento da designação",
+      }),
+      {
+        loading: "Cancelando designação...",
+        success: () => {
+          setHandleCancel({
+            show: false,
+            justification: "",
+          });
+          return "Designação cancelada com sucesso";
+        },
+        error: (error) =>
+          error?.response?.data?.message || "Erro ao cancelar designação",
+      }
+    );
+  };
 
   return (
     <>
@@ -111,30 +184,88 @@ export function Designar() {
           )}
           {/*  Designação de pontos */}
         </div>
-        {/* Botão de disparar designação */}
-        <div className="w-full flex justify-end">
+        <div className="w-full flex justify-between">
+          <Button
+            className="bg-red-600 text-white"
+            placeholder={"Cancelar designação"}
+            hidden={desigantion?.status !== "OPEN"}
+            onClick={() => setHandleCancel({ show: true, justification: "" })}
+          >
+            Cancelar designação
+          </Button>
+          <div
+            onClick={copyToClipboard}
+            className={`
+              border border-gray-300 rounded-lg p-2 cursor-pointer hover:bg-gray-100 text-center flex items-center gap-2
+              ${
+                desigantion?.status !== "OPEN" || !desigantion?.id
+                  ? "hidden"
+                  : ""
+              }
+            `}
+          >
+            Copiar <b>Link</b> para visualização {CopyStatusIcon[copyStatus]}
+          </div>
           <Button
             className="bg-primary-600 text-white"
             placeholder={"Disparar designação"}
             hidden={desigantion?.status !== "OPEN"}
-            onClick={async () => {
-              await toast.promise(
-                http.post<Designation>("/designations/send/" + desigantion?.id),
-                {
-                  loading: "Disparando designação...",
-                  success: "Designação disparada com sucesso",
-                  error: (error) =>
-                    error?.response?.data?.message ||
-                    "Erro ao disparar designação",
-                }
-              );
-            }}
+            onClick={sendDesignation}
           >
             Disparar designação
           </Button>
         </div>
-        {/* Botão de disparar designação */}
       </BoxScreen>
+      <Alert
+        show={handleCancel.show}
+        close={() =>
+          setHandleCancel({
+            show: false,
+            justification: "",
+          })
+        }
+      >
+        <div className="flex justify-between items-center flex-col gap-2 bg-white p-4 rounded-lg min-w-[20vw] max-w-96">
+          <h6 className="text-xl">
+            Deseja mesmo cancelar a Designação desta semana?
+          </h6>
+          <p className="text-primary-400 pt-3 pb-2">
+            Se estiver correto, deixe uma nota para justificar o cancelamento.
+          </p>
+          <Textarea
+            label="Justificativa para o cancelamento"
+            className="w-full bg-primary-100 focus:bg-primary-200"
+            value={handleCancel.justification}
+            onChange={(e) =>
+              setHandleCancel({
+                show: true,
+                justification: e.target.value,
+              })
+            }
+          />
+          <div className="flex justify-between w-full gap-4">
+            <Button
+              className="bg-white border border-primary-600 text-primary-600 font-bold"
+              placeholder={"Cancelar designação"}
+              onClick={cancelDesignation}
+            >
+              Concluir
+            </Button>
+            <Button
+              className="bg-primary-500 text-white"
+              placeholder={"Cancelar designação"}
+              onClick={() =>
+                setHandleCancel({
+                  show: false,
+                  justification: "",
+                })
+              }
+            >
+              Voltar
+            </Button>
+          </div>
+        </div>
+      </Alert>
     </>
   );
 }
