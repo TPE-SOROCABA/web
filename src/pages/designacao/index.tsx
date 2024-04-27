@@ -3,15 +3,15 @@ import { BoxGroup, BoxScreen } from "../../components/box";
 import { FilterText } from "../../components/filter";
 import { InputParticipant } from "../../components/participant/Input";
 import { useHttp, useToastHot } from "../../lib";
-import { Button, Textarea } from "@material-tailwind/react";
+import { Button, Checkbox, Textarea } from "@material-tailwind/react";
 import { ArrowRightLeft, CheckIcon, CopyIcon, XIcon } from "lucide-react";
-import { Designation } from "./interfaces";
 import { ParticipantsToAssign } from "./components/ParticipantsToAssign";
 import { useDesignation } from "./useDesignation";
 import { AlertAbsentParticipant } from "./components/AlertAbsentParticipant";
 import { IParticipant } from "../../entity";
 import { statusDesignation } from "./const";
 import { useState } from "react";
+import { Designation } from "./interfaces";
 
 const isAbsent = (participant: IParticipant) =>
   participant.incident_history?.status === "OPEN";
@@ -41,6 +41,7 @@ export function Designar() {
     show: false,
     justification: "",
   });
+  const [isOptional, setIsOptional] = useState(false);
 
   const copyToClipboard = async () => {
     if (!desigantion?.id) return;
@@ -68,7 +69,9 @@ export function Designar() {
 
   const sendDesignation = async () => {
     await toast.promise(
-      http.post<Designation>("/designations/send/" + desigantion?.id),
+      http.post<Designation>("/designations/send/" + desigantion?.id, {
+        isOptional,
+      }),
       {
         loading: "Disparando designação...",
         success: "Designação disparada com sucesso",
@@ -184,9 +187,9 @@ export function Designar() {
           )}
           {/*  Designação de pontos */}
         </div>
-        <div className="w-full flex justify-between">
+        <div className="w-full h-24 flex justify-between">
           <Button
-            className="bg-red-600 text-white"
+            className="bg-red-600 text-white h-12"
             placeholder={"Cancelar designação"}
             hidden={desigantion?.status !== "OPEN"}
             onClick={() => setHandleCancel({ show: true, justification: "" })}
@@ -196,7 +199,7 @@ export function Designar() {
           <div
             onClick={copyToClipboard}
             className={`
-              border border-gray-300 rounded-lg p-2 cursor-pointer hover:bg-gray-100 text-center flex items-center gap-2
+              h-12 border border-gray-300 rounded-lg p-2 cursor-pointer hover:bg-gray-100 text-center flex items-center gap-2
               ${
                 desigantion?.status !== "OPEN" || !desigantion?.id
                   ? "hidden"
@@ -206,14 +209,23 @@ export function Designar() {
           >
             Copiar <b>Link</b> para visualização {CopyStatusIcon[copyStatus]}
           </div>
-          <Button
-            className="bg-primary-600 text-white"
-            placeholder={"Disparar designação"}
-            hidden={desigantion?.status !== "OPEN"}
-            onClick={sendDesignation}
-          >
-            Disparar designação
-          </Button>
+          <div className="flex flex-col gap-2 justify-center">
+            <Button
+              className="h-12 bg-primary-600 text-white"
+              placeholder={"Disparar designação"}
+              hidden={desigantion?.status !== "OPEN"}
+              onClick={sendDesignation}
+            >
+              Disparar designação
+            </Button>
+            <Checkbox
+              crossOrigin
+              label="Presença Opcional"
+              checked={isOptional}
+              onChange={() => setIsOptional((old) => !old)}
+              className="checked:bg-primary-600 checked:border-primary-600"
+            />
+          </div>
         </div>
       </BoxScreen>
       <Alert
