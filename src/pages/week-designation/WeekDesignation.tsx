@@ -47,7 +47,7 @@ export const WeekDesignation = () => {
     const [showAlert, setShowAlert] = useState(false);
 
     const getDesignation = useCallback(async () => {
-        const url = participantId ? `/designations/${designationId}/participant/${participantId}` : `/designations/${designationId}`;
+        const url = participantId ? `/designations/${designationId}/participants/${participantId}` : `/designations/${designationId}/participants`;
         try {
             const { data } = await http.get<IWeekDesignationModel[]>(url, {});
             setDesignation(data);

@@ -28,7 +28,7 @@ export const useDesignation = () => {
         filter: props?.filter ?? undefined,
         random: props?.random ?? undefined,
       };
-      const { data } = await http.get<Designation>("/designations/week", {
+      const { data } = await http.get<Designation>(`/groups/${groupId}/designations/week`, {
         params,
       });
 

@@ -97,7 +97,7 @@ export function Designar() {
               onClick={async () => {
                 await toast.promise(
                   http.post<Designation>(
-                    "/designations/send/" + desigantion?.id
+                    `/designations/${desigantion?.id}/send`,
                   ),
                   {
                     loading: "Disparando designação...",
