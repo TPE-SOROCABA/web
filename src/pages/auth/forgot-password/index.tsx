@@ -4,10 +4,11 @@ import { AuthLayout } from "../components";
 import { useState } from "react";
 import { useHttp, useToast } from "../../../lib";
 import { AxiosError } from "axios";
+import { formatPhone } from "../../../utils";
 
 export const ForgotPassword = () => {
   const [inputForgotPassword, setInputForgotPassword] = useState({
-    cpf: "",
+    phone: "",
     // cellphone: "",
   });
   const navigate = useNavigate();
@@ -19,21 +20,21 @@ export const ForgotPassword = () => {
     const toastId = toast.loading("Enviando código de recuperação");
     try {
       await http.post("/auth/recover-password", {
-        cpf: inputForgotPassword.cpf.replace(/\D/g, ""),
+        phone: inputForgotPassword.phone.replace(/\D/g, ""),
         // cellphone: inputForgotPassword.cellphone.replace(/\D/g, ""),
       });
       navigate("/forgot-password/check-number", {
-        state: { cpf: inputForgotPassword.cpf },
+        state: { phone: inputForgotPassword.phone },
       });
     } catch (error) {
       console.error(error);
       if (error instanceof AxiosError) {
         const status = error.response?.status;
         if (status === 404) {
-          return toast.error("CPF não encontrado");
+          return toast.error("Telefone não encontrado");
         }
         if (status === 400) {
-          return toast.error("CPF ou telefone inválidos");
+          return toast.error("Telefone inválido");
         }
         return toast.error(
           "Ops! Um erro inesperado ocorreu ao enviar o seu código"
@@ -44,12 +45,10 @@ export const ForgotPassword = () => {
     }
   };
 
-  const updateCPF = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const cpfRaw = e.target.value;
-    const cpf = cpfRaw
-      .replace(/\D/g, "")
-      .replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-    setInputForgotPassword({ ...inputForgotPassword, cpf });
+  const updatePhone = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const phoneRaw = e.target.value.replace(/\D/g, "");
+    const phone = formatPhone(phoneRaw);
+    setInputForgotPassword({ ...inputForgotPassword, phone });
   };
 
   // const updateCellphone = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,7 +62,8 @@ export const ForgotPassword = () => {
   // };
 
   const haveEmptyFields =
-    !inputForgotPassword.cpf || inputForgotPassword.cpf.length < 14;
+    !inputForgotPassword.phone ||
+    inputForgotPassword.phone.replace(/\D/g, "").length < 11;
   return (
     <AuthLayout onSubmit={onSubmit}>
       <div className="h-4/6 flex flex-col md:w-1/2 md:justify-center">
@@ -74,15 +74,14 @@ export const ForgotPassword = () => {
           <div className="md:w-96 w-full flex flex-col items-center md:gap-12 gap-6">
             <Input
               crossOrigin
-              value={inputForgotPassword.cpf}
-              onChange={updateCPF}
-              name="cpf"
-              label="CPF"
+              value={inputForgotPassword.phone}
+              onChange={updatePhone}
+              name="phone"
+              label="Telefone (Celular) com DDD"
               autoFocus
               type="text"
-              maxLength={14}
+              maxLength={15}
               minLength={14}
-              pattern="\d{3}\.\d{3}\.\d{3}-\d{2}"
               variant={window?.innerWidth < 768 ? "outlined" : "static"}
               size="lg"
             />

@@ -11,6 +11,7 @@ import {
 import { PrivateRoute } from "./PrivateRoutes";
 import { WeekDesignation } from "../pages/week-designation/WeekDesignation";
 import { Menu } from "../components";
+import { ConsultarHistorico } from "../pages/consultar";
 
 export function RoutesApp() {
   return (
@@ -26,12 +27,23 @@ export function RoutesApp() {
         <Route element={<Menu />}>
           <Route element={<PrivateRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/lista-designacao" element={<ListaDesignacao />} />
-            <Route path="/designar" element={<Designar />} />
+            <Route path="/consultar">
+              <Route path="historico" element={<ConsultarHistorico />} />
+            </Route>
+            <Route path="/lista-designacao">
+              <Route path="" element={<ListaDesignacao />} />
+              <Route path="designar" element={<Designar />} />
+            </Route>
           </Route>
         </Route>
-        <Route path="/week-designation/:designationId" element={<WeekDesignation />} />
-        <Route path="/week-designation/:designationId/:participantId" element={<WeekDesignation />} />
+        <Route
+          path="/week-designation/:designationId"
+          element={<WeekDesignation />}
+        />
+        <Route
+          path="/week-designation/:designationId/:participantId"
+          element={<WeekDesignation />}
+        />
       </Routes>
     </BrowserRouter>
   );
