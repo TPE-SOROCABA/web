@@ -28,7 +28,7 @@ export const Menu = () => {
     ["ASSISTANT_CAPTAIN"]: "Capitão Assistente",
     ["PARTICIPANT"]: "Participante",
     ["ADMIN_ANALYST"]: "Analista Administrativo",
-  }
+  };
 
   return (
     <div className="relative">
@@ -46,7 +46,9 @@ export const Menu = () => {
           {token && (
             <CountdownTimer targetDate={token.designation.expiration} />
           )}
-          <h2 className="text-white text-1xl hidden md:block">{PROFILE_BR[token?.profile as never] || ""}</h2>
+          <h2 className="text-white text-1xl hidden md:block">
+            {PROFILE_BR[token?.profile as never] || ""}
+          </h2>
           <Bell color="#fff" />
           {token?.profile_photo && (
             <Avatar
@@ -54,7 +56,8 @@ export const Menu = () => {
               alt="avatar"
               size="sm"
               placeholder="Avatar"
-            />)}
+            />
+          )}
         </div>
       </header>
       <div className="h-16 invisible"></div>

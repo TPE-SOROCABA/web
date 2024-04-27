@@ -26,8 +26,10 @@ export function RoutesApp() {
         <Route element={<Menu />}>
           <Route element={<PrivateRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/lista-designacao" element={<ListaDesignacao />} />
-            <Route path="/designar" element={<Designar />} />
+            <Route path="/lista-designacao">
+              <Route path="" element={<ListaDesignacao />} />
+              <Route path="designar" element={<Designar />} />
+            </Route>
           </Route>
         </Route>
         <Route path="/week-designation/:id" element={<WeekDesignation />} />

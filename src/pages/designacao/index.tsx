@@ -10,6 +10,7 @@ import { ParticipantsToAssign } from "./components/ParticipantsToAssign";
 import { useDesignation } from "./useDesignation";
 import { AlertAbsentParticipant } from "./components/AlertAbsentParticipant";
 import { IParticipant } from "../../entity";
+import { statusDesignation } from "./const";
 
 const isAbsent = (participant: IParticipant) =>
   participant.incident_history?.status === "OPEN";
@@ -25,7 +26,7 @@ export function Designar() {
     handleRandom,
     handleSearch,
     setFilteredAssignments,
-    getParticipants,
+    getDesignation,
     handleUpdatePoint,
     handleUpdatePointParticipants,
     createIncidentParticipants,
@@ -35,7 +36,16 @@ export function Designar() {
 
   return (
     <>
-      <BoxScreen loader={!assignments.length}>
+      <BoxScreen
+        loader={!assignments.length}
+        rightContent={
+          <>
+            <p className="text-primary-800 text-sm font-semibold">
+              {desigantion?.status ? statusDesignation[desigantion.status] : ""}
+            </p>
+          </>
+        }
+      >
         {/*  Filtros e botão de designação automática */}
         <div className="w-full justify-between items-center flex gap-4">
           <div className="flex justify-between items-center w-2/5 gap-4">
@@ -50,6 +60,7 @@ export function Designar() {
             className="bg-primary-600 text-white"
             placeholder={"Designar Automaticamente"}
             onClick={handleRandom}
+            hidden={desigantion?.status !== "OPEN"}
           >
             Designação Automática
           </Button>
@@ -63,57 +74,66 @@ export function Designar() {
           {!!filteredAssignments?.length && (
             <>
               <h2 className="text-2xl font-bold w-full">Filtrados</h2>
-              <DesignationAssignments
-                assignments={filteredAssignments}
-                participants={participants}
-                getParticipants={getParticipants}
-                handleUpdatePoint={handleUpdatePoint}
-                handleUpdatePointParticipants={handleUpdatePointParticipants}
-                createIncidentParticipants={createIncidentParticipants}
-                setAssignments={setFilteredAssignments}
-                setParticipants={setParticipants}
-              />
+              {desigantion?.status === "CANCELLED" ? (
+                <DesignationAssignmentsReadOnly
+                  assignments={filteredAssignments}
+                />
+              ) : (
+                <DesignationAssignments
+                  assignments={filteredAssignments}
+                  participants={participants}
+                  getDesignation={getDesignation}
+                  handleUpdatePoint={handleUpdatePoint}
+                  handleUpdatePointParticipants={handleUpdatePointParticipants}
+                  createIncidentParticipants={createIncidentParticipants}
+                  setAssignments={setFilteredAssignments}
+                  setParticipants={setParticipants}
+                />
+              )}
               <hr className="w-full my-4" />
             </>
           )}
           {/*  Filtrados */}
           {/*  Designação de pontos */}
-          <DesignationAssignments
-            assignments={assignments}
-            participants={participants}
-            getParticipants={getParticipants}
-            handleUpdatePoint={handleUpdatePoint}
-            handleUpdatePointParticipants={handleUpdatePointParticipants}
-            createIncidentParticipants={createIncidentParticipants}
-            setAssignments={setAssignments}
-            setParticipants={setParticipants}
-          />
+          {desigantion?.status === "CANCELLED" ? (
+            <DesignationAssignmentsReadOnly assignments={assignments} />
+          ) : (
+            <DesignationAssignments
+              assignments={assignments}
+              participants={participants}
+              getDesignation={getDesignation}
+              handleUpdatePoint={handleUpdatePoint}
+              handleUpdatePointParticipants={handleUpdatePointParticipants}
+              createIncidentParticipants={createIncidentParticipants}
+              setAssignments={setAssignments}
+              setParticipants={setParticipants}
+            />
+          )}
           {/*  Designação de pontos */}
-          {/* Botão de disparar designação */}
-          <div className="w-full flex justify-end">
-            <Button
-              className="bg-primary-600 text-white"
-              placeholder={"Disparar designação"}
-              onClick={async () => {
-                await toast.promise(
-                  http.post<Designation>(
-                    "/designations/send/" + desigantion?.id
-                  ),
-                  {
-                    loading: "Disparando designação...",
-                    success: "Designação disparada com sucesso",
-                    error: (error) =>
-                      error?.response?.data?.message ||
-                      "Erro ao disparar designação",
-                  }
-                );
-              }}
-            >
-              Disparar designação
-            </Button>
-          </div>
-          {/* Botão de disparar designação */}
         </div>
+        {/* Botão de disparar designação */}
+        <div className="w-full flex justify-end">
+          <Button
+            className="bg-primary-600 text-white"
+            placeholder={"Disparar designação"}
+            hidden={desigantion?.status !== "OPEN"}
+            onClick={async () => {
+              await toast.promise(
+                http.post<Designation>("/designations/send/" + desigantion?.id),
+                {
+                  loading: "Disparando designação...",
+                  success: "Designação disparada com sucesso",
+                  error: (error) =>
+                    error?.response?.data?.message ||
+                    "Erro ao disparar designação",
+                }
+              );
+            }}
+          >
+            Disparar designação
+          </Button>
+        </div>
+        {/* Botão de disparar designação */}
       </BoxScreen>
     </>
   );
@@ -124,7 +144,7 @@ type Hook = ReturnType<typeof useDesignation>;
 export function DesignationAssignments({
   assignments,
   participants,
-  getParticipants,
+  getDesignation,
   handleUpdatePoint,
   handleUpdatePointParticipants,
   createIncidentParticipants,
@@ -133,7 +153,7 @@ export function DesignationAssignments({
 }: {
   assignments: Hook["assignments"];
   participants: Hook["participants"];
-  getParticipants: Hook["getParticipants"];
+  getDesignation: Hook["getDesignation"];
   handleUpdatePoint: Hook["handleUpdatePoint"];
   handleUpdatePointParticipants: Hook["handleUpdatePointParticipants"];
   createIncidentParticipants: Hook["createIncidentParticipants"];
@@ -286,7 +306,7 @@ export function DesignationAssignments({
                   ]);
                 }}
                 cb={async () => {
-                  await toast.promise(getParticipants(), {
+                  await toast.promise(getDesignation(), {
                     loading: "Atualizando participantes e pontos...",
                     success: "Participante adicionado com sucesso",
                     error: "Erro ao adicionar participante",
@@ -294,6 +314,39 @@ export function DesignationAssignments({
                 }}
               />
             )}
+        </BoxGroup>
+      </div>
+    );
+  });
+}
+
+export function DesignationAssignmentsReadOnly({
+  assignments,
+}: {
+  assignments: Hook["assignments"];
+}) {
+  return assignments.map((assignment) => {
+    const perPoint = assignment.publication_carts
+      .map((cart) => cart.name)
+      .join(", ");
+
+    return (
+      <div id={assignment.point.id} key={assignment.point.id}>
+        <BoxGroup
+          pointName={assignment.point.name}
+          pointCars={perPoint}
+          pointStatus={assignment.point.status}
+          boxGroupEvent={() => {}}
+          readonly
+        >
+          {assignment.participants.map((participant) => (
+            <Participant.Root
+              name={participant.name}
+              key={participant.id}
+              avatar={participant.profile_photo}
+              incident_history={isAbsent(participant)}
+            />
+          ))}
         </BoxGroup>
       </div>
     );

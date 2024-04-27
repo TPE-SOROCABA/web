@@ -20,7 +20,7 @@ export const useDesignation = () => {
     "assignments" | "participants" | "incidents" | "assignmentsFiltered"
   > | null>();
 
-  const getParticipants = useCallback(
+  const getDesignation = useCallback(
     async (props?: { random?: boolean; filter?: string }) => {
       if (!groupId) return console.log("groupId not found");
       const params = {
@@ -31,6 +31,7 @@ export const useDesignation = () => {
       const { data } = await http.get<Designation>("/designations/week", {
         params,
       });
+      console.log(data);
 
       setAssignments(
         shadowCards(
@@ -64,7 +65,7 @@ export const useDesignation = () => {
   );
 
   useEffect(() => {
-    getParticipants();
+    getDesignation();
 
     const resize = () => {
       setAssignments((a) => shadowCards(a));
@@ -116,7 +117,7 @@ export const useDesignation = () => {
   };
 
   const handleRandom = async () => {
-    await toast.promise(getParticipants({ random: true }), {
+    await toast.promise(getDesignation({ random: true }), {
       loading: "Designando automaticamente...",
       success: "Designação automática realizada com sucesso",
       error: (error) =>
@@ -126,9 +127,9 @@ export const useDesignation = () => {
 
   const handleSearch = async (search: string) => {
     timeout && clearTimeout(timeout);
-    if (!search) return getParticipants();
+    if (!search) return getDesignation();
     timeout = setTimeout(async () => {
-      await toast.promise(getParticipants({ filter: search }), {
+      await toast.promise(getDesignation({ filter: search }), {
         loading: "Buscando participantes e pontos...",
         success: "Busca realizada com sucesso",
         error: "Erro ao buscar participantes e pontos",
@@ -188,7 +189,7 @@ export const useDesignation = () => {
           error?.response?.data?.message || "Erro ao atualizar ponto",
       }
     );
-    await getParticipants();
+    await getDesignation();
   };
 
   return {
@@ -196,7 +197,7 @@ export const useDesignation = () => {
     assignments,
     participants,
     desigantion,
-    getParticipants,
+    getDesignation,
     handleUpdatePoint,
     handleUpdatePointParticipants,
     createIncidentParticipants,

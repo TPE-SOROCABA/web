@@ -6,6 +6,7 @@ interface BoxGroupProps {
   pointCars: string;
   pointStatus: boolean;
   boxGroupEvent: (value: boolean) => void;
+  readonly?: boolean;
 }
 
 export function BoxGroup({
@@ -14,6 +15,7 @@ export function BoxGroup({
   pointCars,
   pointStatus,
   boxGroupEvent,
+  readonly = false,
 }: BoxGroupProps) {
   return (
     <>
@@ -38,6 +40,7 @@ export function BoxGroup({
             onChange={(e) => {
               boxGroupEvent(e.target.checked);
             }}
+            disabled={readonly}
           />
         </div>
         <div className="absolute bottom-5 right-3">

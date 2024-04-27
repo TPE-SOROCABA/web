@@ -11,7 +11,7 @@ interface ParticipantProps {
   incident_history: boolean;
   name: string;
   absent?: Absent;
-  children: (p: ChildrenProps) => JSX.Element;
+  children?: (p: ChildrenProps) => JSX.Element;
   className?: HTMLElement["className"];
   // children: ReactNode;
 }
@@ -49,7 +49,7 @@ export function ParticipantComponent({
   absent,
   children: Children,
   className,
-  incident_history
+  incident_history,
 }: ParticipantProps) {
   const [showReason, setShowReason] = useState(false);
   return (
@@ -67,10 +67,12 @@ export function ParticipantComponent({
             alt="Foto de perfil"
             className="rounded-full h-9 w-9"
           />
-          <p className={`
+          <p
+            className={`
           text-primary-700 text-lg font-medium text-nowrap truncate
             ${incident_history ? "w-40" : "w-52"}
-          `}>
+          `}
+          >
             {name}
           </p>
         </div>
