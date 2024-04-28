@@ -61,7 +61,9 @@ export const Menu = () => {
         </div>
       </header>
       <div className="h-16 invisible"></div>
-      <div className="flex items-start">
+      <div
+        className={`${open ? "overflow-hidden" : ""} flex items-start h-screen`}
+      >
         <Sidebar open={open} closeDrawer={closeDrawer} />
         <div className="flex justify-start items-start p-2 w-full">
           <Outlet />

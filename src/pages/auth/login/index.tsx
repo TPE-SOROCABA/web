@@ -36,20 +36,19 @@ export function Login() {
   };
 
   const updatePhone = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const phoneRaw = e.target.value.replace(/\D/g, "");
+    const phoneRaw = e.target.value.trim().replace(/\D/g, "");
     const phoneFormatted = formatPhone(phoneRaw);
     setInputLogin({ ...inputLogin, phone: phoneFormatted });
   };
 
-  const haveEmptyFields = !inputLogin.phone || !inputLogin.password;
   return (
     <AuthLayout onSubmit={handleSubmit}>
-      <div className="h-4/6 flex flex-col md:w-1/2 md:justify-center">
+      <div className="h-4/6 flex flex-col gap-8 p-4 md:w-1/2 md:justify-center">
         <div className="md:h-40 h-4/5 flex flex-col justify-evenly items-center">
           <h1 className="font-bold text-xl text-gray-800 md:hidden">
             Insira suas informações para realizar o login
           </h1>
-          <div className="md:w-96 w-full flex flex-col items-center md:gap-12 gap-6">
+          <div className="md:w-80 w-full flex flex-col items-center md:gap-12 gap-6">
             <Input
               crossOrigin
               value={inputLogin.phone}
@@ -78,17 +77,21 @@ export function Login() {
             />
           </div>
         </div>
-        <div className="h-1/5 flex flex-col justify-center items-center gap-4">
+        <div className="h-1/5 min-h-[40px] flex flex-col justify-center items-center gap-4">
           <Button
             placeholder={"Entrar ou Login"}
-            disabled={haveEmptyFields}
             type="submit"
-            className="md:w-96 w-40 md:rounded-xl bg-primary-600"
+            className="
+            md:w-64 w-40 h-[60px] p-7 
+            flex justify-center items-center rounded-2xl 
+            bg-primary-600
+            focus:opacity-65
+            "
             size="lg"
           >
             Entrar
           </Button>
-          <div className="md:w-96 w-40 flex justify-center md:justify-end text-gray-700 md:text-base text-sm">
+          <div className="text-gray-700 md:text-base text-sm">
             <Link to="/forgot-password">Esqueci minha senha</Link>
           </div>
         </div>

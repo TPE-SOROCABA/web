@@ -51,7 +51,7 @@ export function ListaDesignacao() {
   const getGroupDetails = useCallback(async () => {
     if (!groupId) return console.log("groupId not found");
     const { data } = await http.get<GroupDetails>(
-      `/designations/group/${groupId}/details?groupId=${groupId}`
+      `/groups/${groupId}/designations/week-details`
     );
     setDesignationStatus(data.designation.status);
   }, [groupId, http]);
@@ -114,6 +114,7 @@ export function ListaDesignacao() {
 
   return (
     <BoxScreen
+    showBreadcrumbs={true}
       rightContent={
         <>
           <p className="text-primary-800 text-sm font-semibold">

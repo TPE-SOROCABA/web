@@ -113,6 +113,7 @@ export function Designar() {
   return (
     <>
       <BoxScreen
+      showBreadcrumbs={true}
         loader={!assignments.length}
         rightContent={
           <>
