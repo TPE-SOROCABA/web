@@ -7,11 +7,11 @@ import {
   Login,
   NewPassword,
   Dashboard,
+  ConsultarHistorico,
 } from "../pages";
 import { PrivateRoute } from "./PrivateRoutes";
 import { WeekDesignation } from "../pages/week-designation/WeekDesignation";
 import { Menu } from "../components";
-import { ConsultarHistorico } from "../pages/consultar";
 
 export function RoutesApp() {
   return (

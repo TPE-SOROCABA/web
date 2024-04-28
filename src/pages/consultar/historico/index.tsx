@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { BoxScreen } from "../../components/box";
 import { DateRangePicker } from "rsuite";
-import { useCookies, useHttp } from "../../lib";
-import { Designation } from "../designacao/interfaces";
-import { statusDesignation } from "../designacao/const";
 import dayjs from "dayjs";
+import { BoxScreen } from "../../../components/box";
+import { statusDesignation } from "../../designacao/const";
+import { Designation } from "../../designacao/interfaces";
+import { useCookies, useHttp } from "../../../lib";
+import { DownloadIcon } from "lucide-react";
+import { ModalDesignation } from "./modalDesignation";
 
 interface HistoryDesignation {
   id: string;
@@ -18,31 +20,64 @@ interface HistoryDesignation {
   cancellationJustification: string;
 }
 
+interface DateRange {
+  from: Date;
+  to: Date;
+}
+
 export function ConsultarHistorico() {
   const [history, setHistory] = useState<HistoryDesignation[]>();
+  const [date, setDate] = useState<DateRange | null>(null);
   const http = useHttp();
   const cookie = useCookies();
   const groupId = cookie.decodeToken()?.groupId;
 
   const getHistory = useCallback(async () => {
     if (!groupId) return console.log("groupId not found");
-    const { data } = await http.get(`/groups/${groupId}/designations`);
+    const endpoint = `/groups/${groupId}/designations`;
+    let url = `${endpoint}`;
+    if (date) {
+      const query = new URLSearchParams({
+        dateFrom: dayjs(date.from).format("YYYY-MM-DD"),
+        dateTo: dayjs(date.to).format("YYYY-MM-DD"),
+      });
+      url += `?${query}`;
+    }
+    const { data } = await http.get(url);
     setHistory(data);
-  }, [groupId, http]);
+  }, [date, groupId, http]);
 
   useEffect(() => {
     getHistory();
   }, [getHistory]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const updateDate = (value: any) => {
+    if (!value) {
+      setDate(null);
+      return;
+    }
+    setDate({
+      from: value[0],
+      to: value[1],
+    });
+  };
+
   return (
     <>
       <BoxScreen>
         <div className="flex items-center justify-start w-full gap-4">
-          <DateRangePicker />
+          <DateRangePicker
+            format="dd/MM/yyyy"
+            value={date && [date.from, date.to]}
+            onChange={(value) => updateDate(value)}
+            title="Selecione o intervalo de datas"
+            placeholder="Selecione o intervalo de datas"
+          />
         </div>
         <table className="w-full">
           <thead>
-            <tr>
+            <tr className="border-b-2 border-primary-300 text-primary-400 font-bold">
               <th className="text-left">Data da Designação</th>
               <th>Status</th>
               <th>Presença</th>
@@ -51,8 +86,14 @@ export function ConsultarHistorico() {
             </tr>
           </thead>
           <tbody>
-            {history?.map((item) => (
-              <tr key={item.id} className="text-center h-10">
+            {history?.map((item, index, list) => (
+              <tr
+                key={item.id}
+                className={`
+                  text-center h-10 border-b-2 border-primary-300 text-primary-400
+                  ${index === list.length - 1 ? "border-b-0" : ""}
+                `}
+              >
                 <td className="text-left">
                   {translateWeekDay(item.designationDate)}{" "}
                   {dayjs(item.designationDate).format("DD/MM/YYYY")}
@@ -62,10 +103,15 @@ export function ConsultarHistorico() {
                   {item.mandatoryPresence ? "Obrigatória" : "Não Obrigatória"}
                 </td>
                 <td>
-                  <button>Visualizar</button>
+                  <ModalDesignation
+                    designationId={item.id}
+                    designationDate={item.designationDate}
+                  />
                 </td>
                 <td>
-                  <button>Baixar</button>
+                  <button type="button" disabled>
+                    <DownloadIcon className="stroke-gray-600 cursor-not-allowed" />
+                  </button>
                 </td>
               </tr>
             ))}

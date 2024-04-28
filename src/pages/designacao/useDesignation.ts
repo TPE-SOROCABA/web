@@ -28,10 +28,12 @@ export const useDesignation = () => {
         filter: props?.filter ?? undefined,
         random: props?.random ?? undefined,
       };
-      const { data } = await http.get<Designation>(`/groups/${groupId}/designations/week`, {
-        params,
-      });
-      console.log(data);
+      const { data } = await http.get<Designation>(
+        `/groups/${groupId}/designations/week`,
+        {
+          params,
+        }
+      );
 
       setAssignments(
         shadowCards(
