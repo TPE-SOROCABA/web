@@ -1,5 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Timer } from 'lucide-react';
+import dayjs from 'dayjs';
+import localeData from 'dayjs/plugin/localeData';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import ptBr from 'dayjs/locale/pt-br';
+
+// Adicionando plugins e definindo localidade para português do Brasil
+dayjs.extend(localeData);
+dayjs.extend(localizedFormat);
+dayjs.extend(customParseFormat);
+dayjs.locale(ptBr);
 
 interface Props {
   targetDate: Date
@@ -53,13 +64,13 @@ export default function CountdownTimer({ targetDate }: Props) {
     ${backgroundColor === 'red' ? 'bg-red-500' : ''}
     `}>
       <div className='hidden md:flex'>
-        <h3 className='text-white'>Prazo de Designação</h3>
+        <h3 className='text-white'>{capitalizarPalavras(dayjs(targetDate).format('dddd D MMMM YYYY'))}</h3>
       </div>
       <div className='hidden md:block'>
         <Timer color='white' />
       </div>
-      <div className='flex py-1 px-3 md:py-4 md:px-3'>
-        <span className='text-white pr-1'>{timeRemaining.days}D </span>{' '}
+      <div className='flex gap-0.5 '>
+        <span className='text-white'>{timeRemaining.days}D </span>{' '}
         <span className='text-white'>{timeRemaining.hours}:</span>
         <span className='text-white'>{timeRemaining.minutes}:</span>
         <span className='text-white'>{timeRemaining.seconds}</span>
@@ -68,3 +79,8 @@ export default function CountdownTimer({ targetDate }: Props) {
   );
 }
 
+function capitalizarPalavras(str: string) {
+  return str.replace(/\b\w/g, function (match) {
+      return match.toUpperCase();
+  });
+}

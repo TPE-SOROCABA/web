@@ -6,7 +6,7 @@ import CountdownTimer from "./time";
 import { Sidebar } from "./sidebar";
 import { pagesHeader } from "./const";
 import { ReactNode, useEffect, useState } from "react";
-import { useCookies } from "../../lib";
+import { useCookies, useHttp } from "../../lib";
 import { version } from "../../../package.json";
 
 export const Menu = () => {
@@ -14,6 +14,8 @@ export const Menu = () => {
   const token = cookie.decodeToken();
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const http = useHttp();
+  const [groupDetails, setGroupDetails] = useState<IGroupDetails | null>(null);
 
   const openDrawer = () => setOpen(true);
   const closeDrawer = () => setOpen(false);
@@ -34,8 +36,10 @@ export const Menu = () => {
 
 
   useEffect(() => {
-
-  },[])
+    http.get(`/groups/${token?.groupId}/designations/week-details`).then((response) => {
+      setGroupDetails(response.data)
+    })
+  }, [])
 
   return (
     <div className="relative">
@@ -50,16 +54,16 @@ export const Menu = () => {
           <h2 className="text-white text-1xl">{currentPage?.name || ""}</h2>
         </div>
         <div className="flex flex-row items-center gap-3">
-          {token && (
-            <CountdownTimer targetDate={token.designation.expiration} />
+          {groupDetails?.designation?.designationDate && (
+            <CountdownTimer targetDate={groupDetails.designation.designationDate} />
           )}
           <h2 className="text-white text-1xl hidden md:block">
-            {PROFILE_BR[token?.profile as never] || ""}
+            {PROFILE_BR[groupDetails?.coordinator?.profile as never] || ""}
           </h2>
           <Bell color="#fff" />
-          {token?.profile_photo && (
+          {groupDetails?.coordinator?.profile_photo && (
             <Avatar
-              src={token?.profile_photo}
+              src={groupDetails.coordinator.profile_photo}
               alt="avatar"
               size="sm"
               placeholder="Avatar"
@@ -88,3 +92,36 @@ const BadgeOutline = ({ children }: { children: ReactNode }) => {
     </span>
   );
 };
+
+
+export interface IGroupDetails {
+  id:            string;
+  name:          string;
+  configWeekday: string;
+  coordinator:   Coordinator;
+  designation:   Designation;
+}
+
+export interface Coordinator {
+  id:            string;
+  name:          string;
+  cpf:           string;
+  email:         null;
+  phone:         string;
+  profile_photo: string;
+  profile:       string;
+  computed:      string;
+  sex:           string;
+}
+
+export interface Designation {
+  id:                        string;
+  name:                      string;
+  groupId:                   string;
+  status:                    string;
+  createdAt:                 Date;
+  updatedAt:                 Date;
+  designationDate:           Date;
+  mandatoryPresence:         boolean;
+  cancellationJustification: string;
+}
