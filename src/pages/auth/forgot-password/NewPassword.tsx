@@ -14,7 +14,7 @@ export function NewPassword() {
   const navigate = useNavigate();
   const location = useLocation();
   const toast = useToast();
-  const { cpf } = location.state as { cpf: string };
+  const { phone } = location.state as { phone: string };
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,7 +28,7 @@ export function NewPassword() {
     const toastId = toast.loading("Salvando nova senha");
     try {
       await http.post("/auth/reset-password", {
-        cpf: cpf.replace(/\D/g, ""),
+        phone: phone.replace(/\D/g, ""),
         password: password.value,
       });
       // navigate("/dashboard");
@@ -49,12 +49,12 @@ export function NewPassword() {
 
   return (
     <AuthLayout onSubmit={onSubmit}>
-      <div className="h-4/6 flex flex-col md:w-1/2 md:justify-center">
+      <div className="h-4/6 flex flex-col p-4 md:w-1/2 md:justify-center gap-6">
         <div className="md:h-40 h-4/5 flex flex-col justify-evenly items-center">
           <h1 className="font-bold text-xl text-gray-800 md:hidden">
             Insira aqui a sua nova senha
           </h1>
-          <div className="md:w-96 w-full flex flex-col items-center md:gap-12 gap-6">
+          <div className="md:w-80 w-full flex flex-col items-center md:gap-12 gap-6">
             <Input
               crossOrigin={false}
               className="flex justify-between"
@@ -89,12 +89,15 @@ export function NewPassword() {
           <Button
             placeholder="Recuperar senha"
             type="submit"
-            className="md:w-96 w-40 md:rounded-xl bg-primary-600"
+            className=" md:w-64 w-40 h-[60px] p-7 
+            flex justify-center items-center rounded-2xl 
+            bg-primary-600
+            focus:opacity-65"
             size="lg"
           >
             Salvar Senha
           </Button>
-          <div className="md:w-96 w-40 flex justify-center md:justify-end text-gray-700 md:text-base text-sm">
+          <div className="text-gray-700 md:text-base text-sm">
             <Link to="/">Voltar</Link>
           </div>
         </div>

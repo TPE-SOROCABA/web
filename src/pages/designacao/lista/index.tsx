@@ -9,6 +9,8 @@ import { BoxScreen } from "../../../components/box";
 import { IParticipant } from "../../../entity";
 import { addFakeImage } from "../../../lib/addFakeImage";
 import { AlertAbsentParticipantV2 } from "../components/AlertAbsentParticipantV2";
+import { Designation, GroupDetails } from "../interfaces";
+import { statusDesignation } from "../const";
 
 let timeout: NodeJS.Timeout | null = null;
 
@@ -23,6 +25,9 @@ export function ListaDesignacao() {
   const groupId = cookie.decodeToken()?.groupId;
   const [participants, setParticipants] = useState<IParticipant[]>([]);
   const [filterByStatus, setFilterByStatus] = useState<Status>("all");
+  const [designationStatus, setDesignationStatus] = useState<
+    Designation["status"] | null
+  >(null);
 
   const http = useHttp();
 
@@ -43,10 +48,18 @@ export function ListaDesignacao() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const getGroupDetails = useCallback(async () => {
+    if (!groupId) return console.log("groupId not found");
+    const { data } = await http.get<GroupDetails>(
+      `/groups/${groupId}/designations/week-details`
+    );
+    setDesignationStatus(data.designation.status);
+  }, [groupId, http]);
+
   useEffect(() => {
     getParticipants();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    getGroupDetails();
+  }, [getParticipants, getGroupDetails]);
 
   const handleSearch = (search: string) => {
     if (timeout) clearTimeout(timeout);
@@ -83,9 +96,8 @@ export function ListaDesignacao() {
 
   const handleActiveEvent = async (participant: IParticipant) => {
     await toast.promise(
-      http.put(
-        `/participants/${participant.id}/incidences/${participant.incident_history.id}`,
-        { status: "IGNORED" }
+      http.delete(
+        `/participants/${participant.id}/incidences/${participant.incident_history.id}`
       ),
       {
         loading: "Ativando participante",
@@ -101,7 +113,16 @@ export function ListaDesignacao() {
   };
 
   return (
-    <BoxScreen>
+    <BoxScreen
+    showBreadcrumbs={true}
+      rightContent={
+        <>
+          <p className="text-primary-800 text-sm font-semibold">
+            {designationStatus ? statusDesignation[designationStatus] : ""}
+          </p>
+        </>
+      }
+    >
       <div className="flex justify-between items-center w-full gap-4">
         <FilterText
           toSearch="Pesquisar Voluntários"
@@ -111,7 +132,7 @@ export function ListaDesignacao() {
           status={filterByStatus}
           setStatus={(status) => setFilterByStatus(status)}
         />
-        <Link to="/designar">
+        <Link to="/lista-designacao/designar">
           <Button
             variant="filled"
             className="bg-primary-600 rounded-3xl px-20 h-12"
@@ -124,6 +145,7 @@ export function ListaDesignacao() {
       </div>
 
       <ListaParticipantes
+        designationStatus={designationStatus}
         participants={participants.filter((participant) => {
           if (filterByStatus === "all") return true;
           if (filterByStatus === "present") return !isAbsent(participant);
@@ -138,12 +160,14 @@ export function ListaDesignacao() {
 }
 
 interface ListaParticipantesProps {
+  designationStatus: Designation["status"] | null;
   participants: IParticipant[];
   handleAbsentEvent: (participant: IParticipant, reason: string) => void;
   handleActiveEvent: (participant: IParticipant) => void;
 }
 
 function ListaParticipantes({
+  designationStatus,
   participants,
   handleAbsentEvent,
   handleActiveEvent,
@@ -172,36 +196,41 @@ function ListaParticipantes({
           `}
           incident_history={isAbsent(participant)}
         >
-          {() => (
-            <div className={`flex items-center justify-end w-40 gap-2`}>
-              <Participant.Tag
-                show={isAbsent(participant)}
-                tagTitle="Ausente"
-              />
-              {isAbsent(participant) ? (
-                <Participant.Eye
-                  moreText={participant.incident_history.reason}
-                  buttonEvent={() => {
-                    handleActiveEvent(participant);
-                  }}
+          {() => {
+            if (designationStatus === "CANCELLED") {
+              return <></>;
+            }
+            return (
+              <div className={`flex items-center justify-end w-40 gap-2`}>
+                <Participant.Tag
+                  show={isAbsent(participant)}
+                  tagTitle="Ausente"
                 />
-              ) : (
-                <Participant.Button>
-                  {({ showButton, hidden }) => {
-                    return (
-                      <AlertAbsentParticipantV2
-                        showButton={showButton}
-                        submitReason={(reason) => {
-                          handleAbsentEvent(participant, reason);
-                        }}
-                        closeComponent={hidden}
-                      />
-                    );
-                  }}
-                </Participant.Button>
-              )}
-            </div>
-          )}
+                {isAbsent(participant) ? (
+                  <Participant.Eye
+                    moreText={participant.incident_history.reason}
+                    buttonEvent={() => {
+                      handleActiveEvent(participant);
+                    }}
+                  />
+                ) : (
+                  <Participant.Button>
+                    {({ showButton, hidden }) => {
+                      return (
+                        <AlertAbsentParticipantV2
+                          showButton={showButton}
+                          submitReason={(reason) => {
+                            handleAbsentEvent(participant, reason);
+                          }}
+                          closeComponent={hidden}
+                        />
+                      );
+                    }}
+                  </Participant.Button>
+                )}
+              </div>
+            );
+          }}
         </Participant.Root>
       ))}
     </div>

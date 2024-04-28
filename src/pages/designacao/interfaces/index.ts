@@ -3,7 +3,7 @@ import { IParticipant } from "../../../entity";
 export interface Designation {
   id: string;
   group: Group;
-  status: "OPEN" | "CLOSED";
+  status: "OPEN" | "CLOSED" | "ARCHIVED" | "CANCELLED" | "IN_PROGRESS";
   assignments: Assignment[];
   assignmentsFiltered: Assignment[];
   participants: IParticipant[];
@@ -43,4 +43,34 @@ export interface Group {
     minParticipants: number;
     maxParticipants: number;
   };
+}
+
+export interface GroupDetails {
+  id: string;
+  name: string;
+  configWeekday: string;
+  cordinator: Cordinator;
+  designation: {
+    id: string;
+    name: string;
+    groupId: string;
+    status: "OPEN" | "CLOSED" | "ARCHIVED" | "CANCELLED" | "IN_PROGRESS";
+    createdAt: string;
+    updatedAt: string;
+    designationDate: string;
+    mandatoryPresence: boolean;
+    cancellationJustification: string;
+  };
+}
+
+export interface Cordinator {
+  id: string;
+  name: string;
+  cpf: string;
+  email: string | null;
+  phone: string;
+  profile_photo: string;
+  profile: string;
+  computed: string;
+  sex: "MALE" | "FEMALE";
 }

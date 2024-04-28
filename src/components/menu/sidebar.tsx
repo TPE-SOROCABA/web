@@ -9,10 +9,10 @@ import { pages } from "./const";
 import { Drawer, IconButton } from "@material-tailwind/react";
 
 const menuTw = tv({
-  base: "flex gap-9 w-[87.666667%] mx-auto border-[#D7D7D7] pb-2 h-11 items-center transition-all cursor-pointer hover:bg-[#374192] hover:w-full hover:border-none hover:px-4 hover:h-[50px]",
+  base: "flex gap-9 w-[87.666667%] mx-auto border-[#D7D7D7] pb-2 h-11 items-center transition-all cursor-pointer hover:scale-110",
   variants: {
     menu: {
-      open: "border-b-[1px]",
+      open: "border-b-[1px] hover:bg-[#374192] hover:w-full hover:border-none hover:px-4 hover:text-lg",
       close: "justify-center",
     },
     link: {

@@ -10,9 +10,9 @@ export function CheckNumberCode() {
   const location = useLocation();
   const query = new URLSearchParams(location.search);
   const jwtCode = query.get("code") as string;
-  const { cpf: cpfJWT, code } = decode(jwtCode);
-  const { cpf: cpfLocation } = location.state as { cpf?: string };
-  const cpf = cpfLocation || cpfJWT;
+  const { phone: phoneJWT, code } = decode(jwtCode);
+  const { phone: phoneLocation } = location.state as { phone?: string };
+  const phone = phoneLocation || phoneJWT;
   const [codeInput, setCodeInput] = useState(code);
   const navigate = useNavigate();
   const cookie = useCookies();
@@ -31,12 +31,12 @@ export function CheckNumberCode() {
     const toastId = toast.loading("Verificando código");
     try {
       const { data } = await http.post("/auth/login-code", {
-        cpf: cpf.replace(/\D/g, ""),
+        phone: phone.replace(/\D/g, ""),
         code: codeInput.toString(),
       });
       cookie.set("token", data.token);
       navigate("/forgot-password/new-password", {
-        state: { cpf },
+        state: { phone },
       });
       toast.success("Código verificado com sucesso");
     } catch (error) {
@@ -54,12 +54,12 @@ export function CheckNumberCode() {
 
   return (
     <AuthLayout onSubmit={onSubmit}>
-      <div className="h-4/6 flex flex-col md:w-1/2 md:justify-center">
+      <div className="h-4/6 flex flex-col p-4 md:w-1/2 md:justify-center gap-6">
         <div className="md:h-40 h-4/5 flex flex-col justify-evenly items-center">
           <h1 className="font-bold text-xl text-gray-800 md:w-96">
             Confirme o código de 6 dígitos enviado para o seu WhatsApp
           </h1>
-          <div className="md:w-96 w-full flex items-center justify-between">
+          <div className="md:w-80 w-full flex items-center justify-between">
             <Input
               crossOrigin={false}
               className="flex justify-between"
@@ -75,12 +75,15 @@ export function CheckNumberCode() {
             placeholder={"Entrar ou Login"}
             disabled={codeInput.length < 6}
             type="submit"
-            className="md:w-96 w-40 md:rounded-xl bg-primary-600"
+            className=" md:w-64 w-40 h-[60px] p-7 
+            flex justify-center items-center rounded-2xl 
+            bg-primary-600
+            focus:opacity-65"
             size="lg"
           >
             Enviar
           </Button>
-          <div className="md:w-96 w-40 flex justify-center md:justify-end text-gray-700 md:text-base text-sm">
+          <div className="text-gray-700 md:text-base text-sm">
             <Link to="/">Voltar</Link>
           </div>
         </div>
@@ -93,11 +96,11 @@ const decode = (
   str: string
 ): {
   code: string;
-  cpf: string;
+  phone: string;
 } => {
   try {
     return jwtDecode(str);
   } catch (error) {
-    return { code: "", cpf: "" };
+    return { code: "", phone: "" };
   }
 };
