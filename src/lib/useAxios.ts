@@ -18,9 +18,9 @@ export const useHttp = () => {
     },
     (error) => {
       if (error.response.status === 401) {
-        cookie.erase("token")
-        return Promise.reject(error);
+        cookie.erase("token");
       }
+      return Promise.reject(error);
     }
   );
 

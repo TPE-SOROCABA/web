@@ -38,7 +38,7 @@ export function ModalDesignation({
         random: props?.random ?? undefined,
       };
       const { data } = await http.get<Designation>(
-        `/groups/${groupId}/designations/week`,
+        `designations/${designationId}`,
         {
           params,
         }

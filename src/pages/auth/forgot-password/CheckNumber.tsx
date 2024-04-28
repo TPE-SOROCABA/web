@@ -10,9 +10,9 @@ export function CheckNumberCode() {
   const location = useLocation();
   const query = new URLSearchParams(location.search);
   const jwtCode = query.get("code") as string;
-  const { cpf: cpfJWT, code } = decode(jwtCode);
-  const { cpf: cpfLocation } = location.state as { cpf?: string };
-  const cpf = cpfLocation || cpfJWT;
+  const { phone: phoneJWT, code } = decode(jwtCode);
+  const { phone: phoneLocation } = location.state as { phone?: string };
+  const phone = phoneLocation || phoneJWT;
   const [codeInput, setCodeInput] = useState(code);
   const navigate = useNavigate();
   const cookie = useCookies();
@@ -31,12 +31,12 @@ export function CheckNumberCode() {
     const toastId = toast.loading("Verificando código");
     try {
       const { data } = await http.post("/auth/login-code", {
-        cpf: cpf.replace(/\D/g, ""),
+        phone: phone.replace(/\D/g, ""),
         code: codeInput.toString(),
       });
       cookie.set("token", data.token);
       navigate("/forgot-password/new-password", {
-        state: { cpf },
+        state: { phone },
       });
       toast.success("Código verificado com sucesso");
     } catch (error) {
@@ -96,11 +96,11 @@ const decode = (
   str: string
 ): {
   code: string;
-  cpf: string;
+  phone: string;
 } => {
   try {
     return jwtDecode(str);
   } catch (error) {
-    return { code: "", cpf: "" };
+    return { code: "", phone: "" };
   }
 };

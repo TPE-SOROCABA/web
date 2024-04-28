@@ -14,7 +14,7 @@ export function NewPassword() {
   const navigate = useNavigate();
   const location = useLocation();
   const toast = useToast();
-  const { cpf } = location.state as { cpf: string };
+  const { phone } = location.state as { phone: string };
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,7 +28,7 @@ export function NewPassword() {
     const toastId = toast.loading("Salvando nova senha");
     try {
       await http.post("/auth/reset-password", {
-        cpf: cpf.replace(/\D/g, ""),
+        phone: phone.replace(/\D/g, ""),
         password: password.value,
       });
       // navigate("/dashboard");
