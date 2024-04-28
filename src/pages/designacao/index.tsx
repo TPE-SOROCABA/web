@@ -113,7 +113,7 @@ export function Designar() {
   return (
     <>
       <BoxScreen
-      showBreadcrumbs={true}
+        showBreadcrumbs={true}
         loader={!assignments.length}
         rightContent={
           <>
@@ -188,6 +188,7 @@ export function Designar() {
           )}
           {/*  Designação de pontos */}
         </div>
+
         <div className="w-full h-24 flex justify-between">
           <Button
             className="bg-red-600 text-white h-12"
@@ -197,19 +198,18 @@ export function Designar() {
           >
             Cancelar designação
           </Button>
-          <div
+          {designation?.status == "IN_PROGRESS" ? (
+            <div
             onClick={copyToClipboard}
             className={`
               h-12 border border-gray-300 rounded-lg p-2 cursor-pointer hover:bg-gray-100 text-center flex items-center gap-2
-              ${
-                designation?.status !== "OPEN" || !designation?.id
-                  ? "hidden"
-                  : ""
-              }
+              
             `}
           >
             Copiar <b>Link</b> para visualização {CopyStatusIcon[copyStatus]}
           </div>
+          ): null}
+          
           <div className="flex flex-col gap-2 justify-center">
             <Button
               className="h-12 bg-primary-600 text-white"
@@ -228,6 +228,7 @@ export function Designar() {
             />
           </div>
         </div>
+
       </BoxScreen>
       <Alert
         show={handleCancel.show}
@@ -364,9 +365,8 @@ export function DesignationAssignments({
                     <div className="flex justify-between w-full items-center">
                       <div
                         className={`
-                              absolute ${
-                                showButton ? "left-0" : "-left-44"
-                              } top-0 w-1/2 h-full transition-all ease-in-out duration-300
+                              absolute ${showButton ? "left-0" : "-left-44"
+                          } top-0 w-1/2 h-full transition-all ease-in-out duration-300
                             `}
                       >
                         <Button
@@ -376,11 +376,11 @@ export function DesignationAssignments({
                               prev.map((a) =>
                                 a.point.id === assignment.point.id
                                   ? {
-                                      ...a,
-                                      participants: a.participants.filter(
-                                        (p) => p.id !== participant.id
-                                      ),
-                                    }
+                                    ...a,
+                                    participants: a.participants.filter(
+                                      (p) => p.id !== participant.id
+                                    ),
+                                  }
                                   : a
                               )
                             );
@@ -432,12 +432,12 @@ export function DesignationAssignments({
                     prev.map((a) =>
                       a.point.id === assignment.point.id
                         ? {
-                            ...a,
-                            participants: [
-                              ...a.participants,
-                              participants.find((p) => p.id === participantId)!,
-                            ],
-                          }
+                          ...a,
+                          participants: [
+                            ...a.participants,
+                            participants.find((p) => p.id === participantId)!,
+                          ],
+                        }
                         : a
                     )
                   );
@@ -480,7 +480,7 @@ export function DesignationAssignmentsReadOnly({
           pointName={assignment.point.name}
           pointCars={perPoint}
           pointStatus={assignment.point.status}
-          boxGroupEvent={() => {}}
+          boxGroupEvent={() => { }}
           readonly
         >
           {assignment.participants.map((participant) => (
