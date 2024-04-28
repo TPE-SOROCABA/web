@@ -20,7 +20,7 @@ export default function CountdownTimer({ targetDate }: Props) {
   const [backgroundColor, setBackgroundColor] = useState('blue');
   
   const calculateTimeRemaining = useCallback(() => {
-    const currentTime = new Date();
+    const currentTime = dayjs().subtract(3, 'hours').toDate()
     const total = Date.parse(String(targetDate)) - Date.parse(String(currentTime));
     const seconds = Math.floor((total / 1000) % 60).toString().padStart(2, '0');
     const minutes = Math.floor((total / 1000 / 60) % 60).toString().padStart(2, '0');
@@ -70,7 +70,7 @@ export default function CountdownTimer({ targetDate }: Props) {
         <Timer color='white' />
       </div>
       <div className='flex gap-0.5 '>
-        <span className='text-white'>{timeRemaining.days}D </span>{' '}
+        {timeRemaining.days?(<span className='text-white'>{timeRemaining.days}D </span>):null}{' '}
         <span className='text-white'>{timeRemaining.hours}:</span>
         <span className='text-white'>{timeRemaining.minutes}:</span>
         <span className='text-white'>{timeRemaining.seconds}</span>
