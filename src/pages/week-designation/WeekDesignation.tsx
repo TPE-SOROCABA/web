@@ -7,6 +7,8 @@ import { useParams } from 'react-router-dom'
 import { useHttp, useToastHot } from '../../lib'
 import { LoaderSmall } from '../../components/loadder/LoaderSmall'
 import { AlertAbsentParticipant } from './AlertAbsentParticipant'
+import carSvg from '../../assets/car.svg'
+import { addOneFakeImage } from '../../lib/addFakeImage'
 
 enum DesignationStatus {
     OPEN = "OPEN",
@@ -18,7 +20,10 @@ interface IWeekDesignationModel {
     event: string;
     point: string;
     publication_carts: string[];
-    participants: string[];
+    participants: {
+        name: string,
+        profile_photo: string
+    }[];
     createdAt: Date;
     updatedAt: Date;
     expirationDate: Date;
@@ -153,14 +158,28 @@ export const WeekDesignation = () => {
                                             </>
                                         )}
                                     </div>
-                                    <div className="flex justify-between gap-2"><strong className="truncate w-[80%]">{designation.point}</strong>
+                                    <div className="flex justify-between gap-2 text-md"><strong className="truncate w-[80%]">{designation.point}</strong>
                                         {designation.publication_carts.length > 0 && (
-                                            <span><strong>({designation.publication_carts.join(",")})</strong></span>
+                                            <span className='flex gap-2 justify-center items-center'>
+                                                <strong>({designation.publication_carts.join(",")})</strong>
+                                                <img className="w-3" src={carSvg} />
+                                            </span>
                                         )}
                                     </div>
                                     <div className="flex flex-col gap-2 pl-2">
                                         {designation.participants.map((participant, index) => (
-                                            <span key={index}>• {participant}</span>
+                                            <div className='flex gap-2 items-center text-md'>
+                                                <img
+                                                    src={participant?.profile_photo ?? addOneFakeImage({
+                                                        name: participant.name,
+                                                        profile_photo: ""
+                                                    }).profile_photo
+                                                    }
+                                                    alt="Foto de perfil"
+                                                    className="rounded-full h-8 w-8"
+                                                />
+                                                <span key={index}>{participant.name}</span>
+                                            </div>
                                         ))}
                                     </div>
                                     {participantId && (
