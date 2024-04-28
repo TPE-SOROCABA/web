@@ -37,3 +37,36 @@ export const pages: Page[] = [
   //   icon: cadastrarIcon,
   // },
 ];
+
+export const pagesHeader: Page[] = [
+  // {
+  //   name: "Dashboard",
+  //   altName: "dashboard",
+  //   path: "/dashboard",
+  //   icon: dashboardIcon,
+  // },
+  {
+    name: "Consultar",
+    altName: "search",
+    path: "/consultar/historico",
+    icon: searchIcon,
+  },
+  {
+    name: "Designar",
+    altName: "designar",
+    path: "/lista-designacao",
+    icon: designarIcon,
+  },
+  {
+    name: "Designação",
+    altName: "designar",
+    path: "/lista-designacao/designar",
+    icon: designarIcon,
+  },
+  // {
+  //   name: "Cadastrar",
+  //   altName: "cadastrar",
+  //   path: "/lista-designacao",
+  //   icon: cadastrarIcon,
+  // },
+];

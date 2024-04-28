@@ -4,8 +4,8 @@ import { Outlet, useLocation } from "react-router-dom";
 
 import CountdownTimer from "./time";
 import { Sidebar } from "./sidebar";
-import { pages } from "./const";
-import { ReactNode, useState } from "react";
+import { pagesHeader } from "./const";
+import { ReactNode, useEffect, useState } from "react";
 import { useCookies } from "../../lib";
 import { version } from "../../../package.json";
 
@@ -19,7 +19,9 @@ export const Menu = () => {
   const closeDrawer = () => setOpen(false);
 
   const path = location.pathname;
-  const currentPage = pages.find((page) => page.path === path);
+  const currentPage = pagesHeader.find((page) => {
+    return page.path === path
+  });
 
   const PROFILE_BR = {
     ["COORDINATOR"]: "Coordenador",
@@ -29,6 +31,11 @@ export const Menu = () => {
     ["PARTICIPANT"]: "Participante",
     ["ADMIN_ANALYST"]: "Analista Administrativo",
   };
+
+
+  useEffect(() => {
+
+  },[])
 
   return (
     <div className="relative">
@@ -65,7 +72,7 @@ export const Menu = () => {
         className={`${open ? "overflow-hidden" : ""} flex items-start h-screen`}
       >
         <Sidebar open={open} closeDrawer={closeDrawer} />
-        <div className="flex justify-start items-start p-2 w-full">
+        <div className="flex justify-start items-start p-2 pt-0 w-full">
           <Outlet />
         </div>
       </div>

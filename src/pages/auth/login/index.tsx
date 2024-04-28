@@ -57,7 +57,7 @@ export function Login() {
               label="Telefone (Celular) com DDD"
               autoFocus
               type="text"
-              maxLength={15}
+              maxLength={16}
               minLength={14}
               variant={window?.innerWidth < 768 ? "outlined" : "static"}
               size="lg"
