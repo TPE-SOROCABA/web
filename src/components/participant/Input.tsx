@@ -155,9 +155,8 @@ export function InputParticipant({
                             onClick={async () => {
                               close();
                               await toast.promise(
-                                http.put(
-                                  `/participants/${participant.id}/incidences/${participant.incident_history["id"]}`,
-                                  { status: "IGNORED" }
+                                http.delete(
+                                  `/participants/${participant.id}/incidences/${participant.incident_history["id"]}`
                                 ),
                                 {
                                   loading: "Ativando participante",
