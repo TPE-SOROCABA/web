@@ -3,7 +3,7 @@ import searchIcon from "../../assets/icons/menu/search.svg";
 import designarIcon from "../../assets/icons/menu/designar.svg";
 // import cadastrarIcon from "../../assets/icons/menu/cadastrar.svg";
 
-export type NamePage = "Dashboard" | "Consultar" | "Designar" | "Cadastrar";
+export type NamePage = "Dashboard" | "Consultar" | "Designar" | "Cadastrar" | "Designação";
 type Page = {
   name: NamePage;
   altName: string;
