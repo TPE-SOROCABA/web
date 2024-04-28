@@ -1,3 +1,4 @@
+
 import { useCallback, useEffect, useState } from "react";
 import { DateRangePicker } from "rsuite";
 import dayjs from "dayjs";
@@ -73,6 +74,7 @@ export function ConsultarHistorico() {
             onChange={(value) => updateDate(value)}
             title="Selecione o intervalo de datas"
             placeholder="Selecione o intervalo de datas"
+
           />
         </div>
         <table className="w-full">
@@ -123,12 +125,12 @@ export function ConsultarHistorico() {
 }
 
 const translateWeekDay = (date: string) =>
-  ({
-    Sunday: "Domingo",
-    Monday: "Segunda-Feira",
-    Tuesday: "Terça-Feira",
-    Wednesday: "Quarta-Feira",
-    Thursday: "Quinta-Feira",
-    Friday: "Sexta-Feira",
-    Saturday: "Sábado",
-  }[dayjs(date).format("dddd")]);
+({
+  Sunday: "Domingo",
+  Monday: "Segunda-Feira",
+  Tuesday: "Terça-Feira",
+  Wednesday: "Quarta-Feira",
+  Thursday: "Quinta-Feira",
+  Friday: "Sexta-Feira",
+  Saturday: "Sábado",
+}[dayjs(date).format("dddd")]);
