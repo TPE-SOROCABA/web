@@ -55,15 +55,15 @@ export const Menu = () => {
         </div>
         <div className="flex flex-row items-center gap-3">
           {groupDetails?.designation?.designationDate && (
-            <CountdownTimer targetDate={groupDetails.designation.designationDate} />
+             <CountdownTimer targetDate={groupDetails.designation.designationDate} />
           )}
           <h2 className="text-white text-1xl hidden md:block">
-            {PROFILE_BR[groupDetails?.coordinator?.profile as never] || ""}
+            {PROFILE_BR[token?.profile as never] || ""}
           </h2>
           <Bell color="#fff" />
-          {groupDetails?.coordinator?.profile_photo && (
+          {token?.profile_photo && (
             <Avatar
-              src={groupDetails.coordinator.profile_photo}
+              src={token?.profile_photo}
               alt="avatar"
               size="sm"
               placeholder="Avatar"
@@ -95,33 +95,33 @@ const BadgeOutline = ({ children }: { children: ReactNode }) => {
 
 
 export interface IGroupDetails {
-  id:            string;
-  name:          string;
+  id: string;
+  name: string;
   configWeekday: string;
-  coordinator:   Coordinator;
-  designation:   Designation;
+  coordinator: Coordinator;
+  designation: Designation;
 }
 
 export interface Coordinator {
-  id:            string;
-  name:          string;
-  cpf:           string;
-  email:         null;
-  phone:         string;
+  id: string;
+  name: string;
+  cpf: string;
+  email: null;
+  phone: string;
   profile_photo: string;
-  profile:       string;
-  computed:      string;
-  sex:           string;
+  profile: string;
+  computed: string;
+  sex: string;
 }
 
 export interface Designation {
-  id:                        string;
-  name:                      string;
-  groupId:                   string;
-  status:                    string;
-  createdAt:                 Date;
-  updatedAt:                 Date;
-  designationDate:           Date;
-  mandatoryPresence:         boolean;
+  id: string;
+  name: string;
+  groupId: string;
+  status: string;
+  createdAt: Date;
+  updatedAt: Date;
+  designationDate: Date;
+  mandatoryPresence: boolean;
   cancellationJustification: string;
 }
