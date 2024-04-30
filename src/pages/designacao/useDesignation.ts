@@ -15,7 +15,7 @@ export const useDesignation = () => {
     []
   );
   const [participants, setParticipants] = useState<IParticipant[]>([]);
-  const [desigantion, setDesignation] = useState<Omit<
+  const [designation, setDesignation] = useState<Omit<
     Designation,
     "assignments" | "participants" | "incidents" | "assignmentsFiltered"
   > | null>();
@@ -142,7 +142,7 @@ export const useDesignation = () => {
   const handleUpdatePoint = async (pointId: string, status: boolean) => {
     await toast.promise(
       http.patch<Designation>(
-        `/designations/${desigantion!.id}/points/${pointId}`,
+        `/designations/${designation!.id}/points/${pointId}`,
         {
           status,
         }
@@ -162,7 +162,7 @@ export const useDesignation = () => {
   ) => {
     await toast.promise(
       http.put<Designation>(
-        `/designations/${desigantion!.id}/points/${pointId}/participants`,
+        `/designations/${designation!.id}/points/${pointId}/participants`,
         {
           participants: participantIds,
         }
@@ -198,7 +198,7 @@ export const useDesignation = () => {
     filteredAssignments,
     assignments,
     participants,
-    desigantion,
+    designation,
     getDesignation,
     handleUpdatePoint,
     handleUpdatePointParticipants,

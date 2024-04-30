@@ -63,7 +63,9 @@ export function ParticipantsToAssign({
               key={participant.id}
               src={participant.profile_photo}
               alt={participant.name}
-              title={participant.name}
+              title={`${participant.name} ${
+                participant.profile === "COORDINATOR" ? "(Coordenador)" : ""
+              }`}
               className={participantstoAssign({
                 noFirst: index !== 0 ? "yes" : undefined,
                 className: `${"z-"[zIndex - 10]} ${

@@ -9,9 +9,31 @@ import { ParticipantsToAssign } from "./components/ParticipantsToAssign";
 import { useDesignation } from "./useDesignation";
 import { AlertAbsentParticipant } from "./components/AlertAbsentParticipant";
 import { IParticipant } from "../../entity";
-import { statusDesignation } from "./const";
 import { useState } from "react";
 import { Designation } from "./interfaces";
+
+const statusDesignation = {
+  OPEN: {
+    color: "yellow-700",
+    text: "Em aberto",
+  },
+  IN_PROGRESS: {
+    color: "purple-500",
+    text: "Em progresso",
+  },
+  CANCELLED: {
+    color: "red-500",
+    text: "Cancelado",
+  },
+  CLOSED: {
+    color: "green-500",
+    text: "Concluído",
+  },
+  ARCHIVED: {
+    color: "primary-500",
+    text: "Arquivado",
+  },
+};
 
 const isAbsent = (participant: IParticipant) =>
   participant.incident_history?.status === "OPEN";
@@ -23,7 +45,7 @@ export function Designar() {
     filteredAssignments,
     assignments,
     participants,
-    desigantion: designation,
+    designation,
     handleRandom,
     handleSearch,
     setFilteredAssignments,
@@ -37,10 +59,6 @@ export function Designar() {
   const [copyStatus, setCopyStatus] = useState<"able" | "copied" | "error">(
     "able"
   );
-  const [handleCancel, setHandleCancel] = useState({
-    show: false,
-    justification: "",
-  });
   const [isOptional, setIsOptional] = useState(false);
 
   const copyToClipboard = async () => {
@@ -79,35 +97,7 @@ export function Designar() {
           error?.response?.data?.message || "Erro ao disparar designação",
       }
     );
-  };
-
-  const cancelDesignation = async () => {
-    if (!designation?.id) return;
-    if (!handleCancel.justification) {
-      toast.error("Justificativa é obrigatória");
-      return;
-    }
-    if (handleCancel.justification.length < 3) {
-      toast.error("Justificativa deve ter no mínimo 3 caracteres");
-      return;
-    }
-    await toast.promise(
-      http.patch(`/designations/${designation.id}/cancel`, {
-        justification: "Cancelamento da designação",
-      }),
-      {
-        loading: "Cancelando designação...",
-        success: () => {
-          setHandleCancel({
-            show: false,
-            justification: "",
-          });
-          return "Designação cancelada com sucesso";
-        },
-        error: (error) =>
-          error?.response?.data?.message || "Erro ao cancelar designação",
-      }
-    );
+    getDesignation();
   };
 
   return (
@@ -117,8 +107,23 @@ export function Designar() {
         loader={!assignments.length}
         rightContent={
           <>
-            <p className="text-primary-800 text-sm font-semibold">
-              {designation?.status ? statusDesignation[designation.status] : ""}
+            <p className="text-sm">
+              Status da Designação:{" "}
+              {/* Em aberto (cor amarelo), Em progresso (cor Roxo), Concluído (cor Verde 48 hrs), Arquivado (Azul após 48 hrs), Cancelado (Vermelho) */}
+              <span
+                className={`
+                font-semibold text-base
+                ${
+                  designation?.status
+                    ? statusDesignation[designation?.status].color
+                    : ""
+                }
+              `}
+              >
+                {designation?.status
+                  ? statusDesignation[designation?.status].text
+                  : ""}
+              </span>
             </p>
           </>
         }
@@ -190,19 +195,15 @@ export function Designar() {
         </div>
 
         <div className="w-full h-24 flex justify-between">
-          <Button
-            className="bg-red-600 text-white h-12"
-            placeholder={"Cancelar designação"}
-            hidden={designation?.status !== "OPEN"}
-            onClick={() => setHandleCancel({ show: true, justification: "" })}
-          >
-            Cancelar designação
-          </Button>
+          <CancelDesignation
+            designationId={designation?.id || ""}
+            designationStatus={designation?.status || ""}
+          />
           {designation?.status === "IN_PROGRESS" ? (
             <div
               onClick={copyToClipboard}
               className={`
-                block m-auto  h-12 border border-gray-300 rounded-lg p-2 cursor-pointer hover:bg-gray-100 text-center items-center gap-2
+                h-12 border border-gray-300 rounded-lg p-2 cursor-pointer hover:bg-gray-100 text-center items-center gap-2
               `}
             >
               <span className="flex items-center gap-2 h-full">
@@ -213,16 +214,15 @@ export function Designar() {
             </div>
           ) : null}
 
-          <div className="flex flex-col gap-2 justify-center">
-            <Button
-              className="h-12 bg-primary-600 text-white"
-              placeholder={"Disparar designação"}
-              hidden={designation?.status !== "OPEN"}
-              onClick={sendDesignation}
-            >
-              Disparar designação
-            </Button>
-            {designation?.status === "OPEN" && (
+          {designation?.status === "OPEN" && (
+            <div className="flex flex-col gap-2 justify-center">
+              <Button
+                className="h-12 bg-primary-600 text-white"
+                placeholder={"Disparar designação"}
+                onClick={sendDesignation}
+              >
+                Disparar designação
+              </Button>
               <Checkbox
                 crossOrigin
                 label="Presença Opcional"
@@ -230,18 +230,74 @@ export function Designar() {
                 onChange={() => setIsOptional((old) => !old)}
                 className="checked:bg-primary-600 checked:border-primary-600"
               />
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </BoxScreen>
-      <Alert
-        show={handleCancel.show}
-        close={() =>
-          setHandleCancel({
-            show: false,
-            justification: "",
-          })
+    </>
+  );
+}
+
+const CancelDesignation = ({
+  designationId,
+  designationStatus,
+}: {
+  designationId: string;
+  designationStatus: string;
+}) => {
+  const [justification, setJustification] = useState("");
+  const [show, setShow] = useState(false);
+  const http = useHttp();
+  const toast = useToastHot();
+
+  const cancelDesignation = async () => {
+    if (!designationId) return;
+    if (!justification) {
+      toast.error("Justificativa é obrigatória");
+      return;
+    }
+    if (justification.length < 3) {
+      toast.error("Justificativa deve ter no mínimo 3 caracteres");
+      return;
+    }
+    await toast.promise(
+      http.patch(`/designations/${designationId}/cancel`, {
+        justification: "Cancelamento da designação",
+      }),
+      {
+        loading: "Cancelando designação...",
+        success: () => {
+          setShow(false);
+          setJustification("");
+          return "Designação cancelada com sucesso";
+        },
+        error: (error) =>
+          error?.response?.data?.message || "Erro ao cancelar designação",
+      }
+    );
+  };
+
+  return (
+    <>
+      <Button
+        className="bg-red-600 text-white h-12"
+        placeholder={"Cancelar designação"}
+        hidden={
+          designationStatus !== "OPEN" && designationStatus !== "IN_PROGRESS"
         }
+        onClick={() => {
+          setShow(true);
+          setJustification("");
+        }}
+      >
+        Cancelar designação
+      </Button>
+      <Alert
+        show={show}
+        close={() => {
+          setShow(false);
+          setJustification("");
+        }}
       >
         <div className="flex justify-between items-center flex-col gap-2 bg-white p-4 rounded-lg min-w-[20vw] max-w-96">
           <h6 className="text-xl">
@@ -253,13 +309,8 @@ export function Designar() {
           <Textarea
             label="Justificativa para o cancelamento"
             className="w-full bg-primary-100 focus:bg-primary-200"
-            value={handleCancel.justification}
-            onChange={(e) =>
-              setHandleCancel({
-                show: true,
-                justification: e.target.value,
-              })
-            }
+            value={justification}
+            onChange={(e) => setJustification(e.target.value)}
           />
           <div className="flex justify-between w-full gap-4">
             <Button
@@ -272,12 +323,10 @@ export function Designar() {
             <Button
               className="bg-primary-500 text-white"
               placeholder={"Cancelar designação"}
-              onClick={() =>
-                setHandleCancel({
-                  show: false,
-                  justification: "",
-                })
-              }
+              onClick={() => {
+                setShow(false);
+                setJustification("");
+              }}
             >
               Voltar
             </Button>
@@ -286,7 +335,7 @@ export function Designar() {
       </Alert>
     </>
   );
-}
+};
 
 type Hook = ReturnType<typeof useDesignation>;
 
@@ -430,7 +479,9 @@ export function DesignationAssignments({
               <InputParticipant
                 crossOrigin
                 disabled={!assignment.point.status}
-                participants={participants.filter((p) => !p.incident_history)}
+                participants={participants.filter(
+                  (p) => !p.incident_history && p.profile !== "COORDINATOR"
+                )}
                 placeholder="Adicionar voluntário"
                 onSelect={async (participantId) => {
                   setAssignments((prev) =>
