@@ -47,6 +47,7 @@ export function FilterText({
     setSearch((old) => {
       if (Boolean(old) && !value) setSearchParams({});
       handleSearchEvent && handleSearchEvent(value);
+      setSearchParams({ search: value });
       return value;
     });
   };
@@ -67,15 +68,17 @@ export function FilterText({
         value={search}
         onChange={updateSearch}
       />
-      {!handleSearchEvent && (<Button
-        variant="outlined"
-        className="border border-primary-600 rounded-3xl"
-        placeholder="Filtrar"
-        type="submit"
-        hidden={!showButton}
-      >
-        Filtrar
-      </Button>)}
+      {!handleSearchEvent && (
+        <Button
+          variant="outlined"
+          className="border border-primary-600 rounded-3xl"
+          placeholder="Filtrar"
+          type="submit"
+          hidden={!showButton}
+        >
+          Filtrar
+        </Button>
+      )}
     </form>
   );
 }

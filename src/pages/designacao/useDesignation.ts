@@ -25,6 +25,7 @@ export const useDesignation = () => {
     Designation,
     "assignments" | "participants" | "incidents" | "assignmentsFiltered"
   > | null>();
+  const query = new URLSearchParams(window.location.search);
 
   const getDesignation = useCallback(
     async (props?: { random?: boolean; filter?: string }) => {
@@ -201,6 +202,7 @@ export const useDesignation = () => {
         `/designations/${designation!.id}/points/${pointId}/participants`,
         {
           participants: participantIds,
+          search: query.get("search"),
         }
       ),
       {
