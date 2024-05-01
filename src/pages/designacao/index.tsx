@@ -46,6 +46,7 @@ export function Designar() {
     "able"
   );
   const [isOptional, setIsOptional] = useState(false);
+  const [isSticky, setSticky] = useState(false);
 
   const copyToClipboard = async () => {
     if (!designation?.id) return;
@@ -71,11 +72,19 @@ export function Designar() {
     error: <XIcon color="red" />,
   };
 
+  const sendAndUpdateDesignation = async () => {
+    await http.post<Designation>(`/designations/${designation?.id}/send`, {
+      optional: isOptional,
+    })
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    await getDesignation()
+  }
+
   const sendDesignation = async () => {
-    await toast.promise(
-      http.post<Designation>(`/designations/${designation?.id}/send`, {
-        optional: isOptional,
-      }),
+    await toast.promise(sendAndUpdateDesignation(),
       {
         loading: "Disparando designação...",
         success: "Designação disparada com sucesso",
@@ -83,8 +92,19 @@ export function Designar() {
           error?.response?.data?.message || "Erro ao disparar designação",
       }
     );
-    getDesignation();
   };
+
+  window.addEventListener('scroll', function () {
+    const element = document.getElementById('quantidade-voluntarios');
+    const position = 50;
+
+    if (!element) return;
+    if (window.scrollY > position) {
+      setSticky(true);
+    } else {
+      setSticky(false);
+    }
+  });
 
   return (
     <>
@@ -115,14 +135,16 @@ export function Designar() {
           const totalVacancies = designation?.total.vacancies || 0;
           return (
             <div
+              id="quantidade-voluntarios"
               className={`
-                absolute -top-11 left-1/2 -translate-x-1/2 
                 rounded-md px-2 py-1 gap-4 shadow-md shadow-gray-500 bg-white h-fit w-fit
                 flex justify-around items-center
-                ${
-                  totalParticipants > totalVacancies
-                    ? "text-red-600 fill-red-600"
-                    : "text-primary-600 fill-primary-600"
+                ${isSticky ?
+                  'fixed top-16 right-0 z-50 transition-all duration-300 delay-150' :
+                  'absolute -top-11 left-1/2 -translate-x-1/2 transition'}
+                ${totalParticipants > totalVacancies
+                  ? "text-red-600 fill-red-600"
+                  : "text-primary-600 fill-primary-600"
                 }
               `}
             >
@@ -289,18 +311,17 @@ export function DesignationAssignments({
         id={assignment.point.id}
         key={assignment.point.id}
         className={` relative
-            ${
-              assignment.error &&
-              assignment.point.status &&
-              assignment.participants?.length
-                ? "border-2 border-red-500 shadow-lg shadow-red-200"
-                : assignment.point.name && "border-0 shadow-lg shadow-gray-200"
-            }
+            ${assignment.error &&
+            assignment.point.status &&
+            assignment.participants?.length
+            ? "border-2 border-red-500 shadow-lg shadow-red-200"
+            : assignment.point.name && "border-0 shadow-lg shadow-gray-200"
+          }
           `}
       >
         {assignment?.error &&
-        assignment.point.status &&
-        assignment.participants?.length ? (
+          assignment.point.status &&
+          assignment.participants?.length ? (
           <div
             className={`
               absolute z-50 flex justify-center items-center text-center -top-11 w-full rounded-2xl p-1
@@ -361,9 +382,8 @@ export function DesignationAssignments({
                     <div className="flex justify-between w-full items-center">
                       <div
                         className={`
-                              absolute ${
-                                showButton ? "left-0" : "-left-44"
-                              } top-0 w-1/2 h-full transition-all ease-in-out duration-300
+                              absolute ${showButton ? "left-0" : "-left-44"
+                          } top-0 w-1/2 h-full transition-all ease-in-out duration-300
                             `}
                       >
                         <Button
@@ -373,11 +393,11 @@ export function DesignationAssignments({
                               prev.map((a) =>
                                 a.point.id === assignment.point.id
                                   ? {
-                                      ...a,
-                                      participants: a.participants.filter(
-                                        (p) => p.id !== participant.id
-                                      ),
-                                    }
+                                    ...a,
+                                    participants: a.participants.filter(
+                                      (p) => p.id !== participant.id
+                                    ),
+                                  }
                                   : a
                               )
                             );
@@ -434,12 +454,12 @@ export function DesignationAssignments({
                     prev.map((a) =>
                       a.point.id === assignment.point.id
                         ? {
-                            ...a,
-                            participants: [
-                              ...a.participants,
-                              participants.find((p) => p.id === participantId)!,
-                            ],
-                          }
+                          ...a,
+                          participants: [
+                            ...a.participants,
+                            participants.find((p) => p.id === participantId)!,
+                          ],
+                        }
                         : a
                     )
                   );
@@ -482,7 +502,7 @@ export function DesignationAssignmentsReadOnly({
           pointName={assignment.point.name}
           pointCars={perPoint}
           pointStatus={assignment.point.status}
-          boxGroupEvent={() => {}}
+          boxGroupEvent={() => { }}
           readonly
         >
           {assignment.participants.map((participant) => (
