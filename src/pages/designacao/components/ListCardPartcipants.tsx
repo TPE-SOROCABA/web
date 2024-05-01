@@ -32,7 +32,7 @@ export function ListaCardsParticipantes({
 
     return (
         <div
-            className="flex flex-wrap gap-8 justify-between w-full"
+            className="flex flex-wrap gap-8 justify-around w-full"
         >
             {participants.filter((p) => p.name).map((participant) =>
                 <ParticipantCard
