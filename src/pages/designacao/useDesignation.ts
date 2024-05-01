@@ -202,7 +202,7 @@ export const useDesignation = () => {
         `/designations/${designation!.id}/points/${pointId}/participants`,
         {
           participants: participantIds,
-          search: query.get("search"),
+          filter: query.get("search"),
         }
       ),
       {
