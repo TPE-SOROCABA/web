@@ -5,10 +5,10 @@ import logo from "../../assets/logo.png";
 import { useState, useCallback, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useHttp, useToastHot } from "../../lib";
-import { LoaderSmall } from "../../components/loadder/LoaderSmall";
 import { AlertAbsentParticipant } from "./AlertAbsentParticipant";
 import carSvg from "../../assets/car.svg";
 import { addOneFakeImage } from "../../lib/addFakeImage";
+import { Loader } from "../../components/loadder";
 
 enum DesignationStatus {
   OPEN = "OPEN",
@@ -89,8 +89,8 @@ export const WeekDesignation = () => {
   switch (page) {
     case "loading":
       return (
-        <div className="w-10 relative">
-          <LoaderSmall />
+        <div className="">
+          <Loader/>
         </div>
       );
     case "screen":

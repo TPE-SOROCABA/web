@@ -127,6 +127,7 @@ export function ListaDesignacao() {
 
   return (
     <BoxScreen
+      loader={Boolean(!participants.length)}
       showBreadcrumbs={true}
       rightContent={
         <>
