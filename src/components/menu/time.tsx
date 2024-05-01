@@ -101,7 +101,7 @@ export default function CountdownTimer({ targetDate }: Props) {
 }
 
 function capitalizarPalavras(str: string) {
-  return str.replace(/\b\w/g, function (match) {
+  return str.replace(/(^|\s)\S/g, function(match) {
     return match.toUpperCase();
-  });
+});
 }
