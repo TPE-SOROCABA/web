@@ -106,12 +106,12 @@ export const WeekDesignation = () => {
             <img src={logo} alt="logo" className="w-1/2" />
           </div>
           <p className="text-center p-2 text-sm">
-            {participantId && (
+            {/* {participantId && (
               <>
                 <span className="text-sm">Confira os detalhes da sua</span>
                 <br></br>
               </>
-            )}
+            )} */}
             {participantId ? (
               <>
                 <strong>Designação da Semana</strong>
@@ -129,12 +129,12 @@ export const WeekDesignation = () => {
             )}
             {participantId && (
               <>
-                <span className="text-sm">
+                {/* <span className="text-sm">
                   Caso não esteja presente, recuse a designação. Qualquer dúvida
                   entre em contato com o capitão do seu grupo.
                 </span>
                 <br></br>
-                <br></br>
+                <br></br> */}
 
                 <div>
                   <strong>{designations[0].event}</strong>
