@@ -28,7 +28,7 @@ export function ListaDesignacao() {
   const [designationStatus, setDesignationStatus] = useState<
     Designation["status"] | null
   >(null);
-  const [mode, setMode] = useState<"list" | "card">("list");
+  const [mode, setMode] = useState<"list" | "card">("card");
 
   const http = useHttp();
 
@@ -166,7 +166,7 @@ export function ListaDesignacao() {
           }}
         >
           Visualização {
-            mode === "list" ? (
+            mode !== "list" ? (
               <List />
             ) : (
               <Component />
