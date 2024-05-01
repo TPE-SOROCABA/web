@@ -1,4 +1,4 @@
-import { ListFilter } from "lucide-react";
+import { Component, List, ListFilter } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@material-tailwind/react";
 import { Participant } from "../../../components/index";
@@ -10,6 +10,7 @@ import { IParticipant } from "../../../entity";
 import { AlertAbsentParticipantV2 } from "../components/AlertAbsentParticipantV2";
 import { Designation, GroupDetails } from "../interfaces";
 import { statusDesignationWithColor } from "../const";
+import { ListaCardsParticipantes } from "../components/ListCardPartcipants";
 
 let timeout: NodeJS.Timeout | null = null;
 
@@ -27,6 +28,7 @@ export function ListaDesignacao() {
   const [designationStatus, setDesignationStatus] = useState<
     Designation["status"] | null
   >(null);
+  const [mode, setMode] = useState<"list" | "card">("list");
 
   const http = useHttp();
 
@@ -154,6 +156,23 @@ export function ListaDesignacao() {
           status={filterByStatus}
           setStatus={(status) => setFilterByStatus(status)}
         />
+        <Button
+          variant="outlined"
+          placeholder="Filtrar Status"
+          className="flex justify-center gap-4 rounded-3xl border-primary-500 items-center h-12 z-30 focus:outline-none !overflow-visible"
+          type="button"
+          onClick={() => {
+            setMode((prev) => (prev === "list" ? "card" : "list"))
+          }}
+        >
+          Visualização {
+            mode === "list" ? (
+              <List />
+            ) : (
+              <Component />
+            )
+          }
+        </Button>
         <Link to="/lista-designacao/designar">
           <Button
             variant="filled"
@@ -166,17 +185,33 @@ export function ListaDesignacao() {
         </Link>
       </div>
 
-      <ListaParticipantes
-        designationStatus={designationStatus}
-        participants={participants.filter((participant) => {
-          if (filterByStatus === "all") return true;
-          if (filterByStatus === "present") return !isAbsent(participant);
-          if (filterByStatus === "absent") return isAbsent(participant);
-          return false;
-        })}
-        handleAbsentEvent={handleAbsentEvent}
-        handleActiveEvent={handleActiveEvent}
-      />
+      {
+        mode === "list" ? (
+          <ListaParticipantes
+            designationStatus={designationStatus}
+            participants={participants.filter((participant) => {
+              if (filterByStatus === "all") return true;
+              if (filterByStatus === "present") return !isAbsent(participant);
+              if (filterByStatus === "absent") return isAbsent(participant);
+              return false;
+            })}
+            handleAbsentEvent={handleAbsentEvent}
+            handleActiveEvent={handleActiveEvent}
+          />
+        ) : (
+          <ListaCardsParticipantes
+            designationStatus={designationStatus}
+            participants={participants.filter((participant) => {
+              if (filterByStatus === "all") return true;
+              if (filterByStatus === "present") return !isAbsent(participant);
+              if (filterByStatus === "absent") return isAbsent(participant);
+              return false;
+            })}
+            handleAbsentEvent={handleAbsentEvent}
+            handleActiveEvent={handleActiveEvent}
+          />
+        )
+      }
     </BoxScreen>
   );
 }
@@ -357,7 +392,7 @@ function FilterStatus({ status, setStatus }: FilterStatusProps) {
         {status === "all"
           ? "Filtrar"
           : options.find((option) => option.name === status)?.title ||
-            "Filtrar"}
+          "Filtrar"}
         <ListFilter />
       </Button>
       {showOptions && (
