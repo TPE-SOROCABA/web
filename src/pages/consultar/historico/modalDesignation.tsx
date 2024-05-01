@@ -3,7 +3,6 @@ import { Alert, Participant } from "../../../components";
 import { EyeIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useCookies, useHttp } from "../../../lib";
-import { addFakeImage } from "../../../lib/addFakeImage";
 import { Assignment, Designation } from "../../designacao/interfaces";
 import { IParticipant } from "../../../entity";
 import { BoxGroup } from "../../../components/box";
@@ -44,14 +43,7 @@ export function ModalDesignation({
         }
       );
 
-      setAssignments(
-        shadowCards(
-          data.assignments.map((a) => ({
-            ...a,
-            participants: addFakeImage(a.participants),
-          }))
-        )
-      );
+      setAssignments(shadowCards(data.assignments));
 
       setDesignation({
         id: data.id,
@@ -59,6 +51,7 @@ export function ModalDesignation({
         status: data.status,
         createdAt: data.createdAt,
         updatedAt: data.updatedAt,
+        total: data.total,
       });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

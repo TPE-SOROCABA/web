@@ -1,39 +1,26 @@
-import { Alert, Participant } from "../../components";
+import { Participant } from "../../components";
 import { BoxGroup, BoxScreen } from "../../components/box";
 import { FilterText } from "../../components/filter";
 import { InputParticipant } from "../../components/participant/Input";
 import { useHttp, useToastHot } from "../../lib";
-import { Button, Checkbox, Textarea } from "@material-tailwind/react";
-import { ArrowRightLeft, CheckIcon, CopyIcon, XIcon } from "lucide-react";
+import { Button, Checkbox } from "@material-tailwind/react";
+import {
+  ArrowRightLeft,
+  CheckIcon,
+  CopyIcon,
+  XIcon,
+  MapPinIcon,
+  UserIcon,
+} from "lucide-react";
 import { ParticipantsToAssign } from "./components/ParticipantsToAssign";
 import { useDesignation } from "./useDesignation";
 import { AlertAbsentParticipant } from "./components/AlertAbsentParticipant";
 import { IParticipant } from "../../entity";
 import { useState } from "react";
 import { Designation } from "./interfaces";
-
-const statusDesignation = {
-  OPEN: {
-    color: "yellow-700",
-    text: "Em aberto",
-  },
-  IN_PROGRESS: {
-    color: "purple-500",
-    text: "Em progresso",
-  },
-  CANCELLED: {
-    color: "red-500",
-    text: "Cancelado",
-  },
-  CLOSED: {
-    color: "green-500",
-    text: "Concluído",
-  },
-  ARCHIVED: {
-    color: "primary-500",
-    text: "Arquivado",
-  },
-};
+import { statusDesignationWithColor } from "./const";
+import { CancelDesignation } from "./components/CancelDesignation";
+import { AutoDesignation } from "./components/AutoDesignation";
 
 const isAbsent = (participant: IParticipant) =>
   participant.incident_history?.status === "OPEN";
@@ -46,7 +33,6 @@ export function Designar() {
     assignments,
     participants,
     designation,
-    handleRandom,
     handleSearch,
     setFilteredAssignments,
     getDesignation,
@@ -107,29 +93,58 @@ export function Designar() {
         loader={!assignments.length}
         rightContent={
           <>
-            <p className="text-sm">
-              Status da Designação:{" "}
-              {/* Em aberto (cor amarelo), Em progresso (cor Roxo), Concluído (cor Verde 48 hrs), Arquivado (Azul após 48 hrs), Cancelado (Vermelho) */}
-              <span
-                className={`
+            {designation?.status && (
+              <p className="text-sm">
+                Status da Designação:{" "}
+                {/* Em aberto (cor amarelo), Em progresso (cor Roxo), Concluído (cor Verde 48 hrs), Arquivado (Azul após 48 hrs), Cancelado (Vermelho) */}
+                <span
+                  className={`
                 font-semibold text-base
-                ${
-                  designation?.status
-                    ? statusDesignation[designation?.status].color
-                    : ""
-                }
+                ${statusDesignationWithColor[designation.status].color}
               `}
-              >
-                {designation?.status
-                  ? statusDesignation[designation?.status].text
-                  : ""}
-              </span>
-            </p>
+                >
+                  {statusDesignationWithColor[designation.status].text}
+                </span>
+              </p>
+            )}
           </>
         }
       >
+        {(() => {
+          const totalParticipants = designation?.total.participants || 0;
+          const totalVacancies = designation?.total.vacancies || 0;
+          return (
+            <div
+              className={`
+                absolute -top-11 left-1/2 -translate-x-1/2 
+                rounded-md px-2 py-1 gap-4 shadow-md shadow-gray-500 bg-white h-fit w-fit
+                flex justify-around items-center
+                ${
+                  totalParticipants > totalVacancies
+                    ? "text-red-600 fill-red-600"
+                    : "text-primary-600 fill-primary-600"
+                }
+              `}
+            >
+              <div
+                title="Quantidade de Voluntários"
+                className="gap-0.5 flex items-center justify-between text-lg"
+              >
+                <UserIcon className="stroke-transparent fill-inherit" />
+                {totalParticipants}
+              </div>
+              <div
+                title="Vagas Disponíveis"
+                className="gap-0.5 flex items-center justify-between text-lg"
+              >
+                <MapPinIcon className="stroke-white fill-inherit" />
+                {designation?.total.vacancies || 0}
+              </div>
+            </div>
+          );
+        })()}
         {/*  Filtros e botão de designação automática */}
-        <div className="w-full justify-between items-center flex gap-4">
+        <div className="w-full justify-between items-center flex gap-4 relative">
           <div className="flex justify-between items-center w-2/5 gap-4">
             <FilterText
               toSearch="Pesquisar Voluntários"
@@ -138,14 +153,11 @@ export function Designar() {
             />
             <ParticipantsToAssign participants={participants} />
           </div>
-          <Button
-            className="bg-primary-600 text-white"
-            placeholder={"Designar Automaticamente"}
-            onClick={handleRandom}
-            hidden={designation?.status !== "OPEN"}
-          >
-            Designação Automática
-          </Button>
+          <AutoDesignation
+            assignments={assignments}
+            getDesignation={getDesignation}
+            designationStatus={designation?.status}
+          />
         </div>
         {/*  Filtros e botão de designação automática */}
         <div
@@ -220,6 +232,12 @@ export function Designar() {
                 className="h-12 bg-primary-600 text-white"
                 placeholder={"Disparar designação"}
                 onClick={sendDesignation}
+                title={
+                  assignments.some((a) => Boolean(a.error))
+                    ? "Existem pontos com erro"
+                    : ""
+                }
+                disabled={assignments.some((a) => Boolean(a.error))}
               >
                 Disparar designação
               </Button>
@@ -237,105 +255,6 @@ export function Designar() {
     </>
   );
 }
-
-const CancelDesignation = ({
-  designationId,
-  designationStatus,
-}: {
-  designationId: string;
-  designationStatus: string;
-}) => {
-  const [justification, setJustification] = useState("");
-  const [show, setShow] = useState(false);
-  const http = useHttp();
-  const toast = useToastHot();
-
-  const cancelDesignation = async () => {
-    if (!designationId) return;
-    if (!justification) {
-      toast.error("Justificativa é obrigatória");
-      return;
-    }
-    if (justification.length < 3) {
-      toast.error("Justificativa deve ter no mínimo 3 caracteres");
-      return;
-    }
-    await toast.promise(
-      http.patch(`/designations/${designationId}/cancel`, {
-        justification: "Cancelamento da designação",
-      }),
-      {
-        loading: "Cancelando designação...",
-        success: () => {
-          setShow(false);
-          setJustification("");
-          return "Designação cancelada com sucesso";
-        },
-        error: (error) =>
-          error?.response?.data?.message || "Erro ao cancelar designação",
-      }
-    );
-  };
-
-  return (
-    <>
-      <Button
-        className="bg-red-600 text-white h-12"
-        placeholder={"Cancelar designação"}
-        hidden={
-          designationStatus !== "OPEN" && designationStatus !== "IN_PROGRESS"
-        }
-        onClick={() => {
-          setShow(true);
-          setJustification("");
-        }}
-      >
-        Cancelar designação
-      </Button>
-      <Alert
-        show={show}
-        close={() => {
-          setShow(false);
-          setJustification("");
-        }}
-      >
-        <div className="flex justify-between items-center flex-col gap-2 bg-white p-4 rounded-lg min-w-[20vw] max-w-96">
-          <h6 className="text-xl">
-            Deseja mesmo cancelar a Designação desta semana?
-          </h6>
-          <p className="text-primary-400 pt-3 pb-2">
-            Se estiver correto, deixe uma nota para justificar o cancelamento.
-          </p>
-          <Textarea
-            label="Justificativa para o cancelamento"
-            className="w-full bg-primary-100 focus:bg-primary-200"
-            value={justification}
-            onChange={(e) => setJustification(e.target.value)}
-          />
-          <div className="flex justify-between w-full gap-4">
-            <Button
-              className="bg-white border border-primary-600 text-primary-600 font-bold"
-              placeholder={"Cancelar designação"}
-              onClick={cancelDesignation}
-            >
-              Concluir
-            </Button>
-            <Button
-              className="bg-primary-500 text-white"
-              placeholder={"Cancelar designação"}
-              onClick={() => {
-                setShow(false);
-                setJustification("");
-              }}
-            >
-              Voltar
-            </Button>
-          </div>
-        </div>
-      </Alert>
-    </>
-  );
-};
 
 type Hook = ReturnType<typeof useDesignation>;
 
@@ -366,7 +285,31 @@ export function DesignationAssignments({
       .join(", ");
 
     return (
-      <div id={assignment.point.id} key={assignment.point.id}>
+      <div
+        id={assignment.point.id}
+        key={assignment.point.id}
+        className={` relative
+            ${
+              assignment.error &&
+              assignment.point.status &&
+              assignment.participants?.length
+                ? "border-2 border-red-500 shadow-lg shadow-red-200"
+                : assignment.point.name && "border-0 shadow-lg shadow-gray-200"
+            }
+          `}
+      >
+        {assignment?.error &&
+        assignment.point.status &&
+        assignment.participants?.length ? (
+          <div
+            className={`
+              absolute z-50 flex justify-center items-center text-center -top-11 w-full rounded-2xl p-1
+              bg-white border border-red-500 animate-bounce ease-in-out duration-300 shadow-md shadow-red-200
+            `}
+          >
+            {assignment.error}
+          </div>
+        ) : null}
         <BoxGroup
           pointName={assignment.point.name}
           pointCars={perPoint}
@@ -480,7 +423,10 @@ export function DesignationAssignments({
                 crossOrigin
                 disabled={!assignment.point.status}
                 participants={participants.filter(
-                  (p) => !p.incident_history && p.profile !== "COORDINATOR"
+                  (p) =>
+                    !p.incident_history &&
+                    p.profile !== "COORDINATOR" &&
+                    p.profile !== "CAPTAIN"
                 )}
                 placeholder="Adicionar voluntário"
                 onSelect={async (participantId) => {

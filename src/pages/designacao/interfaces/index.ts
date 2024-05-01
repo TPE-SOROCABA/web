@@ -10,6 +10,10 @@ export interface Designation {
   incidents: IParticipant[];
   createdAt: string;
   updatedAt: string;
+  total: {
+    participants: number;
+    vacancies: number;
+  };
 }
 
 export interface Assignment {
@@ -20,6 +24,7 @@ export interface Assignment {
     max: number;
     min: number;
   };
+  error?: string;
 }
 
 export interface PublicationCart {

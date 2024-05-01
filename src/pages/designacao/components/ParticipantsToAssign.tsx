@@ -1,6 +1,5 @@
 import { tv } from "tailwind-variants";
 import { IParticipant } from "../../../entity";
-import { addFakeImage } from "../../../lib/addFakeImage";
 
 const participantstoAssign = tv({
   base: "w-8 h-8 rounded-full object-cover sticky",
@@ -37,9 +36,9 @@ export function ParticipantsToAssign({
   }) {
     if (!participants.length) return null;
     return (
-      <div className="flex justify-start items-center relative">
+      <div className="flex justify-start items-center relative z-20">
         <span className="text-xs text-gray-800 min-w-16">{label}:</span>
-        {addFakeImage(participants).map((participant, index) => {
+        {participants.map((participant, index) => {
           const zIndex = 10;
           if (index > 5) return null;
           if (index === 5)
@@ -52,7 +51,16 @@ export function ParticipantsToAssign({
                 `}
                 title={participants
                   .slice(5)
-                  .map((p) => p.name)
+                  .map((p) => {
+                    const profiles = {
+                      COORDINATOR: "(Coordenador)",
+                      CAPTAIN: "(Capitão)",
+                    };
+                    const name = `${p.name} ${
+                      profiles[p.profile as keyof typeof profiles] || ""
+                    }`;
+                    return name;
+                  })
                   .join(",\n")}
               >
                 +{participants.length - 5}
@@ -63,9 +71,16 @@ export function ParticipantsToAssign({
               key={participant.id}
               src={participant.profile_photo}
               alt={participant.name}
-              title={`${participant.name} ${
-                participant.profile === "COORDINATOR" ? "(Coordenador)" : ""
-              }`}
+              title={(() => {
+                const profiles = {
+                  COORDINATOR: "(Coordenador)",
+                  CAPTAIN: "(Capitão)",
+                };
+                const name = `${participant.name} ${
+                  profiles[participant.profile as keyof typeof profiles] || ""
+                }`;
+                return name;
+              })()}
               className={participantstoAssign({
                 noFirst: index !== 0 ? "yes" : undefined,
                 className: `${"z-"[zIndex - 10]} ${

@@ -7,10 +7,9 @@ import { useCookies, useHttp, useToastHot } from "../../../lib";
 import { FilterText } from "../../../components/filter";
 import { BoxScreen } from "../../../components/box";
 import { IParticipant } from "../../../entity";
-import { addFakeImage } from "../../../lib/addFakeImage";
 import { AlertAbsentParticipantV2 } from "../components/AlertAbsentParticipantV2";
 import { Designation, GroupDetails } from "../interfaces";
-import { statusDesignation } from "../const";
+import { statusDesignationWithColor } from "../const";
 
 let timeout: NodeJS.Timeout | null = null;
 
@@ -129,9 +128,20 @@ export function ListaDesignacao() {
       showBreadcrumbs={true}
       rightContent={
         <>
-          <p className="text-primary-800 text-sm font-semibold">
-            {designationStatus ? statusDesignation[designationStatus] : ""}
-          </p>
+          {designationStatus && (
+            <p className="text-sm">
+              Status da Designação:{" "}
+              {/* Em aberto (cor amarelo), Em progresso (cor Roxo), Concluído (cor Verde 48 hrs), Arquivado (Azul após 48 hrs), Cancelado (Vermelho) */}
+              <span
+                className={`
+                font-semibold text-base
+                ${statusDesignationWithColor[designationStatus].color}
+              `}
+              >
+                {statusDesignationWithColor[designationStatus].text}
+              </span>
+            </p>
+          )}
         </>
       }
     >
@@ -198,7 +208,7 @@ function ListaParticipantes({
       className="flex flex-wrap gap-8 justify-between w-full "
       hidden={!participants.length}
     >
-      {addFakeImage(participants).map((participant) => {
+      {participants.map((participant) => {
         if (!participant.name) {
           return (
             <div className="h-12 w-72 invisible" key={participant.id}></div>
