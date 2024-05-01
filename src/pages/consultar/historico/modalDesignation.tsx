@@ -118,7 +118,7 @@ export function ModalDesignation({
         show={Boolean(showDesignation)}
         close={() => setShowDesignation("")}
       >
-        <div className="flex justify-between items-center flex-col gap-2 bg-white p-4 rounded-lg min-w-[70vw] max-w-96 h-[80vh]">
+        <div className="flex justify-between items-center flex-col gap-2 bg-white p-4 rounded-lg min-w-[77vw] max-w-96 h-[80vh]">
           <h1 className="text-left w-full font-bold text-xl pb-4">
             Designação de {desigantion?.group.name} (
             {dayjs(designationDate).format("DD/MM/YYYY")}){" "}
