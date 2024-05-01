@@ -173,14 +173,14 @@ export function ListaDesignacao() {
             )
           }
         </Button>
-        <Link to="/lista-designacao/designar">
+        <Link className="w-full flex justify-end" to="/lista-designacao/designar">
           <Button
             variant="filled"
-            className="bg-primary-600 rounded-3xl px-20 h-12"
+            className="bg-primary-600 rounded-3xl h-12 min-w-36"
             placeholder="Designar"
             type="button"
           >
-            Designar
+            {designationStatus === "IN_PROGRESS" ? "Editar Designação" : "Designar"}
           </Button>
         </Link>
       </div>

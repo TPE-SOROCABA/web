@@ -49,7 +49,7 @@ function ParticipantCard({ participant, handleAbsentEvent, handleActiveEvent }: 
     const [reason, setReason] = useState("");
     return (
         <div className="w-56 h-40 border rounded-lg shadow-md bg-gray-50 relative flex flex-col justify-between" key={participant.id} >
-            <span className="absolute right-0 top-0">
+            <span className="absolute right-0 -top-1">
                 {participant.incident_history ?
                     <BookmarkMinus className="fill-red-500 stroke-none" />
                     :
