@@ -1,4 +1,4 @@
-import { ListFilter } from "lucide-react";
+import { Component, List, ListFilter } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@material-tailwind/react";
 import { Participant } from "../../../components/index";
@@ -7,10 +7,10 @@ import { useCookies, useHttp, useToastHot } from "../../../lib";
 import { FilterText } from "../../../components/filter";
 import { BoxScreen } from "../../../components/box";
 import { IParticipant } from "../../../entity";
-import { addFakeImage } from "../../../lib/addFakeImage";
 import { AlertAbsentParticipantV2 } from "../components/AlertAbsentParticipantV2";
 import { Designation, GroupDetails } from "../interfaces";
-import { statusDesignation } from "../const";
+import { statusDesignationWithColor } from "../const";
+import { ListaCardsParticipantes } from "../components/ListCardPartcipants";
 
 let timeout: NodeJS.Timeout | null = null;
 
@@ -28,6 +28,7 @@ export function ListaDesignacao() {
   const [designationStatus, setDesignationStatus] = useState<
     Designation["status"] | null
   >(null);
+  const [mode, setMode] = useState<"list" | "card">("card");
 
   const http = useHttp();
 
@@ -44,7 +45,9 @@ export function ListaDesignacao() {
     const participantsActive = data.filter(
       (participant) => !isAbsent(participant)
     );
-    setParticipants([...participantsActive, ...participantsAbsent]);
+    setParticipants(
+      shadowCards([...participantsActive, ...participantsAbsent])
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -59,6 +62,16 @@ export function ListaDesignacao() {
   useEffect(() => {
     getParticipants();
     getGroupDetails();
+
+    const resize = () => {
+      setParticipants((p) => shadowCards(p));
+    };
+
+    addEventListener("resize", resize);
+
+    return () => {
+      removeEventListener("resize", resize);
+    };
   }, [getParticipants, getGroupDetails]);
 
   const handleSearch = (search: string) => {
@@ -114,12 +127,24 @@ export function ListaDesignacao() {
 
   return (
     <BoxScreen
-    showBreadcrumbs={true}
+      loader={Boolean(!participants.length)}
+      showBreadcrumbs={true}
       rightContent={
         <>
-          <p className="text-primary-800 text-sm font-semibold">
-            {designationStatus ? statusDesignation[designationStatus] : ""}
-          </p>
+          {designationStatus && (
+            <p className="text-sm">
+              Status da Designação:{" "}
+              {/* Em aberto (cor amarelo), Em progresso (cor Roxo), Concluído (cor Verde 48 hrs), Arquivado (Azul após 48 hrs), Cancelado (Vermelho) */}
+              <span
+                className={`
+                font-semibold text-base
+                ${statusDesignationWithColor[designationStatus].color}
+              `}
+              >
+                {statusDesignationWithColor[designationStatus].text}
+              </span>
+            </p>
+          )}
         </>
       }
     >
@@ -132,29 +157,62 @@ export function ListaDesignacao() {
           status={filterByStatus}
           setStatus={(status) => setFilterByStatus(status)}
         />
-        <Link to="/lista-designacao/designar">
+        <Button
+          variant="outlined"
+          placeholder="Filtrar Status"
+          className="flex justify-center gap-4 rounded-3xl border-primary-500 items-center h-12 z-30 focus:outline-none !overflow-visible"
+          type="button"
+          onClick={() => {
+            setMode((prev) => (prev === "list" ? "card" : "list"))
+          }}
+        >
+          Visualização {
+            mode !== "list" ? (
+              <List />
+            ) : (
+              <Component />
+            )
+          }
+        </Button>
+        <Link className="w-full flex justify-end" to="/lista-designacao/designar">
           <Button
             variant="filled"
-            className="bg-primary-600 rounded-3xl px-20 h-12"
+            className="bg-primary-600 rounded-3xl h-12 min-w-36"
             placeholder="Designar"
             type="button"
           >
-            Designar
+            {designationStatus === "IN_PROGRESS" ? "Editar Designação" : "Designar"}
           </Button>
         </Link>
       </div>
 
-      <ListaParticipantes
-        designationStatus={designationStatus}
-        participants={participants.filter((participant) => {
-          if (filterByStatus === "all") return true;
-          if (filterByStatus === "present") return !isAbsent(participant);
-          if (filterByStatus === "absent") return isAbsent(participant);
-          return false;
-        })}
-        handleAbsentEvent={handleAbsentEvent}
-        handleActiveEvent={handleActiveEvent}
-      />
+      {
+        mode === "list" ? (
+          <ListaParticipantes
+            designationStatus={designationStatus}
+            participants={participants.filter((participant) => {
+              if (filterByStatus === "all") return true;
+              if (filterByStatus === "present") return !isAbsent(participant);
+              if (filterByStatus === "absent") return isAbsent(participant);
+              return false;
+            })}
+            handleAbsentEvent={handleAbsentEvent}
+            handleActiveEvent={handleActiveEvent}
+          />
+        ) : (
+          <ListaCardsParticipantes
+            designationStatus={designationStatus}
+            participants={participants.filter((participant) => {
+              if (filterByStatus === "all") return true;
+              if (filterByStatus === "present") return !isAbsent(participant);
+              if (filterByStatus === "absent") return isAbsent(participant);
+              return false;
+            })}
+            handleAbsentEvent={handleAbsentEvent}
+            handleActiveEvent={handleActiveEvent}
+          />
+        )
+      }
     </BoxScreen>
   );
 }
@@ -186,56 +244,99 @@ function ListaParticipantes({
       className="flex flex-wrap gap-8 justify-between w-full "
       hidden={!participants.length}
     >
-      {addFakeImage(participants).map((participant) => (
-        <Participant.Root
-          key={participant.id}
-          name={participant.name}
-          avatar={participant?.profile_photo}
-          className={`
-          ${isAbsent(participant) ? "opacity-70 bg-gray-300" : ""}
-          `}
-          incident_history={isAbsent(participant)}
-        >
-          {() => {
-            if (designationStatus === "CANCELLED") {
-              return <></>;
-            }
-            return (
-              <div className={`flex items-center justify-end w-40 gap-2`}>
-                <Participant.Tag
-                  show={isAbsent(participant)}
-                  tagTitle="Ausente"
-                />
-                {isAbsent(participant) ? (
-                  <Participant.Eye
-                    moreText={participant.incident_history.reason}
-                    buttonEvent={() => {
-                      handleActiveEvent(participant);
-                    }}
+      {participants.map((participant) => {
+        if (!participant.name) {
+          return (
+            <div className="h-12 w-72 invisible" key={participant.id}></div>
+          );
+        }
+        return (
+          <Participant.Root
+            key={participant.id}
+            name={participant.name}
+            avatar={participant?.profile_photo}
+            className={`
+            ${isAbsent(participant) ? "opacity-70 bg-gray-300" : ""}
+            `}
+            incident_history={isAbsent(participant)}
+          >
+            {() => {
+              if (designationStatus === "CANCELLED") {
+                return <></>;
+              }
+              return (
+                <div className={`flex items-center justify-end w-40 gap-2`}>
+                  <Participant.Tag
+                    show={isAbsent(participant)}
+                    tagTitle="Ausente"
                   />
-                ) : (
-                  <Participant.Button>
-                    {({ showButton, hidden }) => {
-                      return (
-                        <AlertAbsentParticipantV2
-                          showButton={showButton}
-                          submitReason={(reason) => {
-                            handleAbsentEvent(participant, reason);
-                          }}
-                          closeComponent={hidden}
-                        />
-                      );
-                    }}
-                  </Participant.Button>
-                )}
-              </div>
-            );
-          }}
-        </Participant.Root>
-      ))}
+                  {isAbsent(participant) ? (
+                    <Participant.Eye
+                      moreText={participant.incident_history.reason}
+                      buttonEvent={() => {
+                        handleActiveEvent(participant);
+                      }}
+                    />
+                  ) : (
+                    <Participant.Button>
+                      {({ showButton, hidden }) => {
+                        return (
+                          <AlertAbsentParticipantV2
+                            showButton={showButton}
+                            submitReason={(reason) => {
+                              handleAbsentEvent(participant, reason);
+                            }}
+                            closeComponent={hidden}
+                          />
+                        );
+                      }}
+                    </Participant.Button>
+                  )}
+                </div>
+              );
+            }}
+          </Participant.Root>
+        );
+      })}
     </div>
   );
 }
+
+const shadowCards = (participants: IParticipant[]): IParticipant[] => {
+  const CARD_WIDTH = 285;
+  const SIDE_BAR_WIDTH = 64;
+  const WINDOW_WIDTH = window.innerWidth - SIDE_BAR_WIDTH - 208;
+
+  const quantityCards = participants.filter((p) => Boolean(p.id)).length;
+  const cardsByRow = Math.floor(WINDOW_WIDTH / CARD_WIDTH);
+
+  type LineRaw = IParticipant[];
+  type Line = LineRaw[];
+
+  const lines: Line = [];
+  let currentLine = 0;
+  Array.from({ length: quantityCards }).forEach((_, index) => {
+    if (lines[currentLine]?.length === cardsByRow) {
+      currentLine++;
+    }
+    if (!lines[currentLine]?.length) {
+      lines[currentLine] = [];
+    }
+    lines[currentLine].push(participants[index]);
+  });
+
+  const lastLine = lines.at(-1);
+  const lastLineLength = lastLine?.length || 0;
+  if (lastLineLength < cardsByRow && lastLine) {
+    const emptyCards = cardsByRow - lastLineLength;
+    Array.from({ length: emptyCards }).forEach(() => {
+      lastLine.push(SHADOW_PARTICIPANT);
+    });
+  }
+
+  const newAssignments = lines.filter((l) => l.some((p) => p.name)).flat();
+  return newAssignments;
+};
 
 interface FilterStatusProps {
   status: Status;
@@ -292,7 +393,7 @@ function FilterStatus({ status, setStatus }: FilterStatusProps) {
         {status === "all"
           ? "Filtrar"
           : options.find((option) => option.name === status)?.title ||
-            "Filtrar"}
+          "Filtrar"}
         <ListFilter />
       </Button>
       {showOptions && (
@@ -314,3 +415,16 @@ function FilterStatus({ status, setStatus }: FilterStatusProps) {
     </div>
   );
 }
+
+const SHADOW_PARTICIPANT: IParticipant = {
+  id: Math.random().toString(),
+  name: "",
+  phone: "",
+  profile_photo: "",
+  profile: "",
+  incident_history: {
+    reason: "",
+    id: "",
+    status: "OPEN",
+  },
+};

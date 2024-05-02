@@ -85,6 +85,7 @@ export function AlertAbsentParticipant({
               placeholder="Botão de ausência"
               onClick={async () => {
                 if (!reason) return toast.error("Informe o motivo da ausência");
+                if (reason.length < 3) return toast.error("Motivo muito curto");
                 setParticipants((prev) => [...prev, participant]);
                 setAssignments((prev) =>
                   prev.map((a) =>

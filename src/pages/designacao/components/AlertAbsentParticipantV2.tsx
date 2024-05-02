@@ -2,6 +2,7 @@ import { Button, Textarea } from "@material-tailwind/react";
 import { Trash } from "lucide-react";
 import { useState } from "react";
 import { Alert } from "../../../components";
+import toast from "react-hot-toast";
 
 type AlertAbsentParticipantProps = {
   showButton: boolean;
@@ -12,7 +13,7 @@ type AlertAbsentParticipantProps = {
 export function AlertAbsentParticipantV2({
   showButton,
   submitReason,
-  closeComponent
+  closeComponent,
 }: AlertAbsentParticipantProps) {
   const [showAlert, setShowAlert] = useState(false);
   const [reason, setReason] = useState("");
@@ -20,7 +21,7 @@ export function AlertAbsentParticipantV2({
   const close = () => {
     setShowAlert(false);
     setReason("");
-    closeComponent()
+    closeComponent();
   };
 
   return (
@@ -67,8 +68,10 @@ export function AlertAbsentParticipantV2({
             <Button
               placeholder="Botão de ausência"
               onClick={() => {
-                submitReason(reason)
-                close()
+                if (!reason) return toast.error("Informe o motivo da ausência");
+                if (reason.length < 3) return toast.error("Motivo muito curto");
+                submitReason(reason);
+                close();
               }}
               className="w-32 bg-primary-500 rounded-3xl"
             >

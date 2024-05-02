@@ -1,17 +1,26 @@
-import { Alert, Participant } from "../../components";
+import { Participant } from "../../components";
 import { BoxGroup, BoxScreen } from "../../components/box";
 import { FilterText } from "../../components/filter";
 import { InputParticipant } from "../../components/participant/Input";
 import { useHttp, useToastHot } from "../../lib";
-import { Button, Checkbox, Textarea } from "@material-tailwind/react";
-import { ArrowRightLeft, CheckIcon, CopyIcon, XIcon } from "lucide-react";
+import { Button, Checkbox } from "@material-tailwind/react";
+import {
+  ArrowRightLeft,
+  CheckIcon,
+  CopyIcon,
+  XIcon,
+  MapPinIcon,
+  UserIcon,
+} from "lucide-react";
 import { ParticipantsToAssign } from "./components/ParticipantsToAssign";
 import { useDesignation } from "./useDesignation";
 import { AlertAbsentParticipant } from "./components/AlertAbsentParticipant";
 import { IParticipant } from "../../entity";
-import { statusDesignation } from "./const";
 import { useState } from "react";
 import { Designation } from "./interfaces";
+import { statusDesignationWithColor } from "./const";
+import { CancelDesignation } from "./components/CancelDesignation";
+import { AutoDesignation } from "./components/AutoDesignation";
 
 const isAbsent = (participant: IParticipant) =>
   participant.incident_history?.status === "OPEN";
@@ -23,8 +32,7 @@ export function Designar() {
     filteredAssignments,
     assignments,
     participants,
-    desigantion: designation,
-    handleRandom,
+    designation,
     handleSearch,
     setFilteredAssignments,
     getDesignation,
@@ -37,11 +45,8 @@ export function Designar() {
   const [copyStatus, setCopyStatus] = useState<"able" | "copied" | "error">(
     "able"
   );
-  const [handleCancel, setHandleCancel] = useState({
-    show: false,
-    justification: "",
-  });
   const [isOptional, setIsOptional] = useState(false);
+  const [isSticky, setSticky] = useState(false);
 
   const copyToClipboard = async () => {
     if (!designation?.id) return;
@@ -67,11 +72,19 @@ export function Designar() {
     error: <XIcon color="red" />,
   };
 
+  const sendAndUpdateDesignation = async () => {
+    await http.post<Designation>(`/designations/${designation?.id}/send`, {
+      optional: isOptional,
+    })
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    await getDesignation()
+  }
+
   const sendDesignation = async () => {
-    await toast.promise(
-      http.post<Designation>(`/designations/${designation?.id}/send`, {
-        optional: isOptional,
-      }),
+    await toast.promise(sendAndUpdateDesignation(),
       {
         loading: "Disparando designação...",
         success: "Designação disparada com sucesso",
@@ -81,34 +94,17 @@ export function Designar() {
     );
   };
 
-  const cancelDesignation = async () => {
-    if (!designation?.id) return;
-    if (!handleCancel.justification) {
-      toast.error("Justificativa é obrigatória");
-      return;
+  window.addEventListener('scroll', function () {
+    const element = document.getElementById('quantidade-voluntarios');
+    const position = 50;
+
+    if (!element) return;
+    if (window.scrollY > position) {
+      setSticky(true);
+    } else {
+      setSticky(false);
     }
-    if (handleCancel.justification.length < 3) {
-      toast.error("Justificativa deve ter no mínimo 3 caracteres");
-      return;
-    }
-    await toast.promise(
-      http.patch(`/designations/${designation.id}/cancel`, {
-        justification: "Cancelamento da designação",
-      }),
-      {
-        loading: "Cancelando designação...",
-        success: () => {
-          setHandleCancel({
-            show: false,
-            justification: "",
-          });
-          return "Designação cancelada com sucesso";
-        },
-        error: (error) =>
-          error?.response?.data?.message || "Erro ao cancelar designação",
-      }
-    );
-  };
+  });
 
   return (
     <>
@@ -117,14 +113,60 @@ export function Designar() {
         loader={!assignments.length}
         rightContent={
           <>
-            <p className="text-primary-800 text-sm font-semibold">
-              {designation?.status ? statusDesignation[designation.status] : ""}
-            </p>
+            {designation?.status && (
+              <p className="text-sm">
+                Status da Designação:{" "}
+                {/* Em aberto (cor amarelo), Em progresso (cor Roxo), Concluído (cor Verde 48 hrs), Arquivado (Azul após 48 hrs), Cancelado (Vermelho) */}
+                <span
+                  className={`
+                font-semibold text-base
+                ${statusDesignationWithColor[designation.status].color}
+              `}
+                >
+                  {statusDesignationWithColor[designation.status].text}
+                </span>
+              </p>
+            )}
           </>
         }
       >
+        {(() => {
+          const totalParticipants = designation?.total.participants || 0;
+          const totalVacancies = designation?.total.vacancies || 0;
+          return (
+            <div
+              id="quantidade-voluntarios"
+              className={`
+                rounded-md px-2 py-1 gap-4 shadow-md shadow-gray-500 bg-white h-fit w-fit
+                flex justify-around items-center
+                ${isSticky ?
+                  'fixed top-16 right-0 z-50 transition-all duration-300 delay-150' :
+                  'absolute -top-11 left-1/2 -translate-x-1/2 transition'}
+                ${totalParticipants > totalVacancies
+                  ? "text-red-600 fill-red-600"
+                  : "text-primary-600 fill-primary-600"
+                }
+              `}
+            >
+              <div
+                title="Quantidade de Voluntários"
+                className="gap-0.5 flex items-center justify-between text-lg"
+              >
+                <UserIcon className="stroke-transparent fill-inherit" />
+                {totalParticipants}
+              </div>
+              <div
+                title="Vagas Disponíveis"
+                className="gap-0.5 flex items-center justify-between text-lg"
+              >
+                <MapPinIcon className="stroke-white fill-inherit" />
+                {designation?.total.vacancies || 0}
+              </div>
+            </div>
+          );
+        })()}
         {/*  Filtros e botão de designação automática */}
-        <div className="w-full justify-between items-center flex gap-4">
+        <div className="w-full justify-between items-center flex gap-4 relative">
           <div className="flex justify-between items-center w-2/5 gap-4">
             <FilterText
               toSearch="Pesquisar Voluntários"
@@ -133,14 +175,11 @@ export function Designar() {
             />
             <ParticipantsToAssign participants={participants} />
           </div>
-          <Button
-            className="bg-primary-600 text-white"
-            placeholder={"Designar Automaticamente"}
-            onClick={handleRandom}
-            hidden={designation?.status !== "OPEN"}
-          >
-            Designação Automática
-          </Button>
+          <AutoDesignation
+            assignments={assignments}
+            getDesignation={getDesignation}
+            designationStatus={designation?.status}
+          />
         </div>
         {/*  Filtros e botão de designação automática */}
         <div
@@ -190,19 +229,15 @@ export function Designar() {
         </div>
 
         <div className="w-full h-24 flex justify-between">
-          <Button
-            className="bg-red-600 text-white h-12"
-            placeholder={"Cancelar designação"}
-            hidden={designation?.status !== "OPEN"}
-            onClick={() => setHandleCancel({ show: true, justification: "" })}
-          >
-            Cancelar designação
-          </Button>
+          <CancelDesignation
+            designationId={designation?.id || ""}
+            designationStatus={designation?.status || ""}
+          />
           {designation?.status === "IN_PROGRESS" ? (
             <div
               onClick={copyToClipboard}
               className={`
-                block m-auto  h-12 border border-gray-300 rounded-lg p-2 cursor-pointer hover:bg-gray-100 text-center items-center gap-2
+                h-12 border border-gray-300 rounded-lg p-2 cursor-pointer hover:bg-gray-100 text-center items-center gap-2
               `}
             >
               <span className="flex items-center gap-2 h-full">
@@ -213,16 +248,21 @@ export function Designar() {
             </div>
           ) : null}
 
-          <div className="flex flex-col gap-2 justify-center">
-            <Button
-              className="h-12 bg-primary-600 text-white"
-              placeholder={"Disparar designação"}
-              hidden={designation?.status !== "OPEN"}
-              onClick={sendDesignation}
-            >
-              Disparar designação
-            </Button>
-            {designation?.status === "OPEN" && (
+          {designation?.status === "OPEN" && (
+            <div className="flex flex-col gap-2 justify-center">
+              <Button
+                className="h-12 bg-primary-600 text-white"
+                placeholder={"Disparar designação"}
+                onClick={sendDesignation}
+                title={
+                  assignments.some((a) => Boolean(a.error))
+                    ? "Existem pontos com erro"
+                    : ""
+                }
+                disabled={assignments.some((a) => Boolean(a.error))}
+              >
+                Disparar designação
+              </Button>
               <Checkbox
                 crossOrigin
                 label="Presença Opcional"
@@ -230,60 +270,10 @@ export function Designar() {
                 onChange={() => setIsOptional((old) => !old)}
                 className="checked:bg-primary-600 checked:border-primary-600"
               />
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </BoxScreen>
-      <Alert
-        show={handleCancel.show}
-        close={() =>
-          setHandleCancel({
-            show: false,
-            justification: "",
-          })
-        }
-      >
-        <div className="flex justify-between items-center flex-col gap-2 bg-white p-4 rounded-lg min-w-[20vw] max-w-96">
-          <h6 className="text-xl">
-            Deseja mesmo cancelar a Designação desta semana?
-          </h6>
-          <p className="text-primary-400 pt-3 pb-2">
-            Se estiver correto, deixe uma nota para justificar o cancelamento.
-          </p>
-          <Textarea
-            label="Justificativa para o cancelamento"
-            className="w-full bg-primary-100 focus:bg-primary-200"
-            value={handleCancel.justification}
-            onChange={(e) =>
-              setHandleCancel({
-                show: true,
-                justification: e.target.value,
-              })
-            }
-          />
-          <div className="flex justify-between w-full gap-4">
-            <Button
-              className="bg-white border border-primary-600 text-primary-600 font-bold"
-              placeholder={"Cancelar designação"}
-              onClick={cancelDesignation}
-            >
-              Concluir
-            </Button>
-            <Button
-              className="bg-primary-500 text-white"
-              placeholder={"Cancelar designação"}
-              onClick={() =>
-                setHandleCancel({
-                  show: false,
-                  justification: "",
-                })
-              }
-            >
-              Voltar
-            </Button>
-          </div>
-        </div>
-      </Alert>
     </>
   );
 }
@@ -317,7 +307,30 @@ export function DesignationAssignments({
       .join(", ");
 
     return (
-      <div id={assignment.point.id} key={assignment.point.id}>
+      <div
+        id={assignment.point.id}
+        key={assignment.point.id}
+        className={` relative
+            ${assignment.error &&
+            assignment.point.status &&
+            assignment.participants?.length
+            ? "border-2 border-red-500 shadow-lg shadow-red-200"
+            : assignment.point.name && "border-0 shadow-lg shadow-gray-200"
+          }
+          `}
+      >
+        {assignment?.error &&
+          assignment.point.status &&
+          assignment.participants?.length ? (
+          <div
+            className={`
+              absolute z-50 flex justify-center items-center text-center -top-11 w-full rounded-2xl p-1
+              bg-white border border-red-500 animate-bounce ease-in-out duration-300 shadow-md shadow-red-200
+            `}
+          >
+            {assignment.error}
+          </div>
+        ) : null}
         <BoxGroup
           pointName={assignment.point.name}
           pointCars={perPoint}
@@ -369,9 +382,8 @@ export function DesignationAssignments({
                     <div className="flex justify-between w-full items-center">
                       <div
                         className={`
-                              absolute ${
-                                showButton ? "left-0" : "-left-44"
-                              } top-0 w-1/2 h-full transition-all ease-in-out duration-300
+                              absolute ${showButton ? "left-0" : "-left-44"
+                          } top-0 w-1/2 h-full transition-all ease-in-out duration-300
                             `}
                       >
                         <Button
@@ -381,11 +393,11 @@ export function DesignationAssignments({
                               prev.map((a) =>
                                 a.point.id === assignment.point.id
                                   ? {
-                                      ...a,
-                                      participants: a.participants.filter(
-                                        (p) => p.id !== participant.id
-                                      ),
-                                    }
+                                    ...a,
+                                    participants: a.participants.filter(
+                                      (p) => p.id !== participant.id
+                                    ),
+                                  }
                                   : a
                               )
                             );
@@ -430,19 +442,24 @@ export function DesignationAssignments({
               <InputParticipant
                 crossOrigin
                 disabled={!assignment.point.status}
-                participants={participants.filter((p) => !p.incident_history)}
+                participants={participants.filter(
+                  (p) =>
+                    !p.incident_history &&
+                    p.profile !== "COORDINATOR" &&
+                    p.profile !== "CAPTAIN"
+                )}
                 placeholder="Adicionar voluntário"
                 onSelect={async (participantId) => {
                   setAssignments((prev) =>
                     prev.map((a) =>
                       a.point.id === assignment.point.id
                         ? {
-                            ...a,
-                            participants: [
-                              ...a.participants,
-                              participants.find((p) => p.id === participantId)!,
-                            ],
-                          }
+                          ...a,
+                          participants: [
+                            ...a.participants,
+                            participants.find((p) => p.id === participantId)!,
+                          ],
+                        }
                         : a
                     )
                   );
@@ -485,7 +502,7 @@ export function DesignationAssignmentsReadOnly({
           pointName={assignment.point.name}
           pointCars={perPoint}
           pointStatus={assignment.point.status}
-          boxGroupEvent={() => {}}
+          boxGroupEvent={() => { }}
           readonly
         >
           {assignment.participants.map((participant) => (
