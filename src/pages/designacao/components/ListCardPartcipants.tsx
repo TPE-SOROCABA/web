@@ -59,7 +59,7 @@ function ParticipantCard({ participant, handleAbsentEvent, handleActiveEvent }: 
             <div className="flex gap-3 p-2 items-center">
                 <img src={participant.profile_photo} alt={participant.name} className="w-10 h-10 rounded-full mt-2" />
                 <div>
-                    <div className="w-4/5 truncate">{participant.name}</div>
+                    <div className="w-36 truncate">{participant.name}</div>
                     <div className="text-sm text-gray-600">{formatPhone(participant.phone)}</div>
 
                 </div>
