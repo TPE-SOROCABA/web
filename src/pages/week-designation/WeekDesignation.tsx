@@ -90,7 +90,7 @@ export const WeekDesignation = () => {
     case "loading":
       return (
         <div className="">
-          <Loader/>
+          <Loader />
         </div>
       );
     case "screen":
@@ -154,26 +154,22 @@ export const WeekDesignation = () => {
                           <div>
                             <span
                               className={`text-xs px-2 py-1 rounded-full absolute -top-4 -right-4
-                                        ${
-                                          designation.status === "OPEN"
-                                            ? "border-blue-700 text-blue-700 bg-blue-100"
-                                            : ""
-                                        }
-                                        ${
-                                          designation.status === "CANCELLED"
-                                            ? "border-red-700 text-red-700 bg-red-100"
-                                            : ""
-                                        }
-                                        ${
-                                          designation.status === "CLOSED"
-                                            ? "border-green-700 text-green-700 bg-green-100"
-                                            : ""
-                                        }
-                                        ${
-                                          designation.status === "IN_PROGRESS"
-                                            ? "border-yellow-700 text-yellow-700 bg-yellow-100"
-                                            : ""
-                                        }
+                                        ${designation.status === "OPEN"
+                                  ? "border-blue-700 text-blue-700 bg-blue-100"
+                                  : ""
+                                }
+                                        ${designation.status === "CANCELLED"
+                                  ? "border-red-700 text-red-700 bg-red-100"
+                                  : ""
+                                }
+                                        ${designation.status === "CLOSED"
+                                  ? "border-green-700 text-green-700 bg-green-100"
+                                  : ""
+                                }
+                                        ${designation.status === "IN_PROGRESS"
+                                  ? "border-yellow-700 text-yellow-700 bg-yellow-100"
+                                  : ""
+                                }
                                         `}
                             >
                               {DesignationStatusMap[designation.status]}
@@ -198,23 +194,25 @@ export const WeekDesignation = () => {
                     <div className="flex flex-col gap-2 pl-2">
                       {designation?.participants?.length
                         ? designation?.participants?.map(
-                            (participant, index) => (
-                              <div className="flex gap-2 items-center text-md">
-                                <img
-                                  src={
-                                    participant?.profile_photo ??
-                                    addOneFakeImage({
-                                      name: participant.name,
-                                      profile_photo: "",
-                                    }).profile_photo
-                                  }
-                                  alt="Foto de perfil"
-                                  className="rounded-full h-8 w-8"
-                                />
-                                <span key={index}>{participant.name}</span>
-                              </div>
-                            )
+                          (participant, index) => (
+                            <div
+                              key={index}
+                              className="flex gap-2 items-center text-md">
+                              <img
+                                src={
+                                  participant?.profile_photo ??
+                                  addOneFakeImage({
+                                    name: participant.name,
+                                    profile_photo: "",
+                                  }).profile_photo
+                                }
+                                alt="Foto de perfil"
+                                className="rounded-full h-8 w-8"
+                              />
+                              <span key={index}>{participant.name}</span>
+                            </div>
                           )
+                        )
                         : null}
                     </div>
                     {participantId && (
@@ -228,11 +226,10 @@ export const WeekDesignation = () => {
                         />
                         <Button
                           placeholder={"Recusar Designação"}
-                          className={`${
-                            designation?.incident_history?.status === "OPEN"
-                              ? "bg-blue-700"
-                              : "bg-red-700"
-                          } w-[95px] flex justify-center`}
+                          className={`${designation?.incident_history?.status === "OPEN"
+                            ? "bg-blue-700"
+                            : "bg-red-700"
+                            } w-[95px] flex justify-center`}
                           onClick={() => {
                             if (
                               designation?.incident_history?.status === "OPEN"
@@ -245,9 +242,10 @@ export const WeekDesignation = () => {
                           }
                           type="button"
                         >
-                          {designation?.incident_history?.status === "OPEN"
-                            ? "Recusado"
-                            : "Recusar"}
+
+                          {designation?.incident_history?.status === "OPEN" ? "Recusado" : (
+                            designation.status === "CLOSED" ? "Justificar" : "Recusar"
+                          )}
                         </Button>
                       </div>
                     )}
