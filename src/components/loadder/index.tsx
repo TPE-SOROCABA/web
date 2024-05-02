@@ -2,12 +2,8 @@
 
 export const Loader = () => {
     return (
-        <div className="flex justify-center items-center">
-            <div className="container">
-                <div className="loader"></div>
-                <div className="loader"></div>
-                <div className="loader"></div>
-            </div>
+        <div className="flex justify-center items-center mt-14">
+            <div className="loader"></div>
         </div>
     );
 }
