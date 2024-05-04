@@ -29,11 +29,13 @@ export function ListaDesignacao() {
     Designation["status"] | null
   >(null);
   const [mode, setMode] = useState<"list" | "card">("card");
+  const [loading, setLoading] = useState<boolean>(true);
 
   const http = useHttp();
 
   const getParticipants = useCallback(async (search: string = "") => {
     if (!groupId) return console.log("groupId not found");
+    setLoading(true);
     const { data } = await http.get<IParticipant[]>(`/participants`, {
       params: {
         groupId,
@@ -48,6 +50,7 @@ export function ListaDesignacao() {
     setParticipants(
       shadowCards([...participantsActive, ...participantsAbsent])
     );
+    setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -127,7 +130,7 @@ export function ListaDesignacao() {
 
   return (
     <BoxScreen
-      loader={Boolean(!participants.length)}
+      loader={loading}
       showBreadcrumbs={true}
       rightContent={
         <>

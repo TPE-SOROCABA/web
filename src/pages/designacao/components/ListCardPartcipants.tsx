@@ -70,10 +70,11 @@ function ParticipantCard({ participant, handleAbsentEvent, handleActiveEvent }: 
             <div className="w-full flex justify-center gap-4 p-4">
                 <Button
                     variant="outlined"
-                    className="rounded-md w-20 p-2"
+                    className="rounded-md w-20 p-2 cursor-not-allowed"
                     placeholder="Designar"
                     type="button"
                     disabled={true}
+                    title="Em construção"
                 >
                     Histórico
                 </Button>

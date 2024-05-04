@@ -103,7 +103,7 @@ export const useDesignation = () => {
     if (lastLineLength < cardsByRow && lastLine) {
       const emptyCards = cardsByRow - lastLineLength;
       Array.from({ length: emptyCards }).forEach(() => {
-        lastLine.push(SHADOW_ASSIGNMENT);
+        lastLine.push(SHADOW_ASSIGNMENT.from());
       });
     }
 
@@ -276,16 +276,35 @@ export const useDesignation = () => {
   };
 };
 
-const SHADOW_ASSIGNMENT: Assignment = {
-  point: {
+class SHADOW_ASSIGNMENT {
+  point = {
     id: "",
     name: "",
     status: false,
-  },
-  publication_carts: [],
-  participants: [],
-  config: {
+  };
+  publication_carts = [];
+  participants = [];
+  config = {
     max: 0,
     min: 0,
-  },
-};
+  };
+
+  static from() {
+    return new SHADOW_ASSIGNMENT();
+  }
+
+  constructor() {
+    this.point = {
+      id: Math.random().toString(36).substring(7),
+      name: "",
+      status: false,
+    };
+    this.publication_carts = [];
+    this.participants = [];
+    this.config = {
+      max: 0,
+      min: 0,
+    };
+  }
+  
+}

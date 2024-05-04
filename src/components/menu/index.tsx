@@ -87,7 +87,7 @@ export const Menu = () => {
 
 const BadgeOutline = ({ children }: { children: ReactNode }) => {
   return (
-    <span className="flex items-center justify-center w-5 h-5 bg-primary-100 text-primary-700 text-xs rounded-full bottom-0 right-1.5 fixed">
+    <span className="flex items-center justify-center w-fit h-5 bg-primary-100 border border-primary-400 text-primary-700 text-xs rounded-lg p-0.5 bottom-1 right-1.5 fixed pointer-events-none">
       {children}
     </span>
   );
