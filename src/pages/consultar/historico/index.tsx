@@ -65,7 +65,9 @@ export function ConsultarHistorico() {
 
   return (
     <>
-      <BoxScreen>
+      <BoxScreen
+        loader={Boolean(!history?.length)}
+      >
         <div className="flex items-center justify-start w-full gap-4">
           <DateRangePicker
             format="dd/MM/yyyy"
@@ -123,12 +125,12 @@ export function ConsultarHistorico() {
 }
 
 const translateWeekDay = (date: string) =>
-  ({
-    Sunday: "Domingo",
-    Monday: "Segunda-Feira",
-    Tuesday: "Terça-Feira",
-    Wednesday: "Quarta-Feira",
-    Thursday: "Quinta-Feira",
-    Friday: "Sexta-Feira",
-    Saturday: "Sábado",
-  }[dayjs(date).format("dddd")]);
+({
+  Sunday: "Domingo",
+  Monday: "Segunda-Feira",
+  Tuesday: "Terça-Feira",
+  Wednesday: "Quarta-Feira",
+  Thursday: "Quinta-Feira",
+  Friday: "Sexta-Feira",
+  Saturday: "Sábado",
+}[dayjs(date).format("dddd")]);
