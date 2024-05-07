@@ -29,6 +29,8 @@ export function ButtonComponent({
         })}
         onMouseEnter={() => setShowButton(true)}
         onMouseLeave={() => setShowButton(false)}
+        onFocus={() => setShowButton(true)}
+        onBlur={() => setShowButton(false)}
       >
         <Children showButton={showButton} hidden={() => setShowButton(false)} />
       </div>
