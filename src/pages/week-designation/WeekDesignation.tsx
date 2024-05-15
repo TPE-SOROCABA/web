@@ -95,20 +95,20 @@ export const WeekDesignation = () => {
       );
     case "screen":
       return (
-        <div className="flex flex-col justify-center items-center relative gap-1 max-w-[500px] m-auto">
+        <div className="flex flex-col justify-center items-center relative gap-1 max-w-[500px] m-auto ">
           <img
             src={ellipse}
             alt="ellipse"
             className="w-full -z-10 -mt-11 md:hidden"
           />
-          <div className="flex flex-col justify-center items-center -mt-28 gap-4">
+          <div className="flex flex-col justify-center items-center -mt-28 gap-4 text-md font-semibold">
             <div className="text-gray-50">Bem-vindo(a) ao TPE DIGITAL</div>
             <img src={logo} alt="logo" className="w-1/2" />
           </div>
-          <p className="text-center p-2 text-sm">
+          <p className="text-center p-2 text-md">
             {/* {participantId && (
               <>
-                <span className="text-sm">Confira os detalhes da sua</span>
+                <span className="text-md">Confira os detalhes da sua</span>
                 <br></br>
               </>
             )} */}
@@ -129,7 +129,7 @@ export const WeekDesignation = () => {
             )}
             {participantId && (
               <>
-                {/* <span className="text-sm">
+                {/* <span className="text-md">
                   Caso não esteja presente, recuse a designação. Qualquer dúvida
                   entre em contato com o capitão do seu grupo.
                 </span>
@@ -143,7 +143,7 @@ export const WeekDesignation = () => {
             )}
           </p>
           <div className="w-full p-2">
-            <div className="bg-white rounded-lg min-h-full flex flex-col gap-4 p-4 text-sm">
+            <div className="bg-white rounded-lg min-h-full flex flex-col gap-4 p-4 text-md">
               {designations.map((designation, index) => {
                 const isListLast = index === designations.length - 1;
                 return (
@@ -191,7 +191,7 @@ export const WeekDesignation = () => {
                         </span>
                       )}
                     </div>
-                    <div className="flex flex-col gap-2 pl-2">
+                    <div className="flex flex-col gap-2">
                       {designation?.participants?.length
                         ? designation?.participants?.map(
                           (participant, index) => (
@@ -207,9 +207,9 @@ export const WeekDesignation = () => {
                                   }).profile_photo
                                 }
                                 alt="Foto de perfil"
-                                className="rounded-full h-8 w-8"
+                                className="rounded-full h-9 w-9"
                               />
-                              <span key={index}>{participant.name}</span>
+                              <span className="w-[90%] truncate" key={index}>{participant.name}</span>
                             </div>
                           )
                         )
