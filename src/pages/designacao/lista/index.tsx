@@ -1,4 +1,4 @@
-import { Component, List, ListFilter } from "lucide-react";
+import { Component, List, ListFilter, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@material-tailwind/react";
 import { Participant } from "../../../components/index";
@@ -174,6 +174,9 @@ export function ListaDesignacao() {
             )
           }
         </Button>
+        <div className="flex items-center gap-2 text-primary-500 font-semibold" title={`${participants?.length || 0} Participante${participants?.length > 1 ? 's' : ''}`}>
+          <Users className="fill-primary-500" /> {participants?.length || 0}
+        </div>
         <Link className="w-full flex justify-end" to="/lista-designacao/designar">
           <Button
             variant="filled"
