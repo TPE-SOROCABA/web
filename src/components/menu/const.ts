@@ -1,9 +1,16 @@
 // import dashboardIcon from "../../assets/icons/menu/dashboard.svg";
 import searchIcon from "../../assets/icons/menu/search.svg";
 import designarIcon from "../../assets/icons/menu/designar.svg";
+import uploadIcon from "../../assets/icons/menu/upload.svg";
 // import cadastrarIcon from "../../assets/icons/menu/cadastrar.svg";
 
-export type NamePage = "Dashboard" | "Consultar" | "Designar" | "Cadastrar" | "Designação";
+export type NamePage =
+  | "Dashboard"
+  | "Consultar"
+  | "Designar"
+  | "Cadastrar"
+  | "Designação"
+  | "Upload de petição";
 type Page = {
   name: NamePage;
   altName: string;
@@ -29,6 +36,12 @@ export const pages: Page[] = [
     altName: "designar",
     path: "/lista-designacao",
     icon: designarIcon,
+  },
+  {
+    name: "Upload de petição",
+    altName: "upload",
+    path: "/peticao",
+    icon: uploadIcon,
   },
   // {
   //   name: "Cadastrar",

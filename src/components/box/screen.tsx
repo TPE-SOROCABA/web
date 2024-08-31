@@ -51,7 +51,7 @@ export function BoxScreen({
         )}
         {rightContent}
       </div>
-      <div className="bg-white rounded-lg min-h-96 flex flex-col gap-10 p-9 relative">
+      <div className="bg-white rounded-lg min-h-96 h-full flex flex-col gap-10 p-9 relative">
         {loader ? <Loader /> : children}
       </div>
     </div>
