@@ -10,7 +10,7 @@ export function FormularioPeticao() {
   return (
     <PetitionFormProvider>
       <BoxScreen showBreadcrumbs>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-8">
           <HandlerTabs />
           <Files />
         </div>
@@ -27,7 +27,7 @@ const Files = () => {
   const src = page === 1 ? pageOneUrl : pageTwoUrl;
 
   return (
-    <div className="flex flex-col col-span-1 gap-1 relative">
+    <div className="flex flex-col col-span-1 gap-1 relative border rounded-2xl shadow-md">
       <div className="container mx-auto p-4">
         <TransformWrapper
           defaultScale={1}
@@ -42,7 +42,7 @@ const Files = () => {
                 <TransformComponent contentClass="cursor-grab selection:cursor-grabbing">
                   <img src={src} alt="Imagem" className="w-full h-auto" />
                 </TransformComponent>
-                <div className="z-40 absolute -bottom-8 left-0 flex items-center gap-4">
+                <div className="z-40 absolute -bottom-3 left-0 flex items-center gap-4 bg-white">
                   <button
                     className="flex justify-center items-center h-6 w-6 hover:shadow-md rounded-lg hover:bg-gray-200 p-1 cursor-pointer transition-all ease-in-out duration-300"
                     onClick={() => zoomOut()}
@@ -58,7 +58,7 @@ const Files = () => {
                     <ZoomIn />
                   </button>
                 </div>
-                <div className="z-40 flex gap-4 justify-end items-center absolute -bottom-8 right-0">
+                <div className="z-40 flex gap-4 justify-end items-center absolute -bottom-3 right-0 bg-white">
                   <button
                     className={
                       "flex justify-center items-center h-6 w-6 hover:shadow-md rounded-lg hover:bg-gray-200 p-1 cursor-pointer transition-all ease-in-out duration-300"

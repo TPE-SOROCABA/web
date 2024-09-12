@@ -39,6 +39,7 @@ export function PetitionFormProvider({ children }: StoreProviderProps) {
   const [petition, setPetition] = useState<PetitionForm>(
     location.state?.petition
   );
+  console.log(location.state)
   if (!petition) {
     router(-1);
     return null;
