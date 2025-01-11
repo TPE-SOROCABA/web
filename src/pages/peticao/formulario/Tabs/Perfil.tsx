@@ -109,7 +109,7 @@ export function Perfil() {
           <Option value="masculino">Masculino</Option>
           <Option value="feminino">Feminino</Option>
         </Select>
-        <div className="flex col-span-2 justify-end items-center">
+        {/* <div className="flex col-span-2 justify-end items-center">
           <Button
             placeholder={"Próximo"}
             className="bg-primary-600 rounded-full"
@@ -121,7 +121,7 @@ export function Perfil() {
           >
             Próximo
           </Button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

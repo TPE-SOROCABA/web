@@ -165,7 +165,7 @@ export function Congregacao() {
           ))}
         </div>
 
-        <div className="flex col-span-2 justify-end items-center">
+        {/* <div className="flex col-span-2 justify-end items-center">
           <Button
             placeholder={"Próximo"}
             className="bg-primary-600 rounded-full"
@@ -177,7 +177,7 @@ export function Congregacao() {
           >
             Próximo
           </Button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

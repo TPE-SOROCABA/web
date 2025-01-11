@@ -63,10 +63,10 @@ export function PetitionFormProvider({ children }: StoreProviderProps) {
   const [petition, setPetition] = useState<PetitionForm>(
     location.state?.petition ?? petitionMock
   );
-  // if (!petition) {
-  //   router(-1);
-  //   return null;
-  // }
+  if (!petition) {
+    router(-1);
+    return null;
+  }
 
   const updatePetition = ({ name, value }: { name: string; value: any }) => {
     setPetition((prev) => ({
