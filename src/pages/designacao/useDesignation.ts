@@ -41,10 +41,12 @@ export const useDesignation = () => {
           params,
         }
       );
-      setAssignments(shadowCards(data.assignments));
+      // setAssignments(shadowCards(data.assignments));
+      setAssignments(data.assignments);
       setParticipants([...data.participants, ...data.incidents]);
 
-      setFilteredAssignments(shadowCards(data.assignmentsFiltered));
+      // setFilteredAssignments(shadowCards(data.assignmentsFiltered));
+      setFilteredAssignments(data.assignmentsFiltered);
 
       setDesignation({
         id: data.id,
@@ -62,16 +64,16 @@ export const useDesignation = () => {
   useEffect(() => {
     getDesignation();
 
-    const resize = () => {
-      setAssignments((a) => shadowCards(a));
-      setFilteredAssignments((a) => shadowCards(a));
-    };
+    // const resize = () => {
+    //   setAssignments((a) => shadowCards(a));
+    //   setFilteredAssignments((a) => shadowCards(a));
+    // };
 
-    addEventListener("resize", resize);
+    // addEventListener("resize", resize);
 
-    return () => {
-      removeEventListener("resize", resize);
-    };
+    // return () => {
+    //   removeEventListener("resize", resize);
+    // };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -306,5 +308,4 @@ class SHADOW_ASSIGNMENT {
       min: 0,
     };
   }
-  
 }

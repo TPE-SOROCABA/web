@@ -28,7 +28,7 @@ export function UploadPeticao() {
     });
     try {
       const endpoint = location.hostname.includes("localhost")
-        ? "/petition/upload-test"
+        ? "/petition/upload"
         : "/petition/upload";
       const { status, data } = await http.postForm<IPetition>(
         endpoint,

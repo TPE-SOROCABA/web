@@ -32,17 +32,41 @@ export const PetitionFormContext = createContext(
 interface StoreProviderProps {
   children: ReactNode;
 }
+
+const petitionMock: PetitionForm = {
+  id: "1",
+  name: "João da Silva",
+  protocol: "123456",
+  pageOneUrl: "https://picsum.photos/600/600?random=1",
+  pageTwoUrl: "https://picsum.photos/600/600?random=2",
+  status: "PENDING",
+  city: "São Paulo",
+  phone: "11999999999",
+  address: "Rua das Flores, 123",
+  state: "SP",
+  email: "joao.silva@example.com",
+  languages: "PT",
+  congregation: "Congregação",
+  dateOfBaptism: "2021-01-01",
+  dateOfBirth: "2001-01-01",
+  avatarUrl: "https://picsum.photos/150/150",
+  zipCode: "12345678",
+  maritalStatus: "SINGLE",
+  privileges: "ELDER",
+  gender: "MALE",
+};
+
 export function PetitionFormProvider({ children }: StoreProviderProps) {
   const location = useLocation();
   const router = useNavigate();
   const tabs = useTabs();
   const [petition, setPetition] = useState<PetitionForm>(
-    location.state?.petition
+    location.state?.petition ?? petitionMock
   );
-  if (!petition) {
-    router(-1);
-    return null;
-  }
+  // if (!petition) {
+  //   router(-1);
+  //   return null;
+  // }
 
   const updatePetition = ({ name, value }: { name: string; value: any }) => {
     setPetition((prev) => ({
