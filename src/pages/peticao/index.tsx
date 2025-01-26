@@ -13,7 +13,7 @@ export function Peticao() {
 
   const listPetitions = useCallback(async () => {
     try {
-      const response = await http.get("/petition");
+      const response = await http.get("petitions");
       setPetitions(response.data);
     } catch (error) {
       console.error(error);
@@ -90,9 +90,9 @@ function PetitionRow({ petition }: { petition: IPetition }) {
       <div className="col-span-1ds">
         <FileIcon size={40} />
       </div>
-      <div className="col-span-3">{petition.name}</div>
+      <div className="col-span-3">-</div>
       <div className="col-span-3">{petition.protocol}</div>
-      <div className="col-span-3">{petition.congregation}</div>
+      <div className="col-span-3">-</div>
       <div className="col-span-2">
         <Button
           placeholder={"Vizualizar"}

@@ -1,4 +1,4 @@
-import { Button, Select, Option, Input } from "@material-tailwind/react";
+import { Select, Option, Input } from "@material-tailwind/react";
 import { usePetitionFormStore } from "../store/useContextForm";
 import { XIcon } from "lucide-react";
 
@@ -51,7 +51,7 @@ const languages = [
 ];
 
 export function Congregacao() {
-  const { petition, setActiveTab, updatePetition } = usePetitionFormStore();
+  const { petition, updatePetition } = usePetitionFormStore();
 
   console.log(petition.languages);
   return (

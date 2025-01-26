@@ -20,14 +20,5 @@ export function FormularioPeticao() {
 const Files = () => {
   const { petition } = usePetitionFormStore();
 
-  return (
-    <ImageFiles
-      contents={[
-        petition?.pageOneUrl,
-        petition?.pageTwoUrl,
-        // petition?.pageOneUrl,
-        // petition?.pageTwoUrl,
-      ]}
-    />
-  );
+  return <ImageFiles contents={[petition?.publicUrl, petition?.privateUrl]} />;
 };

@@ -3,38 +3,55 @@ import { Checkbox } from "@material-tailwind/react";
 export function Disponibilidade() {
   return (
     <>
-      <div className="grid grid-cols-2 w-full gap-6">
-        <div className="flex flex-col col-span-1 gap-2">
-          <div className="flex items-center">
-            <span className="block w-32">Segunda-Feira:</span>
-            <Periodos onChange={() => {}} />
+      <div className="flex flex-col col-span-1 gap-2">
+        <div className="flex items-center">
+          <div className="w-44">
+            <Checkbox
+              label="Segunda-Feira:"
+              containerProps={{
+                className: "block w-11",
+              }}
+              crossOrigin
+              className="w-full"
+            />
           </div>
-          <div className="flex items-center">
-            <span className="block w-32">Terça-Feira:</span>
-            <Periodos onChange={() => {}} />
-          </div>
-          <div className="flex items-center">
-            <span className="block w-32">Quarta-Feira:</span>
-            <Periodos onChange={() => {}} />
-          </div>
-          <div className="flex items-center">
-            <span className="block w-32">Quinta-Feira:</span>
-            <Periodos onChange={() => {}} />
-          </div>
+          <Periodos onChange={() => {}} />
         </div>
-        <div className="flex flex-col col-span-1 gap-2 border-l-2 pl-4">
-          <div className="flex items-center">
-            <span className="block w-32">Sexta-Feira:</span>
-            <Periodos onChange={() => {}} />
+        <div className="flex items-center">
+          <div className="w-44">
+            <Checkbox label="Terça-Feira:" crossOrigin onChange={() => {}} />
           </div>
-          <div className="flex items-center">
-            <span className="block w-32">Sábado:</span>
-            <Periodos onChange={() => {}} />
+          <Periodos onChange={() => {}} />
+        </div>
+        <div className="flex items-center">
+          <div className="w-44">
+            <Checkbox label="Quarta-Feira:" crossOrigin onChange={() => {}} />
           </div>
-          <div className="flex items-center">
-            <span className="block w-32">Domingo:</span>
-            <Periodos onChange={() => {}} />
+          <Periodos onChange={() => {}} />
+        </div>
+        <div className="flex items-center">
+          <div className="w-44">
+            <Checkbox label="Quinta-Feira:" crossOrigin onChange={() => {}} />
           </div>
+          <Periodos onChange={() => {}} />
+        </div>
+        <div className="flex items-center">
+          <div className="w-44">
+            <Checkbox label="Sexta-Feira:" crossOrigin onChange={() => {}} />
+          </div>
+          <Periodos onChange={() => {}} />
+        </div>
+        <div className="flex items-center">
+          <div className="w-44">
+            <Checkbox label="Sábado:" crossOrigin onChange={() => {}} />
+          </div>
+          <Periodos onChange={() => {}} />
+        </div>
+        <div className="flex items-center">
+          <div className="w-44">
+            <Checkbox label="Domingo:" crossOrigin onChange={() => {}} />
+          </div>
+          <Periodos onChange={() => {}} />
         </div>
       </div>
     </>

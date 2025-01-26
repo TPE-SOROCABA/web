@@ -1,9 +1,9 @@
-import { Button, Input, Option, Select } from "@material-tailwind/react";
+import { Input, Option, Select } from "@material-tailwind/react";
 import { usePetitionFormStore } from "../store/useContextForm";
 import { formatPhone, formatZipCode } from "../../../../utils";
 
 export function Perfil() {
-  const { petition, setActiveTab, updatePetition } = usePetitionFormStore();
+  const { petition, updatePetition } = usePetitionFormStore();
 
   const updatePhone = (e: React.ChangeEvent<HTMLInputElement>) => {
     const phoneRaw = e.target.value.trim().replace(/\D/g, "");

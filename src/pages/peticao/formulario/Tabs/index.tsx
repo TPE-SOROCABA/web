@@ -1,36 +1,37 @@
-import { ReactNode } from "react";
+import {
+  Accordion,
+  AccordionBody,
+  AccordionHeader,
+} from "@material-tailwind/react";
+
+import { useState } from "react";
 import { Perfil } from "./Perfil";
 import { Congregacao } from "./Congregacao";
 import { Disponibilidade } from "./Disponibilidade";
 
+const tabs = [<Perfil />, <Congregacao />, <Disponibilidade />];
+
 export function HandlerTabs() {
+  const [tab, setTab] = useState(0);
   return (
     <div className="flex flex-col col-span-1">
-      <Tab>Perfil</Tab>
-      <Perfil />
-      <br />
-      <br />
-      <Tab>Congregação</Tab>
-      <br />
-      <Congregacao />
-      <br />
-      <br />
-      <Tab>Disponibilidade</Tab>
-      <br />
-      <Disponibilidade />
+      {tabs.map((item, index) => (
+        <Accordion placeholder="" open={index === tab} key={index}>
+          <AccordionHeader placeholder="" onClick={() => setTab(index)}>
+            <div className="flex items-center gap-2">
+              <span>{index + 1}</span>
+              <span>
+                {index === 0
+                  ? "Perfil"
+                  : index === 1
+                  ? "Congregação"
+                  : "Disponibilidade"}
+              </span>
+            </div>
+          </AccordionHeader>
+          <AccordionBody>{tab === index && item}</AccordionBody>
+        </Accordion>
+      ))}
     </div>
   );
 }
-
-interface TabProps extends React.HTMLAttributes<HTMLDivElement> {
-  children: ReactNode;
-}
-
-const Tab = ({ children, ...rest }: TabProps) => (
-  <div
-    className="flex items-center py-1 gap-2 text-primary-600 font-semibold text-xl"
-    {...rest}
-  >
-    {children}
-  </div>
-);
