@@ -18,67 +18,33 @@ export function Perfil() {
           crossOrigin
           label="Nome"
           containerProps={{ className: "col-span-2" }}
-          value={petition.name}
+          value={petition.participants[0]?.name}
           name="name"
-          onChange={(e) => updatePetition(e.target)}
-        />
-        <Input
-          crossOrigin
-          label="Endereço"
-          containerProps={{ className: "col-span-1" }}
-          value={petition.address}
-          name="address"
           onChange={(e) => updatePetition(e.target)}
         />
         <Input
           crossOrigin
           label="Email"
           containerProps={{ className: "col-span-1" }}
-          value={petition.email}
+          value={petition.participants[0]?.email}
           name="email"
           onChange={(e) => updatePetition(e.target)}
         />
         <Input
           crossOrigin
-          label="Cidade"
-          containerProps={{ className: "col-span-1" }}
-          value={petition.city}
-          name="city"
-          onChange={(e) => updatePetition(e.target)}
-        />
-        <Input
-          crossOrigin
-          label="Estado"
-          containerProps={{ className: "col-span-1" }}
-          value={petition.state}
-          name="state"
-          onChange={(e) => updatePetition(e.target)}
-        />
-        <Input
-          crossOrigin
-          label="CEP"
-          containerProps={{ className: "col-span-1" }}
-          value={formatZipCode(petition.zipCode)}
-          onChange={(e) =>
-            updatePetition({
-              name: "zipCode",
-              value: e.target.value.replace(/\D/g, ""),
-            })
-          }
-        />
-        <Input
-          crossOrigin
           label="Celular"
           containerProps={{ className: "col-span-1" }}
-          value={formatPhone(petition.phone)}
+          value={formatPhone(petition.participants[0]?.phone)}
           onChange={updatePhone}
         />
         <Input
           crossOrigin
           label="Data de Nascimento"
           containerProps={{ className: "col-span-1" }}
-          value={formatDateToInput(petition.dateOfBirth)}
-          name="dateOfBirth"
+          value={formatDateToInput(
+            petition.participants[0]?.birthDate as any as string
+          )}
+          name="birthDate"
           onChange={(e) => updatePetition(e.target)}
           type="date"
         />
@@ -86,22 +52,24 @@ export function Perfil() {
           label="Estado Civil"
           placeholder={"Selecione"}
           containerProps={{ className: "col-span-1" }}
-          value={petition.maritalStatus}
+          value={petition.participants[0]?.civilStatus}
           onChange={(value) =>
-            updatePetition({ name: "maritalStatus", value: value })
+            updatePetition({ name: "civilStatus", value: value })
           }
         >
-          <Option value="solteiro">Solteiro</Option>
-          <Option value="casado">Casado</Option>
+          <Option value="MARRIED">Casado</Option>
+          <Option value="SINGLE">Solteiro</Option>
         </Select>
         <Select
           label="Sexo"
           placeholder={"Selecione"}
           containerProps={{ className: "col-span-1" }}
-          value={petition.gender === "MALE" ? "masculino" : "feminino"}
+          value={
+            petition.participants[0]?.sex === "MALE" ? "masculino" : "feminino"
+          }
           onChange={(value) =>
             updatePetition({
-              name: "gender",
+              name: "sex",
               value: value === "masculino" ? "MALE" : "FEMALE",
             })
           }
@@ -109,6 +77,42 @@ export function Perfil() {
           <Option value="masculino">Masculino</Option>
           <Option value="feminino">Feminino</Option>
         </Select>
+        <Input
+          crossOrigin
+          label="Endereço"
+          containerProps={{ className: "col-span-1" }}
+          value={petition.participants[0]?.address}
+          name="address"
+          onChange={(e) => updatePetition(e.target)}
+        />
+        <Input
+          crossOrigin
+          label="Cidade"
+          containerProps={{ className: "col-span-1" }}
+          value={petition.participants[0]?.city}
+          name="city"
+          onChange={(e) => updatePetition(e.target)}
+        />
+        <Input
+          crossOrigin
+          label="Estado"
+          containerProps={{ className: "col-span-1" }}
+          value={petition.participants[0]?.state}
+          name="state"
+          onChange={(e) => updatePetition(e.target)}
+        />
+        <Input
+          crossOrigin
+          label="CEP"
+          containerProps={{ className: "col-span-1" }}
+          value={formatZipCode(petition.participants[0]?.zipCode)}
+          onChange={(e) =>
+            updatePetition({
+              name: "zipCode",
+              value: e.target.value.replace(/\D/g, ""),
+            })
+          }
+        />
         {/* <div className="flex col-span-2 justify-end items-center">
           <Button
             placeholder={"Próximo"}
@@ -127,5 +131,7 @@ export function Perfil() {
   );
 }
 
-const formatDateToInput = (date: string) =>
-  new Date(date).toISOString().split("T")[0];
+const formatDateToInput = (date: string) => {
+  if (!date) return "";
+  return new Date(date).toISOString().split("T")[0];
+};

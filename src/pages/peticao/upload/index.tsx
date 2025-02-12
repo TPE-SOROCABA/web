@@ -28,8 +28,8 @@ export function UploadPeticao() {
     });
     try {
       const endpoint = location.hostname.includes("localhost")
-        ? "/petition/upload"
-        : "/petition/upload";
+        ? "/petitions/upload"
+        : "/petitions/upload";
       const { status, data } = await http.postForm<IPetition>(
         endpoint,
         formData
@@ -39,8 +39,14 @@ export function UploadPeticao() {
       }
 
       toast.success("Petição enviada com sucesso", { id: toastId });
+      console.log(data);
       router("/peticao/form", {
-        state: { petition: data },
+        state: {
+          petition: {
+            ...data,
+            participants: [],
+          },
+        },
       });
     } catch (e) {
       toast.error("Erro ao enviar arquivo", { id: toastId });

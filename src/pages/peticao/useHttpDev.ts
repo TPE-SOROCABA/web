@@ -1,11 +1,8 @@
 import axios from "axios";
-
-// const MOCK = {
+const http = axios.create({
+  baseURL: "https://server.tpedigital.com.br",
+});
 
 export const useHttp = () => {
-  const http = axios.create({
-    baseURL: "https://server.tpedigital.com.br",
-  });
-
   return http;
 };

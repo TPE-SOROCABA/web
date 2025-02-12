@@ -17,7 +17,10 @@ export function HandlerTabs() {
     <div className="flex flex-col col-span-1">
       {tabs.map((item, index) => (
         <Accordion placeholder="" open={index === tab} key={index}>
-          <AccordionHeader placeholder="" onClick={() => setTab(index)}>
+          <AccordionHeader
+            placeholder=""
+            onClick={() => setTab(index === tab ? -1 : index)}
+          >
             <div className="flex items-center gap-2">
               <span>{index + 1}</span>
               <span>

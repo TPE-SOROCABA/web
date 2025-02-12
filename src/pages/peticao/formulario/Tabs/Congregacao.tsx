@@ -1,6 +1,21 @@
-import { Select, Option, Input } from "@material-tailwind/react";
+import { Select, Option, Input, Button } from "@material-tailwind/react";
 import { usePetitionFormStore } from "../store/useContextForm";
-import { XIcon } from "lucide-react";
+import { CheckboxGroup } from "@/components/checkboxGroup";
+import { useCallback, useEffect, useState } from "react";
+import { useHttp } from "../../useHttpDev";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/index";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/components/lib/utils";
 
 const congregacao = [
   { value: "Magnólia", label: "Magnólia" },
@@ -42,40 +57,114 @@ const congregacao = [
 ];
 
 const languages = [
-  { value: "Português", label: "Português" },
-  { value: "Inglês", label: "Inglês" },
-  { value: "Espanhol", label: "Espanhol" },
-  { value: "Francês", label: "Francês" },
-  { value: "Alemão", label: "Alemão" },
-  { value: "Libras", label: "Libras" },
+  { id: "PORTUGUÊS", label: "Português" },
+  { id: "INGLÊS", label: "Inglês" },
+  { id: "ESPANHOL", label: "Espanhol" },
+  { id: "FRANCÊS", label: "Francês" },
+  { id: "ALEMÃO", label: "Alemão" },
+  { id: "LIBRAS", label: "Libras" },
 ];
 
-export function Congregacao() {
-  const { petition, updatePetition } = usePetitionFormStore();
+interface ComboboxProps {
+  label: string;
+  placeholder: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+}
+function Combobox({
+  label,
+  placeholder,
+  value,
+  onChange,
+  options,
+}: ComboboxProps) {
+  const [open, setOpen] = useState(false);
+  // const [newValue, setNewValue] = useState(value);
 
-  console.log(petition.languages);
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild className="col-span-2">
+        <Button
+          placeholder={placeholder}
+          role="combobox"
+          aria-expanded={open}
+          className="h-10 justify-between flex items-center bg-inherit border border-blue-gray-200 text-gray-600 text-left p-3 m-0 shadow-none cursor-default hover:shadow-none"
+        >
+          {/* {value
+            ? frameworks.find((framework) => framework.value === value)?.label
+            : "Select framework..."} */}
+          <span className="truncate max-w-[90%] block">
+            {value ? value : label}
+          </span>
+          <ChevronsUpDown className="opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="p-0" align="start">
+        <Command>
+          <CommandInput placeholder="Search framework..." className="h-9" />
+          <CommandList>
+            <CommandEmpty>No framework found.</CommandEmpty>
+            <CommandGroup>
+              {options.map((option) => (
+                <CommandItem
+                  key={option.value}
+                  value={option.value}
+                  onSelect={(currentValue) => {
+                    onChange(currentValue === value ? "" : currentValue);
+                    setOpen(false);
+                  }}
+                >
+                  {option.label}
+                  <Check
+                    className={cn(
+                      "ml-auto",
+                      value === option.value ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+export function Congregacao() {
+  const { petition, updatePetition, congregations } = usePetitionFormStore();
+
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 space-y-2 gap-4">
-        <Select
-          label="Congregação"
+        <Combobox
+          label="Selecionar uma congregação"
           placeholder="Selecione"
-          containerProps={{ className: "col-span-2" }}
-          name="congregation"
-          value={petition.congregation}
-          onChange={(e) => updatePetition({ name: "congregation", value: e })}
-        >
-          {congregacao.map((item) => (
-            <Option key={item.value} value={item.value}>
-              {item.label}
-            </Option>
-          ))}
-        </Select>
+          value={
+            congregations?.find(
+              (c) => c.id === petition.participants[0]?.congregationId
+            )?.name ?? ""
+          }
+          onChange={(newCongregation) => {
+            const congregation = congregations?.find(
+              (c) => c.name === newCongregation
+            );
+            updatePetition({
+              name: "congregationId",
+              value: congregation?.id,
+            });
+          }}
+          options={congregations.map((item) => ({
+            value: item.name,
+            label: item.name,
+          }))}
+        />
         <Input
           crossOrigin
           label="Cidade"
           containerProps={{ className: "col-span-1" }}
-          value={petition.city}
+          value={petition.participants[0]?.city}
           name="city"
           onChange={(e) => updatePetition(e.target)}
         />
@@ -83,7 +172,7 @@ export function Congregacao() {
           crossOrigin
           label="Estado"
           containerProps={{ className: "col-span-1" }}
-          value={petition.state}
+          value={petition.participants[0]?.state}
           name="state"
           onChange={(e) => updatePetition(e.target)}
         />
@@ -91,8 +180,10 @@ export function Congregacao() {
           crossOrigin
           label="Data de batismo"
           containerProps={{ className: "col-span-1" }}
-          value={formatDateToInput(petition.dateOfBaptism)}
-          name="dateOfBaptism"
+          value={formatDateToInput(
+            petition.participants[0]?.baptismDate as any as string
+          )}
+          name="baptismDate"
           onChange={(e) => updatePetition(e.target)}
           type="date"
         />
@@ -100,88 +191,57 @@ export function Congregacao() {
           label="Atualmente serve como"
           placeholder={"Selecione"}
           containerProps={{ className: "col-span-1" }}
-          value={petition.privileges}
+          value={petition.participants[0]?.attributions[0]}
           onChange={(value) =>
             updatePetition({
-              name: "privileges",
-              value: value,
+              name: "attributions",
+              value: [value],
             })
           }
         >
-          <Option value="Servo Ministerial">Servo Ministerial</Option>
-          <Option value="Ancião">Ancião</Option>
-          <Option value="Publicador(a)">Publicador(a)</Option>
-          <Option value="Pioneiro(a) Regular">Pioneiro(a) Regular</Option>
+          <Option value="SERVO MINISTERIAL">Servo Ministerial</Option>
+          <Option value="ANCIÃO">Ancião</Option>
+          <Option value="PUBLICADOR(A)">Publicador(a)</Option>
+          <Option value="PIONEIRO(A) REGULAR">Pioneiro(a) Regular</Option>
         </Select>
-        <Select
-          label="Idioma"
-          placeholder={"Selecione"}
-          value="Selecione 1 ou mais idiomas"
-          containerProps={{ className: "col-span-1" }}
-          onChange={(value) =>
+        <CheckboxGroup
+          options={languages}
+          value={petition.participants[0]?.languages?.map((l) => ({
+            id: l,
+            label: languages.find((lang) => lang.id === l)?.label ?? "",
+          }))}
+          onChange={(value) => {
             updatePetition({
               name: "languages",
-              value: petition.languages
-                .split(",")
-                .concat(value ?? "")
-                .join(","),
-            })
-          }
+              value: petition.participants[0]?.languages.includes(
+                value.id as string
+              )
+                ? petition.participants[0]?.languages.filter(
+                    (lang) => lang !== value.id
+                  )
+                : petition.participants[0]?.languages.concat(
+                    value.id as string
+                  ),
+            });
+          }}
         >
-          <Option disabled value="Selecione 1 ou mais idiomas">
-            Selecione 1 ou mais idiomas
-          </Option>
-          {languages.map((item) => (
-            <Option
-              key={item.value}
-              value={item.value}
-              disabled={petition.languages.includes(item.value)}
-            >
-              {item.label}
-            </Option>
-          ))}
-        </Select>
-        <div className="flex gap-2 items-center col-span-1 flex-wrap">
-          {petition.languages.split(",").map((item) => (
+          {petition.participants[0]?.languages?.length ? (
             <span
-              key={item}
-              className="hover:border-primary-600 border-transparent border-b-2 cursor-pointer text-sm opacity-85 font-normal transition-all ease-in-out duration-300 flex items-center gap-0.5"
-              onClick={() =>
-                updatePetition({
-                  name: "languages",
-                  value: petition.languages
-                    .split(",")
-                    .filter((lang) => lang !== item)
-                    .join(","),
-                })
-              }
-              title={`Remover idioma: ${item}`}
+              className="truncate w-[95%] block"
+              title={petition.participants[0]?.languages.join(", ")}
             >
-              {item}{" "}
-              <span className="text-red-500">
-                <XIcon size={14} />
-              </span>
+              {petition.participants[0]?.languages.join(", ")}
             </span>
-          ))}
-        </div>
-
-        {/* <div className="flex col-span-2 justify-end items-center">
-          <Button
-            placeholder={"Próximo"}
-            className="bg-primary-600 rounded-full"
-            type="button"
-            onClick={() => {
-              setActiveTab((old) => old + 1);
-              console.log(petition);
-            }}
-          >
-            Próximo
-          </Button>
-        </div> */}
+          ) : (
+            <div>Escolher o idioma</div>
+          )}
+        </CheckboxGroup>
       </div>
     </div>
   );
 }
 
-const formatDateToInput = (date: string) =>
-  new Date(date).toISOString().split("T")[0];
+const formatDateToInput = (date: string) => {
+  if (!date) return "";
+  return new Date(date).toISOString().split("T")[0];
+};
