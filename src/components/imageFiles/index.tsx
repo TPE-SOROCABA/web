@@ -9,7 +9,7 @@ interface ImageFilesProps {
 }
 
 const zoomButtonGroupTW = tv({
-  base: "z-40 absolute -bottom-8 left-0 flex items-center gap-4",
+  base: "z-40 absolute -bottom-10 left-0 flex items-center gap-4",
   variants: {
     withoutPagination: {
       true: "left-1/2 transform -translate-x-1/2",
@@ -17,7 +17,7 @@ const zoomButtonGroupTW = tv({
   },
 });
 const paginationTW = tv({
-  base: "z-40 flex gap-4 justify-end items-center absolute -bottom-8 right-0",
+  base: "z-40 flex gap-4 justify-end items-center absolute -bottom-10 right-0",
   variants: {
     noPagination: {
       true: "hidden",
@@ -48,8 +48,8 @@ export const ImageFiles = ({ contents, initialPage = 1 }: ImageFilesProps) => {
     return null;
   }
   return (
-    <div className="flex flex-col col-span-1 gap-1 relative">
-      <div className="container mx-auto p-4">
+    <div className="flex flex-col col-span-1 gap-1 relative border-2 border-dashed border-primary-300 rounded-lg">
+      <div className="container mx-auto p-2">
         <TransformWrapper
           defaultScale={1}
           wheel={{ step: 0.1 }}
@@ -61,7 +61,7 @@ export const ImageFiles = ({ contents, initialPage = 1 }: ImageFilesProps) => {
             <Fragment>
               <div className="relative">
                 <TransformComponent contentClass="cursor-grab selection:cursor-grabbing">
-                  <img src={src} alt="Imagem" className="w-full h-auto" />
+                  <img src={src} alt="Imagem" className="w-full h-auto rounded-lg" />
                 </TransformComponent>
                 <div
                   className={zoomButtonGroupTW({

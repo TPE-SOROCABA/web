@@ -12,7 +12,6 @@ export function Perfil() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="h-20">upload de imagem</div>
       <div className="grid grid-cols-2 space-y-2 gap-4">
         <Input
           crossOrigin
