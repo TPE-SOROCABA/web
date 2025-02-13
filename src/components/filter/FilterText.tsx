@@ -28,7 +28,9 @@ export function FilterText({
   showButton = true,
   className,
 }: FilterText) {
-  const [search, setSearch] = useState("");
+  const query = new URLSearchParams(window.location.search);
+  const searchQuery = query.get("search");
+  const [search, setSearch] = useState(searchQuery || "");
   const [, setSearchParams] = useSearchParams();
 
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
@@ -47,7 +49,7 @@ export function FilterText({
     setSearch((old) => {
       if (Boolean(old) && !value) setSearchParams({});
       handleSearchEvent && handleSearchEvent(value);
-      setSearchParams({ search: value });
+      if (value) setSearchParams({ search: value });
       return value;
     });
   };
@@ -67,6 +69,7 @@ export function FilterText({
         size="lg"
         value={search}
         onChange={updateSearch}
+        autoFocus
       />
       {!handleSearchEvent && (
         <Button

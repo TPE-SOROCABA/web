@@ -1,4 +1,5 @@
 export const formatPhone = (phone: string) => {
+  if (!phone) return "";
   const phoneLength = phone.length;
   const phoneFormatted =
     phoneLength === 11

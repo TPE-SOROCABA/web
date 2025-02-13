@@ -115,65 +115,7 @@ export function InputParticipant({
                   Boolean(participant?.incident_history) || false
                 }
               >
-                {() => (
-                  <>
-                    {!participant.incident_history ? (
-                      <Participant.Button>
-                        {({ showButton }) => (
-                          <div
-                            className={`
-                              absolute ${
-                                showButton ? "right-0" : "-right-44"
-                              } top-0 w-1/2 h-full transition-all ease-in-out duration-300
-                            `}
-                          >
-                            <Button
-                              placeholder="Selecionar participante"
-                              className={`
-                              justify-center items-center h-full w-full rounded-r-lg rounded-l-none z-10 bg-primary-600 border border-primary-600 cursor-pointer
-                            `}
-                              onClick={() => {
-                                onSelect(participant.id);
-                                setParticipantSelected(participant);
-                                close();
-                              }}
-                            >
-                              selecionar
-                            </Button>
-                          </div>
-                        )}
-                      </Participant.Button>
-                    ) : (
-                      <Participant.Button>
-                        {({ showButton }) => (
-                          <Button
-                            placeholder="Selecionar participante"
-                            className={`
-                      flex justify-center items-center h-full w-40 absolute top-0 rounded-r-lg opacity-100 rounded-l-none z-50 bg-green-400 border border-green-400 cursor-pointer
-                      ${showButton ? "right-0" : "-right-44"}
-                        `}
-                            onClick={async () => {
-                              close();
-                              await toast.promise(
-                                http.delete(
-                                  `/participants/${participant.id}/incidences/${participant.incident_history["id"]}`
-                                ),
-                                {
-                                  loading: "Ativando participante",
-                                  success: "Participante ativado",
-                                  error: "Erro ao ativar participante",
-                                }
-                              );
-                              cb && cb();
-                            }}
-                          >
-                            ativar
-                          </Button>
-                        )}
-                      </Participant.Button>
-                    )}
-                  </>
-                )}
+                {() => <ActionParticipantButton participant={participant} />}
               </Participant.Root>
             ))
           ) : (
@@ -185,4 +127,88 @@ export function InputParticipant({
       </div>
     </>
   );
+
+  interface SelectParticipantButtonProps {
+    participant: IParticipant;
+  }
+  function SelectParticipantButton({
+    participant,
+  }: SelectParticipantButtonProps) {
+    return (
+      <Participant.Button>
+        {({ showButton }) => (
+          <div
+            className={`
+            absolute ${
+              showButton ? "right-0" : "-right-44"
+            } top-0 w-1/2 h-full transition-all ease-in-out duration-300
+          `}
+          >
+            <Button
+              placeholder="Selecionar participante"
+              className={`
+            justify-center items-center h-full w-full rounded-r-lg rounded-l-none z-10 bg-primary-600 border border-primary-600 cursor-pointer
+          `}
+              onClick={() => {
+                onSelect(participant.id);
+                setParticipantSelected(participant);
+                close();
+              }}
+            >
+              selecionar
+            </Button>
+          </div>
+        )}
+      </Participant.Button>
+    );
+  }
+
+  interface ActiveParticipantButtonProps {
+    participant: IParticipant;
+  }
+  function ActiveParticipantButton({
+    participant,
+  }: ActiveParticipantButtonProps) {
+    return (
+      <Participant.Button>
+        {({ showButton }) => (
+          <Button
+            placeholder="Selecionar participante"
+            className={`
+                      flex justify-center items-center h-full w-40 absolute top-0 rounded-r-lg opacity-100 rounded-l-none z-50 bg-green-400 border border-green-400 cursor-pointer
+                      ${showButton ? "right-0" : "-right-44"}
+                        `}
+            onClick={async () => {
+              close();
+              await toast.promise(
+                http.delete(
+                  `/participants/${participant.id}/incidences/${participant.incident_history["id"]}`
+                ),
+                {
+                  loading: "Ativando participante",
+                  success: "Participante ativado",
+                  error: "Erro ao ativar participante",
+                }
+              );
+              cb && cb();
+            }}
+          >
+            ativar
+          </Button>
+        )}
+      </Participant.Button>
+    );
+  }
+
+  interface ActionParticipantButtonProps {
+    participant: IParticipant;
+  }
+  function ActionParticipantButton({
+    participant,
+  }: ActionParticipantButtonProps) {
+    if (participant.incident_history) {
+      return <ActiveParticipantButton participant={participant} />;
+    }
+    return <SelectParticipantButton participant={participant} />;
+  }
 }

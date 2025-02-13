@@ -11,6 +11,18 @@ const routes = [
     path: "/lista-designacao/designar",
     breadcrumbName: "Designar",
   },
+  {
+    path: "/peticao",
+    breadcrumbName: "Petição",
+  },
+  {
+    path: "/peticao/upload",
+    breadcrumbName: "Nova Petição",
+  },
+  {
+    path: "/peticao/form",
+    breadcrumbName: "Nova Petição",
+  },
 ];
 
 export const generateBreadcrumbs = (fullPath: string) => {

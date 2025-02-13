@@ -22,7 +22,7 @@ export const Menu = () => {
 
   const path = location.pathname;
   const currentPage = pagesHeader.find((page) => {
-    return page.path === path
+    return page.path === path;
   });
 
   const PROFILE_BR = {
@@ -34,12 +34,13 @@ export const Menu = () => {
     ["ADMIN_ANALYST"]: "Analista Administrativo",
   };
 
-
   useEffect(() => {
-    http.get(`/groups/${token?.groupId}/designations/week-details`).then((response) => {
-      setGroupDetails(response.data)
-    })
-  }, [])
+    http
+      .get(`/groups/${token?.groupId}/designations/week-details`)
+      .then((response) => {
+        setGroupDetails(response.data);
+      });
+  }, []);
 
   return (
     <div className="relative">
@@ -55,7 +56,9 @@ export const Menu = () => {
         </div>
         <div className="flex flex-row items-center gap-3">
           {groupDetails?.designation?.designationDate && (
-             <CountdownTimer targetDate={groupDetails.designation.designationDate} />
+            <CountdownTimer
+              targetDate={groupDetails.designation.designationDate}
+            />
           )}
           <h2 className="text-white text-1xl hidden md:block">
             {PROFILE_BR[token?.profile as never] || ""}
@@ -73,7 +76,7 @@ export const Menu = () => {
       </header>
       <div className="h-16 invisible"></div>
       <div
-        className={`${open ? "overflow-hidden" : ""} flex items-start h-screen`}
+        className={`${open ? "overflow-hidden" : ""} flex items-start h-[90hv]`}
       >
         <Sidebar open={open} closeDrawer={closeDrawer} />
         <div className="flex justify-start items-start p-2 pt-0 w-full">
@@ -87,12 +90,11 @@ export const Menu = () => {
 
 const BadgeOutline = ({ children }: { children: ReactNode }) => {
   return (
-    <span className="flex items-center justify-center w-5 h-5 bg-primary-100 text-primary-700 text-xs rounded-full bottom-0 right-1.5 fixed">
+    <span className="flex items-center justify-center w-fit h-5 bg-primary-100 border border-primary-400 text-primary-700 text-xs rounded-lg p-0.5 bottom-1 right-1.5 fixed pointer-events-none">
       {children}
     </span>
   );
 };
-
 
 export interface IGroupDetails {
   id: string;

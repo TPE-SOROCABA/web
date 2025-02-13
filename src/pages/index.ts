@@ -4,3 +4,6 @@ export * from "./designacao/lista";
 export * from "./designacao";
 export * from "./hello";
 export * from "./consultar";
+export * from "./peticao";
+export * from "./peticao/formulario";
+export * from "./peticao/upload";

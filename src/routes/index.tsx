@@ -8,6 +8,9 @@ import {
   NewPassword,
   Dashboard,
   ConsultarHistorico,
+  Peticao,
+  FormularioPeticao,
+  UploadPeticao,
 } from "../pages";
 import { PrivateRoute } from "./PrivateRoutes";
 import { WeekDesignation } from "../pages/week-designation/WeekDesignation";
@@ -24,18 +27,28 @@ export function RoutesApp() {
           element={<CheckNumberCode />}
         />
         <Route path="/forgot-password/new-password" element={<NewPassword />} />
+
         <Route element={<Menu />}>
           <Route element={<PrivateRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
+
+            <Route path="/peticao">
+              <Route path="" element={<Peticao />} />
+              <Route path="upload" element={<UploadPeticao />} />
+              <Route path="form" element={<FormularioPeticao />} />
+            </Route>
+
             <Route path="/consultar">
               <Route path="historico" element={<ConsultarHistorico />} />
             </Route>
+
             <Route path="/lista-designacao">
               <Route path="" element={<ListaDesignacao />} />
               <Route path="designar" element={<Designar />} />
             </Route>
           </Route>
         </Route>
+
         <Route
           path="/week-designation/:designationId"
           element={<WeekDesignation />}

@@ -29,11 +29,13 @@ export function ListaDesignacao() {
     Designation["status"] | null
   >(null);
   const [mode, setMode] = useState<"list" | "card">("card");
+  const [loading, setLoading] = useState<boolean>(true);
 
   const http = useHttp();
 
   const getParticipants = useCallback(async (search: string = "") => {
     if (!groupId) return console.log("groupId not found");
+    setLoading(true);
     const { data } = await http.get<IParticipant[]>(`/participants`, {
       params: {
         groupId,
@@ -48,6 +50,7 @@ export function ListaDesignacao() {
     setParticipants(
       shadowCards([...participantsActive, ...participantsAbsent])
     );
+    setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -127,7 +130,7 @@ export function ListaDesignacao() {
 
   return (
     <BoxScreen
-      loader={Boolean(!participants.length)}
+      loader={loading}
       showBreadcrumbs={true}
       rightContent={
         <>
@@ -163,56 +166,52 @@ export function ListaDesignacao() {
           className="flex justify-center gap-4 rounded-3xl border-primary-500 items-center h-12 z-30 focus:outline-none !overflow-visible"
           type="button"
           onClick={() => {
-            setMode((prev) => (prev === "list" ? "card" : "list"))
+            setMode((prev) => (prev === "list" ? "card" : "list"));
           }}
         >
-          Visualização {
-            mode !== "list" ? (
-              <List />
-            ) : (
-              <Component />
-            )
-          }
+          Visualização {mode !== "list" ? <List /> : <Component />}
         </Button>
-        <Link className="w-full flex justify-end" to="/lista-designacao/designar">
-          <Button
-            variant="filled"
-            className="bg-primary-600 rounded-3xl h-12 min-w-36"
-            placeholder="Designar"
-            type="button"
-          >
-            {designationStatus === "IN_PROGRESS" ? "Editar Designação" : "Designar"}
-          </Button>
-        </Link>
+        <div className="w-full flex justify-end">
+          <Link className="rounded-3xl" to="/lista-designacao/designar">
+            <Button
+              variant="filled"
+              className="bg-primary-600 rounded-3xl h-12 min-w-36"
+              placeholder="Designar"
+              type="button"
+            >
+              {designationStatus === "IN_PROGRESS"
+                ? "Editar Designação"
+                : "Designar"}
+            </Button>
+          </Link>
+        </div>
       </div>
 
-      {
-        mode === "list" ? (
-          <ListaParticipantes
-            designationStatus={designationStatus}
-            participants={participants.filter((participant) => {
-              if (filterByStatus === "all") return true;
-              if (filterByStatus === "present") return !isAbsent(participant);
-              if (filterByStatus === "absent") return isAbsent(participant);
-              return false;
-            })}
-            handleAbsentEvent={handleAbsentEvent}
-            handleActiveEvent={handleActiveEvent}
-          />
-        ) : (
-          <ListaCardsParticipantes
-            designationStatus={designationStatus}
-            participants={participants.filter((participant) => {
-              if (filterByStatus === "all") return true;
-              if (filterByStatus === "present") return !isAbsent(participant);
-              if (filterByStatus === "absent") return isAbsent(participant);
-              return false;
-            })}
-            handleAbsentEvent={handleAbsentEvent}
-            handleActiveEvent={handleActiveEvent}
-          />
-        )
-      }
+      {mode === "list" ? (
+        <ListaParticipantes
+          designationStatus={designationStatus}
+          participants={participants.filter((participant) => {
+            if (filterByStatus === "all") return true;
+            if (filterByStatus === "present") return !isAbsent(participant);
+            if (filterByStatus === "absent") return isAbsent(participant);
+            return false;
+          })}
+          handleAbsentEvent={handleAbsentEvent}
+          handleActiveEvent={handleActiveEvent}
+        />
+      ) : (
+        <ListaCardsParticipantes
+          designationStatus={designationStatus}
+          participants={participants.filter((participant) => {
+            if (filterByStatus === "all") return true;
+            if (filterByStatus === "present") return !isAbsent(participant);
+            if (filterByStatus === "absent") return isAbsent(participant);
+            return false;
+          })}
+          handleAbsentEvent={handleAbsentEvent}
+          handleActiveEvent={handleActiveEvent}
+        />
+      )}
     </BoxScreen>
   );
 }
@@ -393,7 +392,7 @@ function FilterStatus({ status, setStatus }: FilterStatusProps) {
         {status === "all"
           ? "Filtrar"
           : options.find((option) => option.name === status)?.title ||
-          "Filtrar"}
+            "Filtrar"}
         <ListFilter />
       </Button>
       {showOptions && (
