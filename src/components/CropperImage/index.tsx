@@ -7,15 +7,22 @@ import "react-image-crop/dist/ReactCrop.css";
 import "./index.css";
 import { useHttp } from "../../lib";
 import { AxiosError } from "axios";
-import { SeparatorHorizontal } from "lucide-react";
+
+interface UploadImageProps {
+  img: string;
+  setImage: (image: any) => void;
+  className?: string;
+  handleDeleteImage: (props?: any) => void;
+  participantId: string;
+}
 
 export function UploadImage({
   img = image_placeholder,
   setImage: uploadImage,
-  className = "",
+  // className = "",
   handleDeleteImage,
   participantId,
-}) {
+}: UploadImageProps) {
   const axios = useHttp();
 
   const [imagemOfClient, setImagemOfClient] = useState(img);
@@ -155,15 +162,15 @@ export function UploadImage({
     );
   }
 
-  function clearValuesImage() {
-    setImage(null);
-    setResult(null);
-    uploadImage("");
-    setSrc("");
-    setViewImage("");
-    setImagemOfClient(image_placeholder);
-    setClickDeleteImage(true);
-  }
+  // function clearValuesImage() {
+  //   setImage(null);
+  //   setResult(null);
+  //   uploadImage("");
+  //   setSrc("");
+  //   setViewImage("");
+  //   setImagemOfClient(image_placeholder);
+  //   setClickDeleteImage(true);
+  // }
 
   return (
     <>

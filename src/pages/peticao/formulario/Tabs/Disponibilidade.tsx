@@ -1,6 +1,5 @@
 import { Checkbox } from "@material-tailwind/react";
 import { usePetitionFormStore } from "../store/useContextForm";
-import { onChange } from "node_modules/react-toastify/dist/core/store";
 
 const DAYS = [
   { weekday: 0, label: "Domingo" },

@@ -8,8 +8,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@material-tailwind/react";
@@ -25,8 +23,8 @@ interface CheckboxGroupProps {
 }
 
 export function CheckboxGroup({
-  label,
-  placeholder,
+  // label,
+  // placeholder,
   children,
   options,
   value,

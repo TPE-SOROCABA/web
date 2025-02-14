@@ -1,8 +1,8 @@
 import { Select, Option, Input, Button } from "@material-tailwind/react";
 import { usePetitionFormStore } from "../store/useContextForm";
 import { CheckboxGroup } from "@/components/checkboxGroup";
-import { useCallback, useEffect, useState } from "react";
-import { useHttp } from "../../useHttpDev";
+import { useState } from "react";
+
 import {
   Command,
   CommandEmpty,
@@ -16,45 +16,6 @@ import {
 } from "@/components/index";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/components/lib/utils";
-
-const congregacao = [
-  { value: "Magnólia", label: "Magnólia" },
-  { value: "Jardim", label: "Jardim" },
-  { value: "Cidade", label: "Cidade" },
-  { value: "Vila", label: "Vila" },
-  { value: "Bairro", label: "Bairro" },
-  { value: "Parque", label: "Parque" },
-  { value: "Conjunto", label: "Conjunto" },
-  { value: "Residencial", label: "Residencial" },
-  { value: "Chácara", label: "Chácara" },
-  { value: "Sítio", label: "Sítio" },
-  { value: "Fazenda", label: "Fazenda" },
-  { value: "Recanto", label: "Recanto" },
-  { value: "Loteamento", label: "Loteamento" },
-  { value: "Vale", label: "Vale" },
-  { value: "Morro", label: "Morro" },
-  { value: "Serra", label: "Serra" },
-  { value: "Monte", label: "Monte" },
-  { value: "Várzea", label: "Várzea" },
-  { value: "Praia", label: "Praia" },
-  { value: "Ilha", label: "Ilha" },
-  { value: "Estrada", label: "Estrada" },
-  { value: "Travessa", label: "Travessa" },
-  { value: "Rua", label: "Rua" },
-  { value: "Avenida", label: "Avenida" },
-  { value: "Alameda", label: "Alameda" },
-  { value: "Largo", label: "Largo" },
-  { value: "Praça", label: "Praça" },
-  { value: "Viela", label: "Viela" },
-  { value: "Rodovia", label: "Rodovia" },
-  { value: "Via", label: "Via" },
-  { value: "Passarela", label: "Passarela" },
-  { value: "Passagem", label: "Passagem" },
-  { value: "Escadaria", label: "Escadaria" },
-  { value: "Travessão", label: "Travessão" },
-  { value: "Vereda", label: "Vereda" },
-  { value: "Vereda", label: "Vereda" },
-];
 
 const languages = [
   { id: "PORTUGUÊS", label: "Português" },

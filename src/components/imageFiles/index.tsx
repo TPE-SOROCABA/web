@@ -51,13 +51,9 @@ export const ImageFiles = ({ contents, initialPage = 1 }: ImageFilesProps) => {
     <div className="flex flex-col col-span-1 gap-1 relative border-2 border-dashed border-primary-300 rounded-lg">
       <div className="container mx-auto p-2">
         <TransformWrapper
-          defaultScale={1}
           wheel={{ step: 0.1 }}
-          pan={{ velocity: 0.5 }}
-          zoomIn={{ step: 0.1 }}
-          zoomOut={{ step: 0.1 }}
         >
-          {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
+          {({ zoomIn, zoomOut }) => (
             <Fragment>
               <div className="relative">
                 <TransformComponent contentClass="cursor-grab selection:cursor-grabbing">

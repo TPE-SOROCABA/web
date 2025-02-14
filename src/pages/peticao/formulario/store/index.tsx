@@ -91,7 +91,7 @@ export function PetitionFormProvider({ children }: StoreProviderProps) {
         ...prev,
         participants: [data],
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       const status = error.response?.status;
       if (status === 404) {

@@ -77,41 +77,41 @@ export const useDesignation = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const shadowCards = (assignments: Assignment[]): Assignment[] => {
-    const CARD_WIDTH = 330;
-    const SIDE_BAR_WIDTH = 64;
-    const WINDOW_WIDTH = window.innerWidth - SIDE_BAR_WIDTH - 208;
+  // const shadowCards = (assignments: Assignment[]): Assignment[] => {
+  //   const CARD_WIDTH = 330;
+  //   const SIDE_BAR_WIDTH = 64;
+  //   const WINDOW_WIDTH = window.innerWidth - SIDE_BAR_WIDTH - 208;
 
-    const quantityCards = assignments.filter((a) => a.point.id).length;
-    const cardsByRow = Math.floor(WINDOW_WIDTH / CARD_WIDTH);
+  //   const quantityCards = assignments.filter((a) => a.point.id).length;
+  //   const cardsByRow = Math.floor(WINDOW_WIDTH / CARD_WIDTH);
 
-    type LineRaw = Assignment[];
-    type Line = LineRaw[];
+  //   type LineRaw = Assignment[];
+  //   type Line = LineRaw[];
 
-    const lines: Line = [];
-    let currentLine = 0;
-    Array.from({ length: quantityCards }).forEach((_, index) => {
-      if (lines[currentLine]?.length === cardsByRow) {
-        currentLine++;
-      }
-      if (!lines[currentLine]?.length) {
-        lines[currentLine] = [];
-      }
-      lines[currentLine].push(assignments[index]);
-    });
+  //   const lines: Line = [];
+  //   let currentLine = 0;
+  //   Array.from({ length: quantityCards }).forEach((_, index) => {
+  //     if (lines[currentLine]?.length === cardsByRow) {
+  //       currentLine++;
+  //     }
+  //     if (!lines[currentLine]?.length) {
+  //       lines[currentLine] = [];
+  //     }
+  //     lines[currentLine].push(assignments[index]);
+  //   });
 
-    const lastLine = lines.at(-1);
-    const lastLineLength = lastLine?.length || 0;
-    if (lastLineLength < cardsByRow && lastLine) {
-      const emptyCards = cardsByRow - lastLineLength;
-      Array.from({ length: emptyCards }).forEach(() => {
-        lastLine.push(SHADOW_ASSIGNMENT.from());
-      });
-    }
+  //   const lastLine = lines.at(-1);
+  //   const lastLineLength = lastLine?.length || 0;
+  //   if (lastLineLength < cardsByRow && lastLine) {
+  //     const emptyCards = cardsByRow - lastLineLength;
+  //     Array.from({ length: emptyCards }).forEach(() => {
+  //       lastLine.push(SHADOW_ASSIGNMENT.from());
+  //     });
+  //   }
 
-    const newAssignments = lines.flat();
-    return newAssignments;
-  };
+  //   const newAssignments = lines.flat();
+  //   return newAssignments;
+  // };
 
   const handleSearch = async (search: string) => {
     timeout && clearTimeout(timeout);
@@ -278,34 +278,34 @@ export const useDesignation = () => {
   };
 };
 
-class SHADOW_ASSIGNMENT {
-  point = {
-    id: "",
-    name: "",
-    status: false,
-  };
-  publication_carts = [];
-  participants = [];
-  config = {
-    max: 0,
-    min: 0,
-  };
+// class SHADOW_ASSIGNMENT {
+//   point = {
+//     id: "",
+//     name: "",
+//     status: false,
+//   };
+//   publication_carts = [];
+//   participants = [];
+//   config = {
+//     max: 0,
+//     min: 0,
+//   };
 
-  static from() {
-    return new SHADOW_ASSIGNMENT();
-  }
+//   static from() {
+//     return new SHADOW_ASSIGNMENT();
+//   }
 
-  constructor() {
-    this.point = {
-      id: Math.random().toString(36).substring(7),
-      name: "",
-      status: false,
-    };
-    this.publication_carts = [];
-    this.participants = [];
-    this.config = {
-      max: 0,
-      min: 0,
-    };
-  }
-}
+//   constructor() {
+//     this.point = {
+//       id: Math.random().toString(36).substring(7),
+//       name: "",
+//       status: false,
+//     };
+//     this.publication_carts = [];
+//     this.participants = [];
+//     this.config = {
+//       max: 0,
+//       min: 0,
+//     };
+//   }
+// }
