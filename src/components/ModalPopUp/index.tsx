@@ -19,13 +19,13 @@ interface ModalPopUpProps {
 export function ModalPopUp({
   status,
   title,
-  text,
+  // text,
   onClickCancel,
   children,
   className,
   classNameTitle,
   classNameChildren,
-  classNameGrandson,
+  // classNameGrandson,
 }: ModalPopUpProps) {
   if (!status) return null;
 

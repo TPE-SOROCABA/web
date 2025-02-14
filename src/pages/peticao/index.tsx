@@ -3,7 +3,7 @@ import { BoxScreen } from "../../components/box";
 import { useCallback, useEffect, useState } from "react";
 import { FileIcon } from "lucide-react";
 import { useHttp } from "./useHttpDev";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IPetition } from "./types";
 import { PetitionProvider } from "./store";
 import { usePetitionStore } from "./store/useContextForm";
