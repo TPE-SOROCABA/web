@@ -35,7 +35,7 @@ export function CheckboxGroup({
   //   const [showPanel, setShowPanel] = React.useState<Checked>(false);
   const [optionsChecked, setOptionsChecked] = React.useState<{
     [key: number]: Checked;
-  }>(value.reduce((acc, option) => ({ ...acc, [option.id]: true }), {}));
+  }>(value?.reduce((acc, option) => ({ ...acc, [option.id]: true }), {}));
 
   return (
     <DropdownMenu>
