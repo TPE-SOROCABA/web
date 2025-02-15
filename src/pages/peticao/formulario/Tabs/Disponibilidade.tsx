@@ -36,7 +36,7 @@ export function Disponibilidade() {
               } else {
                 oldAvailability[oldAvailability.indexOf(periodExists)][period] =
                   !oldAvailability[oldAvailability.indexOf(periodExists)][
-                    period
+                  period
                   ];
               }
 
@@ -67,18 +67,24 @@ function Periodos({ onChange, availability }: PeriodosProps) {
   return (
     <div className="flex items-center justify-between gap-5">
       <Checkbox
+        containerProps={{ className: "p-0 m-3 !rounded-none" }}
+        className="!rounded-none border-primary-700 hover:before:opacity-0 checked:bg-primary-500"
         label="Manhã"
         crossOrigin
         onChange={() => onChange("morning")}
         checked={availability?.morning}
       />
       <Checkbox
+        containerProps={{ className: "p-0 m-3 !rounded-none" }}
+        className="!rounded-none border-primary-700 hover:before:opacity-0 checked:bg-primary-500"
         label="Tarde"
         crossOrigin
         onChange={() => onChange("afternoon")}
         checked={availability?.afternoon}
       />
       <Checkbox
+        containerProps={{ className: "p-0 m-3 !rounded-none" }}
+        className="!rounded-none border-primary-700 hover:before:opacity-0 checked:bg-primary-500"
         label="Noite"
         crossOrigin
         onChange={() => onChange("evening")}
