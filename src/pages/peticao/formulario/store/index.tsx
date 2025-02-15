@@ -8,6 +8,7 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { IPetition } from "../../types";
 import { useHttp } from "../../useHttpDev";
+import { useToast } from "src/lib";
 
 export interface PetitionForm extends IPetition {
   avatarUrl: string;
@@ -21,6 +22,9 @@ interface PetitionFormContextProps {
   petition: PetitionForm;
   updatePetition: ({ name, value }: { name: string; value: any }) => void;
   congregations: ICongregations[];
+  handleUploadImage: (image: string | Blob | null, participantId: string) => Promise<void>;
+  retryUploadImage: { formData: FormData, image: string | Blob | null } | null;
+  retryUpload: (participantId: string) => Promise<void>;
 }
 
 interface ICongregations {
@@ -42,10 +46,12 @@ export function PetitionFormProvider({ children }: StoreProviderProps) {
   const location = useLocation();
   const router = useNavigate();
   const http = useHttp();
+  const toast = useToast();
   const [petition, setPetition] = useState<PetitionForm>(
     location.state?.petition
   );
   const [congregations, setCongregations] = useState<ICongregations[]>([]);
+  const [retryUploadImage, setRetryUploadImage] = useState<{ formData: FormData, image: string | Blob | null } | null>(null);
 
   const listCongregations = useCallback(async () => {
     try {
@@ -67,12 +73,16 @@ export function PetitionFormProvider({ children }: StoreProviderProps) {
 
   const updatePetition = ({ name, value }: { name: string; value: any }) => {
     setPetition((prev) => {
-      const participants = prev.participants.map((participant) => {
+      const participants = prev.participants?.length ? prev.participants.map((participant) => {
         return {
           ...participant,
           [name]: value,
         };
-      });
+      }) : [
+        {
+          [name]: value,
+        }
+      ] as any
       return {
         ...prev,
         participants,
@@ -109,12 +119,63 @@ export function PetitionFormProvider({ children }: StoreProviderProps) {
   };
   const findByEmailWithDebounce = debounce(findByEmail, 1000);
 
+  const handleUploadImage = async (image: string | Blob | null, participantId: string) => {
+    if (!image) {
+      toast.error("Imagem não selecionada", {
+        duration: 3000,
+      });
+      return;
+    }
+    const formData = new FormData();
+    formData.append('file', image);
+    uploadImage(formData, image, participantId);
+  };
+  const retryUpload = async (participantId: string) => {
+    if (!retryUploadImage) return;
+    await uploadImage(retryUploadImage.formData, retryUploadImage.image, participantId);
+  }
+
+  const uploadImage = async (formData: FormData, image: string | Blob | null, participantId: string) => {
+    const imageUrl = image instanceof Blob ? URL.createObjectURL(image) : image;
+    try {
+      const {data} = await http.post(`/participants/${participantId}/photo`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      toast.success("Imagem alterada com sucesso", {
+        duration: 3000,
+      });
+
+      const profilePhoto = data?.profilePhoto;
+      if (profilePhoto) {
+        updatePetition({ name: "profilePhoto", value: profilePhoto });
+      }
+    } catch (error) {
+      console.log(error);
+      const participant = petition?.participants[0]?.id;
+      if (retryUploadImage !== null && participant) {
+        toast.error("Erro ao alterar a imagem", {
+          duration: 3000,
+        });
+      }
+      updatePetition({ name: "profilePhoto", value: imageUrl });
+      setRetryUploadImage({
+        formData,
+        image
+      });
+    }
+  }
+
   return (
     <PetitionFormContext.Provider
       value={{
         petition,
         updatePetition,
         congregations,
+        handleUploadImage,
+        retryUploadImage,
+        retryUpload,
       }}
     >
       {children}

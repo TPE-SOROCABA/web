@@ -13,7 +13,7 @@ export interface IParticipant {
   id: string;
   name: string;
   phone: string;
-  profilePhoto: null;
+  profilePhoto: string;
   profile: string;
   computed: null;
   sex: string;

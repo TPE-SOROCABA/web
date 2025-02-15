@@ -9,10 +9,9 @@ import { Perfil } from "./Perfil";
 import { Congregacao } from "./Congregacao";
 import { Disponibilidade } from "./Disponibilidade";
 import { usePetitionFormStore } from "../store/useContextForm";
-import { useToast } from "src/lib";
 import { UploadImage } from "@/components/index";
 import { ChevronDown } from "lucide-react";
-import { useHttp } from "../../useHttpDev";
+import dayjs from "dayjs";
 
 const tabs = [
   { component: <Perfil />, label: "Pessoal" },
@@ -22,49 +21,27 @@ const tabs = [
 
 export function HandlerTabs() {
   const [tab, setTab] = useState(0);
-  const { petition, updatePetition } = usePetitionFormStore();
-  const http = useHttp();
-  const toast = useToast();
+  const { petition, handleUploadImage } = usePetitionFormStore();
 
-  const handleUploadImage = async (image: string | Blob | null) => {
-    try {
-      if (!image) {
-        toast.error("Imagem não selecionada", {
-          duration: 3000,
-        });
-        return;
-      }
-      const formData = new FormData();
-      formData.append('file', image);
-      await http.post(`/participants/${petition.participants[0]?.id}/photo`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      toast.success("Imagem alterada com sucesso", {
-        duration: 3000,
-      });
-      const imageUrl = image instanceof Blob ? URL.createObjectURL(image) : image;
-      updatePetition({ name: "profilePhoto", value: imageUrl });
-    } catch (error) {
-      console.log(error);
-      toast.error("Erro ao alterar a imagem", {
-        duration: 3000,
-      });
-    }
-  };
+  const dateBirth = dayjs(petition?.participants[0]?.birthDate);
+  const age = dayjs().diff(dateBirth, "year");
   return (
     <div className="flex flex-col col-span-1 gap-8">
-      <div
-        className="col-span-2 w-fit"
-      >
-        <UploadImage
-          img={petition.participants[0]?.profilePhoto || ""}
-          handleDeleteImage={handleUploadImage}
-          setImage={handleUploadImage}
-          className={`${!petition.participants[0]?.id ? "pointer-events-none" : ""}`}
-          participantId={petition.participants[0]?.id || ""}
-        />
+      <div className="flex items-center justify-between gap-10">
+        <div
+          className="w-fit"
+        >
+          <UploadImage
+            img={petition?.participants[0]?.profilePhoto || ""}
+            handleDeleteImage={() => handleUploadImage(null, petition?.participants[0]?.id || "")}
+            setImage={(image) => handleUploadImage(image, petition?.participants[0]?.id || "")}
+            className={`${!petition?.participants[0]?.id ? "pointer-events-none" : ""}`}
+            participantId={petition?.participants[0]?.id || ""}
+          />
+        </div>
+        <span className="text-lg font-bold underline text-gray-700" hidden={age > 16}>
+          Menor de Idade
+        </span>
       </div>
       {tabs.map((item, index) => (
         <Accordion placeholder="" open={index === tab} key={index} icon={<ChevronDown className={`transition-transform ${index === tab ? "rotate-180" : ""}`} />}>

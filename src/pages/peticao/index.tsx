@@ -19,14 +19,14 @@ export function Peticao() {
 
 function Petition() {
   const http = useHttp();
-  const { mode, searchProtocol, searchStatus } = usePetitionStore();
+  const { mode, search, searchStatus } = usePetitionStore();
   const [petitions, setPetitions] = useState<IPetition[]>([]);
   const [loading, setLoading] = useState(true);
 
   const listPetitions = useCallback(async () => {
     try {
       const url = new URLSearchParams({
-        ...(searchProtocol && { protocol: searchProtocol }),
+        ...(search && { search }),
         ...(searchStatus !== "ALL" && { status: searchStatus }),
       });
       const querie = url.toString() ? `?${url.toString()}` : "";
@@ -37,7 +37,7 @@ function Petition() {
     } finally {
       setLoading(false);
     }
-  }, [http, searchProtocol, searchStatus]);
+  }, [http, search, searchStatus]);
 
   useEffect(() => {
     listPetitions();
@@ -63,24 +63,22 @@ function Petition() {
 const OPTIONS_STATUS = [
   { label: "Todos", value: "ALL" },
   { label: "Ativo", value: "ACTIVE" },
+  { label: "Aguardando confirmação", value: "CREATED" },
   { label: "Aguardando Informações", value: "WAITING_INFORMATION" },
   { label: "Em espera", value: "WAITING" },
-  // { label: "Inativo", value: "inactive" },
-  // { label: "Expirado", value: "expired" },
   { label: "Suspensa", value: "SUSPENDED" },
   { label: "Excluído", value: "EXCLUDED" },
-  // { label: "Temporário", value: "temporary" },
 ];
 function Filter() {
   const {
-    setSearchProtocol: setSearch,
+    setSearch: setSearch,
     searchStatus,
     setSearchStatus,
   } = usePetitionStore();
   return (
     <div className="w-full grid grid-cols-4 gap-4 text-black">
       <FilterText
-        toSearch="Pesquisar por protocolo"
+        toSearch="Pesquisar por protocolo ou nome"
         showButton={false}
         className="col-span-2"
         handleSearchEvent={(search) => setSearch(search)}

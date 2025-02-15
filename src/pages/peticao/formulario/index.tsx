@@ -21,7 +21,7 @@ const ShowData = () => {
   const token = cookie.decodeToken();
   const mode = token?.profile === "COORDINATOR" ? "coordinator" : "analyst";
   const [checkedConfirmation, setCheckedConfirmation] = useState(false);
-  const { petition } = usePetitionFormStore();
+  const { petition, retryUploadImage, retryUpload } = usePetitionFormStore();
   const http = useHttp();
   const toast = useToast();
   const router = useNavigate();
@@ -46,27 +46,33 @@ const ShowData = () => {
 
   const updatePetition = async () => {
     if (mode !== "analyst" || !petition?.id) return;
+    let participantId = petition?.participants[0]?.id;
 
     try {
-      if (petition?.participants[0]?.id) {
+      if (participantId) {
         await http.put(
-          `participants/${petition.participants[0]?.id}`,
+          `participants/${participantId}`,
           petition.participants[0]
         );
       } else {
-        await http.post("participants", {
+        const { data } = await http.post("participants", {
           ...petition.participants[0],
+          profilePhoto: retryUploadImage === null ? petition.participants[0]?.profilePhoto : undefined,
           petitionId: petition.id,
         });
+        participantId = data[0]?.id;
       }
       toast.success("Petição atualizada com sucesso", {
         duration: 3000,
         onClose: () => router("/peticao"),
       });
+
+      if (retryUploadImage !== null) {
+        await retryUpload(participantId);
+      }
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message
-      const messages = errorMessage?.filter((message: string) => message.includes("obrigatório"))
-      if (messages) {
+      const messages = error.response?.data?.message
+      if (messages?.length) {
         const content = () => (<div>
           <h2 className="text-lg font-bold">Erro ao atualizar petição</h2>
           <div className="w-full border-t border-gray-300" />

@@ -30,9 +30,6 @@ export function CheckboxGroup({
   value,
   onChange,
 }: CheckboxGroupProps) {
-  //   const [showStatusBar, setShowStatusBar] = React.useState<Checked>(true);
-  //   const [showActivityBar, setShowActivityBar] = React.useState<Checked>(false);
-  //   const [showPanel, setShowPanel] = React.useState<Checked>(false);
   const [optionsChecked, setOptionsChecked] = React.useState<{
     [key: number]: Checked;
   }>(value?.reduce((acc, option) => ({ ...acc, [option.id]: true }), {}));

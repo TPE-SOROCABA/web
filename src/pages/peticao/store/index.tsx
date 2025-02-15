@@ -5,12 +5,12 @@ import {
   SetStateAction,
   useState,
 } from "react";
-import { useCookies } from "../../../lib";
+import { useCookies, debounce } from "src/lib";
 
 interface PetitionContextProps {
   mode: Mode;
-  searchProtocol: string;
-  setSearchProtocol: Dispatch<SetStateAction<string>>;
+  search: string;
+  setSearch: Dispatch<SetStateAction<string>>;
   searchStatus: Status;
   setSearchStatus: Dispatch<SetStateAction<Status>>;
 }
@@ -34,26 +34,17 @@ export function PetitionProvider({ children }: StoreProviderProps) {
   const cookie = useCookies();
   const token = cookie.decodeToken();
   const mode = token?.profile === "COORDINATOR" ? "coordinator" : "analyst";
-  const [searchProtocol, setSearchProtocol] = useState("");
+  const [search, setSearch] = useState("");
   const [searchStatus, setSearchStatus] = useState<Status>(mode === "analyst" ? "WAITING_INFORMATION" : "ALL");
 
-  const debounce = (fn: Function, delay: number) => {
-    let timeoutId: NodeJS.Timeout;
-    return function (...args: any) {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        fn(...args);
-      }, delay);
-    };
-  };
-  const updateSearchWithDebounce = debounce(setSearchProtocol, 500);
+  const updateSearchWithDebounce = debounce(setSearch, 500);
 
   return (
     <PetitionContext.Provider
       value={{
         mode,
-        searchProtocol,
-        setSearchProtocol: updateSearchWithDebounce,
+        search,
+        setSearch: updateSearchWithDebounce,
         searchStatus,
         setSearchStatus,
       }}

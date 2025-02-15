@@ -16,6 +16,9 @@ import {
 } from "@/components/index";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/components/lib/utils";
+import dayjs from "dayjs";
+import { useToast } from "src/lib";
+
 
 const languages = [
   { id: "PORTUGUÊS", label: "Português" },
@@ -95,6 +98,40 @@ function Combobox({
 
 export function Congregacao() {
   const { petition, updatePetition, congregations } = usePetitionFormStore();
+  const toast = useToast();
+
+  const updateBaptismDate = (date: string) => {
+    const rawBirthDate = petition.participants[0]?.birthDate;
+    const birthDate = dayjs(rawBirthDate);
+    const baptismDate = dayjs(date);
+    const baptismDateIsBeforeBirthDate = baptismDate.isBefore(birthDate);
+    if (baptismDateIsBeforeBirthDate) {
+      toast.error("A data de batismo não pode ser anterior à data de nascimento");
+      return;
+    }
+
+    updatePetition({
+      name: "baptismDate",
+      value: date,
+    });
+  };
+  const updateAttribution = (value: string) => {
+    const gender = petition.participants[0]?.sex;
+    const onlyMaleAttributions = ["ANCIÃO", "SERVO MINISTERIAL"];
+    const cantHasThisAttribution = gender === "FEMALE" ? onlyMaleAttributions.includes(value) : false;
+    if (!value || cantHasThisAttribution) {
+      toast.error("Uma irmã não pode ser " + value);
+      updatePetition({
+        name: "attributions",
+        value: ['PUBLICADOR(A)'],
+      });
+      return;
+    }
+    updatePetition({
+      name: "attributions",
+      value: [value],
+    });
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -144,8 +181,10 @@ export function Congregacao() {
           value={formatDateToInput(
             petition.participants[0]?.baptismDate as any as string
           )}
+          min={petition?.participants[0]?.birthDate ? dayjs(petition?.participants[0]?.birthDate).format("YYYY-MM-DD") : undefined}
+          max={dayjs().format("YYYY-MM-DD")}
           name="baptismDate"
-          onChange={(e) => updatePetition(e.target)}
+          onChange={(e) => updateBaptismDate(e.target.value)}
           type="date"
         />
         <Select
@@ -153,15 +192,10 @@ export function Congregacao() {
           placeholder={"Selecione"}
           containerProps={{ className: "col-span-1" }}
           value={petition.participants[0]?.attributions[0]}
-          onChange={(value) =>
-            updatePetition({
-              name: "attributions",
-              value: [value],
-            })
-          }
+          onChange={(value) => updateAttribution(value ?? "")}
         >
-          <Option value="SERVO MINISTERIAL">Servo Ministerial</Option>
-          <Option value="ANCIÃO">Ancião</Option>
+          <Option hidden={petition?.participants[0]?.sex === "FEMALE"} value="SERVO MINISTERIAL">Servo Ministerial</Option>
+          <Option hidden={petition?.participants[0]?.sex === "FEMALE"} value="ANCIÃO">Ancião</Option>
           <Option value="PUBLICADOR(A)">Publicador(a)</Option>
           <Option value="PIONEIRO(A) REGULAR">Pioneiro(a) Regular</Option>
         </Select>
