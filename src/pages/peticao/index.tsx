@@ -1,11 +1,11 @@
 import { Button, Option, Select } from "@material-tailwind/react";
 import { BoxScreen } from "../../components/box";
 import { useCallback, useEffect, useState } from "react";
-import { FileIcon } from "lucide-react";
+import { FileIcon, InfoIcon, ClockIcon, CheckIcon, BanIcon, XIcon } from "lucide-react";
 import { useHttp } from "./useHttpDev";
 import { Link, useNavigate } from "react-router-dom";
 import { IPetition } from "./types";
-import { PetitionProvider } from "./store";
+import { PetitionProvider, Status } from "./store";
 import { usePetitionStore } from "./store/useContextForm";
 import { FilterText } from "../../components/filter";
 
@@ -50,7 +50,13 @@ function Petition() {
       rightContent={<AddPetitionButton />}
     >
       {mode === "coordinator" ? <Header /> : <Filter />}
-      <Petitions petitions={petitions} />
+      {petitions?.length > 0 ? (
+        <Petitions petitions={petitions} />
+      ) : (
+        <div className="w-full flex flex-col items-center justify-center h-40">
+          <p className="text-lg font-bold text-primary-400">Nenhuma petição encontrada</p>
+        </div>
+      )}
     </BoxScreen>
   );
 }
@@ -89,7 +95,7 @@ function Filter() {
         onChange={(value) => setSearchStatus(value as any)}
       >
         {OPTIONS_STATUS.map((option) => (
-          <Option key={option.value} value={option.value} defaultValue={"ALL"}>
+          <Option key={option.value} value={option.value} defaultValue={"WAITING_INFORMATION"}>
             {option.label}
           </Option>
         ))}
@@ -129,7 +135,7 @@ function Petitions({ petitions }: { petitions: IPetition[] }) {
   const { mode } = usePetitionStore();
   return (
     <div className="w-full flex flex-col">
-      <div className="grid grid-cols-12 gap-4 w-full items-end text-center">
+      <div className="grid grid-cols-12 gap-4 w-full items-end text-center text-lg font-semibold text-primary-800">
         <div className="col-span-1">
           <FileIcon size={40} className="invisible" />
         </div>
@@ -166,18 +172,19 @@ function PetitionRow({ petition }: { petition: IPetition }) {
       ACTIVE: "Visualizar",
       SUSPENDED: "Visualizar",
       EXCLUDED: "Visualizar",
-      CREATED: "Completar",
+      CREATED: "Visualizar",
     };
     return labels[petition.status] || "Visualizar";
   };
 
-  const status = {
+  const status: Record<Status, string> = {
     WAITING_INFORMATION: "Aguardando Informações",
     WAITING: "Em espera",
     ACTIVE: "Ativo",
     SUSPENDED: "Suspensa",
     EXCLUDED: "Excluída",
-    CREATED: "Aguardando Informações",
+    CREATED: "Aguardando confirmação",
+    ALL: "Todos",
   };
 
   const openPetition = (petition: IPetition) => {
@@ -186,16 +193,36 @@ function PetitionRow({ petition }: { petition: IPetition }) {
     });
   };
 
+  const statusColor: Record<Status, string> = {
+    WAITING_INFORMATION: "text-[#D4C159]",
+    WAITING: "text-[#89B275]",
+    ACTIVE: "",
+    SUSPENDED: "",
+    EXCLUDED: "",
+    ALL: "",
+    CREATED: "text-[#D48859]",
+  };
+
+  const statusIcon: Record<Status, React.ReactNode> = {
+    WAITING_INFORMATION: <InfoIcon size={40} className="text-[#D4C159]" />,
+    WAITING: <CheckIcon size={40} className="text-[#89B275]" />,
+    ACTIVE: <CheckIcon size={40} className="text-[#89B275]" />,
+    SUSPENDED: <BanIcon size={40} className="text-[#D4C159]" />,
+    EXCLUDED: <XIcon size={40} className="text-[#D46559]" />,
+    CREATED: <ClockIcon size={40} className="text-[#D48859]" />,
+    ALL: <InfoIcon size={40} />,
+  };
+
   return (
     <div className="py-4 grid grid-cols-12 gap-4 items-center last:border-0 border-b border-primary-200 text-black font-medium text-lg text-center">
-      <div className="col-span-1ds">
-        <FileIcon size={40} />
+      <div className="col-span-1">
+        {statusIcon[petition.status]}
       </div>
       <div className={`col-span-${mode === "analyst" ? 2 : 3}`}>
         {petition?.participants[0]?.name || "- - -"}
       </div>
       <div className="col-span-3">{petition.protocol}</div>
-      <div className={`col-span-${mode === "analyst" ? 2 : 3}`}>
+      <div className={`col-span-${mode === "analyst" ? 2 : 3} ${statusColor[petition.status]}`}>
         {status[petition.status] || "- - -"}
       </div>
       <div className="col-span-2 text-center" hidden={mode !== "analyst"}>

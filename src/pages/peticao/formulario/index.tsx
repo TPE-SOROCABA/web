@@ -16,7 +16,6 @@ export function FormularioPeticao() {
     </PetitionFormProvider>
   );
 }
-
 const ShowData = () => {
   const cookie = useCookies();
   const token = cookie.decodeToken();
@@ -64,11 +63,23 @@ const ShowData = () => {
         duration: 3000,
         onClose: () => router("/peticao"),
       });
-    } catch (error) {
-      console.error(error);
-      toast.error("Erro ao atualizar petição", {
-        duration: 5000,
-      });
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message
+      const messages = errorMessage?.filter((message: string) => message.includes("obrigatório"))
+      if (messages) {
+        const content = () => (<div>
+          <h2 className="text-lg font-bold">Erro ao atualizar petição</h2>
+          <div className="w-full border-t border-gray-300" />
+          {messages.map((message: string, index: number) => (
+            <div key={message}>
+              <span>{message}</span>
+              {index < messages.length - 1 && (', \n')}
+            </div>
+          ))}
+        </div>)
+        return toast.error(content, { closeOnClick: true });
+      }
+      return toast.error("Erro ao atualizar petição, por favor verifique os campos preenchidos", { closeOnClick: true });
     }
   };
 
@@ -94,6 +105,8 @@ const ShowData = () => {
           <Checkbox
             crossOrigin
             label="Todas as informações sigilosas foram devidamente preenchidas*"
+            labelProps={{ className: "uppercase text-[#8C0000] font-bold text-lg tracking-wide" }}
+            containerProps={{ className: "rounded-lg p-0 mr-2 border border-primary-600" }}
             checked={checkedConfirmation}
             onChange={() => setCheckedConfirmation(!checkedConfirmation)}
           />

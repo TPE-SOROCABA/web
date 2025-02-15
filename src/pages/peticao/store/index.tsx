@@ -20,7 +20,7 @@ export const PetitionContext = createContext({} as PetitionContextProps);
 interface StoreProviderProps {
   children: ReactNode;
 }
-type Status =
+export type Status =
   | "CREATED"
   | "WAITING_INFORMATION"
   | "WAITING"
@@ -35,7 +35,7 @@ export function PetitionProvider({ children }: StoreProviderProps) {
   const token = cookie.decodeToken();
   const mode = token?.profile === "COORDINATOR" ? "coordinator" : "analyst";
   const [searchProtocol, setSearchProtocol] = useState("");
-  const [searchStatus, setSearchStatus] = useState<Status>("ALL");
+  const [searchStatus, setSearchStatus] = useState<Status>(mode === "analyst" ? "WAITING_INFORMATION" : "ALL");
 
   const debounce = (fn: Function, delay: number) => {
     let timeoutId: NodeJS.Timeout;

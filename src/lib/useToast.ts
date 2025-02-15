@@ -7,8 +7,9 @@ interface Toaster {
   loading: typeof toastMobile.loading | typeof toastDesktop.loading;
   dismiss: typeof toastMobile.dismiss | typeof toastDesktop.dismiss;
 }
+type ToastFunction = (content: JSX.Element) => void
 
-export const useToast = (): Toaster => {
+export const useToast = (): Toaster & ToastFunction => {
   const isMobile = window.innerWidth < 768;
   const toast = isMobile ? toastMobile : toastDesktop;
   return toast;
