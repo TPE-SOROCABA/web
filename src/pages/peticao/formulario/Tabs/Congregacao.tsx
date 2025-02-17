@@ -35,6 +35,7 @@ interface ComboboxProps {
   value: string;
   onChange: (value: string) => void;
   options: { value: string; label: string }[];
+  disabled?: boolean;
 }
 function Combobox({
   label,
@@ -42,17 +43,19 @@ function Combobox({
   value,
   onChange,
   options,
+  disabled = false,
 }: ComboboxProps) {
   const [open, setOpen] = useState(false);
   // const [newValue, setNewValue] = useState(value);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild className="col-span-2">
+      <PopoverTrigger asChild className="col-span-2" disabled={disabled}>
         <Button
           placeholder={placeholder}
           role="combobox"
           aria-expanded={open}
+          disabled={disabled}
           className="h-10 justify-between flex items-center bg-inherit border border-blue-gray-200 text-gray-600 text-left p-3 m-0 shadow-none cursor-default hover:shadow-none"
         >
           {/* {value
@@ -97,7 +100,10 @@ function Combobox({
 }
 
 export function Congregacao() {
-  const { petition, updatePetition, congregations } = usePetitionFormStore();
+  const { petition, updatePetition, congregations, mode } = usePetitionFormStore();
+  const statusIsCreated = petition?.status === "CREATED";
+  const isAnalyst = mode === "analyst";
+  const disableInputs = isAnalyst && statusIsCreated;
   const toast = useToast();
 
   const updateBaptismDate = (date: string) => {
@@ -157,6 +163,7 @@ export function Congregacao() {
             value: item.name,
             label: item.name,
           }))}
+          disabled={disableInputs}
         />
         <Input
           crossOrigin
@@ -165,6 +172,7 @@ export function Congregacao() {
           value={petition.participants[0]?.city}
           name="city"
           onChange={(e) => updatePetition(e.target)}
+          disabled={disableInputs}
         />
         <Input
           crossOrigin
@@ -173,6 +181,7 @@ export function Congregacao() {
           value={petition.participants[0]?.state}
           name="state"
           onChange={(e) => updatePetition(e.target)}
+          disabled={disableInputs}
         />
         <Input
           crossOrigin
@@ -186,6 +195,7 @@ export function Congregacao() {
           name="baptismDate"
           onChange={(e) => updateBaptismDate(e.target.value)}
           type="date"
+          disabled={disableInputs}
         />
         <Select
           label="Atualmente serve como"
@@ -193,6 +203,7 @@ export function Congregacao() {
           containerProps={{ className: "col-span-1" }}
           value={petition.participants[0]?.attributions[0]}
           onChange={(value) => updateAttribution(value ?? "")}
+          disabled={disableInputs}
         >
           <Option hidden={petition?.participants[0]?.sex === "FEMALE"} value="SERVO MINISTERIAL">Servo Ministerial</Option>
           <Option hidden={petition?.participants[0]?.sex === "FEMALE"} value="ANCIÃO">Ancião</Option>
@@ -219,6 +230,7 @@ export function Congregacao() {
                   ),
             });
           }}
+          disabled={disableInputs}
         >
           {petition.participants[0]?.languages?.length ? (
             <span

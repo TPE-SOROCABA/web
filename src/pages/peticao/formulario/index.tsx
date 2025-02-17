@@ -100,11 +100,28 @@ const ShowData = () => {
   };
 
   const statusIsCreated = petition?.status === "CREATED";
+  const isCoordinator = mode === "coordinator";
+
+  const ToRender = () => {
+    if (isCoordinator && statusIsCreated) {
+      return <Files />
+    }
+    const contents = [petition?.publicUrl];
+    if (isCoordinator) {
+      contents.push(petition?.privateUrl);
+    }
+
+    return (
+      <>
+        <HandlerTabs />
+        <File contents={contents} />
+      </>
+    )
+  }
   return (
-    <BoxScreen showBreadcrumbs background={mode === "analyst"}>
+    <BoxScreen showBreadcrumbs background={!statusIsCreated || statusIsCreated && !isCoordinator}>
       <div className="grid grid-cols-2 gap-8">
-        {mode === "coordinator" ? <Files /> : <HandlerTabs />}
-        {mode === "analyst" && <File />}
+        <ToRender />
       </div>
       <div className="grid grid-cols-2 gap-8">
         <span className={`${mode === "analyst" || !statusIsCreated ? "invisible" : ""}`}>
@@ -120,7 +137,7 @@ const ShowData = () => {
         <div className="flex items-center justify-end gap-8">
           <Button
             placeholder={"Cancelar alterações"}
-            className={`rounded-3xl bg-red-600 px-11 py-4 w-48 ${(!statusIsCreated && mode === "coordinator") ? "invisible" : ""}`}
+            className={`rounded-3xl bg-red-600 px-11 py-4 w-48 ${(statusIsCreated && mode === "analyst") ? "invisible" : ""}`}
             onClick={close}
           >
             Cancelar
@@ -129,9 +146,9 @@ const ShowData = () => {
             placeholder={"Salvar alterações"}
             className="rounded-3xl bg-primary-600 px-11 py-4 w-48"
             disabled={(statusIsCreated && mode === 'coordinator') && disableSaveButton}
-            onClick={(!statusIsCreated && mode === "coordinator") ? close : submit}
+            onClick={(statusIsCreated && mode === "analyst") ? close : submit}
           >
-            {(!statusIsCreated && mode === "coordinator") ? "Fechar" : "Salvar"}
+            {(statusIsCreated && mode === "analyst") ? "Fechar" : "Salvar"}
           </Button>
         </div>
       </div>
@@ -139,10 +156,11 @@ const ShowData = () => {
   );
 };
 
-const File = () => {
-  const { petition } = usePetitionFormStore();
-
-  return <ImageFiles contents={[petition?.publicUrl]} />;
+interface FileProps {
+  contents: string[];
+}
+const File = ({ contents }: FileProps) => {
+  return <ImageFiles contents={contents} />;
 };
 const Files = () => {
   const { petition } = usePetitionFormStore();

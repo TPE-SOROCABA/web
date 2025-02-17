@@ -20,6 +20,7 @@ interface CheckboxGroupProps {
   options: { id: number | string; label: string }[];
   value: { id: number | string; label: string }[];
   onChange: (value: { id: number | string; label: string }) => void;
+  disabled?: boolean;
 }
 
 export function CheckboxGroup({
@@ -27,8 +28,9 @@ export function CheckboxGroup({
   // placeholder,
   children,
   options,
-  value,
+  value = [],
   onChange,
+  disabled = false,
 }: CheckboxGroupProps) {
   const [optionsChecked, setOptionsChecked] = React.useState<{
     [key: number]: Checked;
@@ -36,7 +38,7 @@ export function CheckboxGroup({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild className="col-span-2">
+      <DropdownMenuTrigger asChild className="col-span-2" disabled={disabled}>
         <Button
           placeholder="Toogle multiselector"
           className="bg-none! text-gray-700 border border-blue-gray-200 shadow-none w-full hover:shadow-none cursor-default"
@@ -45,17 +47,17 @@ export function CheckboxGroup({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
-        {options.map((option) => (
+        {options?.map((option) => (
           <>
             <DropdownMenuCheckboxItem
-              key={option.id}
-              checked={optionsChecked[option.id]}
+              key={option?.id}
+              checked={optionsChecked[option?.id]}
               onCheckedChange={(checked) => {
                 setOptionsChecked((prev) => ({
                   ...prev,
                   [option.id]: checked,
                 }));
-                onChange({ id: option.id, label: option.label });
+                onChange({ id: option?.id, label: option?.label });
               }}
             >
               {option.label}

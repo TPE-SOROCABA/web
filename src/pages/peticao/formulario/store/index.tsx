@@ -8,7 +8,9 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { IPetition } from "../../types";
 import { useHttp } from "../../useHttpDev";
-import { useToast } from "src/lib";
+import { useCookies, useToast } from "src/lib";
+
+type Mode = "analyst" | "coordinator";
 
 export interface PetitionForm extends IPetition {
   avatarUrl: string;
@@ -25,6 +27,7 @@ interface PetitionFormContextProps {
   handleUploadImage: (image: string | Blob | null, participantId: string) => Promise<void>;
   retryUploadImage: { formData: FormData, image: string | Blob | null } | null;
   retryUpload: (participantId: string) => Promise<void>;
+  mode: Mode;
 }
 
 interface ICongregations {
@@ -45,6 +48,9 @@ interface StoreProviderProps {
 export function PetitionFormProvider({ children }: StoreProviderProps) {
   const location = useLocation();
   const router = useNavigate();
+  const cookie = useCookies();
+  const token = cookie.decodeToken();
+  const mode = token?.profile === "COORDINATOR" ? "coordinator" : "analyst";
   const http = useHttp();
   const toast = useToast();
   const [petition, setPetition] = useState<PetitionForm>(
@@ -176,6 +182,7 @@ export function PetitionFormProvider({ children }: StoreProviderProps) {
         handleUploadImage,
         retryUploadImage,
         retryUpload,
+        mode,
       }}
     >
       {children}

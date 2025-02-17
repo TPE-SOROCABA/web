@@ -19,7 +19,7 @@ export function Peticao() {
 
 function Petition() {
   const http = useHttp();
-  const { mode, search, searchStatus } = usePetitionStore();
+  const { search, searchStatus } = usePetitionStore();
   const [petitions, setPetitions] = useState<IPetition[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -49,7 +49,7 @@ function Petition() {
       loader={loading}
       rightContent={<AddPetitionButton />}
     >
-      {mode === "coordinator" ? <Header /> : <Filter />}
+      <Filter />
       {petitions?.length > 0 ? (
         <Petitions petitions={petitions} />
       ) : (
@@ -102,17 +102,17 @@ function Filter() {
   );
 }
 
-function Header() {
-  return (
-    <div className="w-full flex flex-col items-center justify-center gap-4 text-black">
-      <h1 className="text-lg font-bold">Enviar Petições</h1>
-      <p className="max-w-[40%] text-base font-medium text-center">
-        Estas petições estão faltando informações. Conclua o cadastro para
-        atualizar o status de cada petição.
-      </p>
-    </div>
-  );
-}
+// function Header() {
+//   return (
+//     <div className="w-full flex flex-col items-center justify-center gap-4 text-black">
+//       <h1 className="text-lg font-bold">Enviar Petições</h1>
+//       <p className="max-w-[40%] text-base font-medium text-center">
+//         Estas petições estão faltando informações. Conclua o cadastro para
+//         atualizar o status de cada petição.
+//       </p>
+//     </div>
+//   );
+// }
 
 function AddPetitionButton() {
   const { mode } = usePetitionStore();
@@ -161,9 +161,6 @@ function PetitionRow({ petition }: { petition: IPetition }) {
   const router = useNavigate();
 
   const buttonLabel = () => {
-    if (mode === "coordinator") {
-      return "Visualizar";
-    }
     const labels = {
       WAITING_INFORMATION: "Completar",
       WAITING: "Editar",

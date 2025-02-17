@@ -21,7 +21,10 @@ const tabs = [
 
 export function HandlerTabs() {
   const [tab, setTab] = useState(0);
-  const { petition, handleUploadImage } = usePetitionFormStore();
+  const { petition, handleUploadImage, mode } = usePetitionFormStore();
+  const statusIsCreated = petition?.status === "CREATED";
+  const isAnalyst = mode === "analyst";
+  const disableInputs = isAnalyst && statusIsCreated;
 
   const dateBirth = dayjs(petition?.participants[0]?.birthDate);
   const age = dayjs().diff(dateBirth, "year");
@@ -29,7 +32,7 @@ export function HandlerTabs() {
     <div className="flex flex-col col-span-1 gap-8">
       <div className="flex items-center justify-between gap-10">
         <div
-          className="w-fit"
+          className="w-fit relative"
         >
           <UploadImage
             img={petition?.participants[0]?.profilePhoto || ""}
@@ -38,26 +41,31 @@ export function HandlerTabs() {
             className={`${!petition?.participants[0]?.id ? "pointer-events-none" : ""}`}
             participantId={petition?.participants[0]?.id || ""}
           />
+          {disableInputs && (
+            <div className="absolute top-0 left-0 w-full h-full bg-black/10 rounded-full cursor-not-allowed select-none" />
+          )}
         </div>
+        
+        
         <span className="text-lg font-bold underline text-gray-700" hidden={age > 16}>
           Menor de Idade
         </span>
       </div>
-      {tabs.map((item, index) => (
-        <Accordion placeholder="" open={index === tab} key={index} icon={<ChevronDown className={`transition-transform ${index === tab ? "rotate-180" : ""}`} />}>
-          <AccordionHeader
-            placeholder=""
-            onClick={() => setTab(index === tab ? -1 : index)}
-            className="bg-[#FAFAFA] rounded-lg p-2 border-none shadow-md"
+        {tabs.map((item, index) => (
+          <Accordion placeholder="" open={index === tab} key={index} icon={<ChevronDown className={`transition-transform ${index === tab ? "rotate-180" : ""}`} />}>
+            <AccordionHeader
+              placeholder=""
+              onClick={() => setTab(index === tab ? -1 : index)}
+              className="bg-[#FAFAFA] rounded-lg p-2 border-none shadow-md"
 
-          >
-            <div className="flex items-center">
-              <span>{item.label}</span>
-            </div>
-          </AccordionHeader>
-          <AccordionBody>{tab === index && item.component}</AccordionBody>
-        </Accordion>
-      ))}
-    </div>
-  );
+            >
+              <div className="flex items-center">
+                <span>{item.label}</span>
+              </div>
+            </AccordionHeader>
+            <AccordionBody>{tab === index && item.component}</AccordionBody>
+          </Accordion>
+        ))}
+      </div>
+      );
 }

@@ -6,7 +6,10 @@ import axios from "axios";
 import dayjs from "dayjs";
 
 export function Perfil() {
-  const { petition, updatePetition } = usePetitionFormStore();
+  const { petition, updatePetition, mode } = usePetitionFormStore();
+  const statusIsCreated = petition?.status === "CREATED";
+  const isAnalyst = mode === "analyst";
+  const disableInputs = isAnalyst && statusIsCreated;
   const toast = useToast();
 
   const updatePhone = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,6 +73,7 @@ export function Perfil() {
           value={petition.participants[0]?.name}
           name="name"
           onChange={(e) => updatePetition(e.target)}
+          disabled={disableInputs}
         />
         <Input
           crossOrigin
@@ -78,6 +82,7 @@ export function Perfil() {
           value={petition.participants[0]?.email}
           name="email"
           onChange={(e) => updatePetition(e.target)}
+          disabled={disableInputs}
         />
         <Input
           crossOrigin
@@ -86,6 +91,7 @@ export function Perfil() {
           value={formatPhone(petition.participants[0]?.phone)}
           onChange={updatePhone}
           maxLength={15}
+          disabled={disableInputs}
         />
         <Input
           crossOrigin
@@ -98,6 +104,7 @@ export function Perfil() {
           name="birthDate"
           onChange={updateBirthDate}
           type="date"
+          disabled={disableInputs}
         />
         <Select
           label="Estado Civil"
@@ -107,6 +114,7 @@ export function Perfil() {
           onChange={(value) =>
             updatePetition({ name: "civilStatus", value: value })
           }
+          disabled={disableInputs}
         >
           <Option value="MARRIED">Casado</Option>
           <Option value="SINGLE">Solteiro</Option>
@@ -119,6 +127,7 @@ export function Perfil() {
             petition.participants[0]?.sex === "MALE" ? "masculino" : "feminino"
           }
           onChange={(value) => updateGender(value ?? "")}
+          disabled={disableInputs}
         >
           <Option value="masculino">Masculino</Option>
           <Option value="feminino">Feminino</Option>
@@ -130,6 +139,7 @@ export function Perfil() {
           value={petition.participants[0]?.address}
           name="address"
           onChange={(e) => updatePetition(e.target)}
+          disabled={disableInputs}
         />
         <Input
           crossOrigin
@@ -138,6 +148,7 @@ export function Perfil() {
           value={petition.participants[0]?.city}
           name="city"
           onChange={(e) => updatePetition(e.target)}
+          disabled={disableInputs}
         />
         <Input
           crossOrigin
@@ -146,6 +157,7 @@ export function Perfil() {
           value={petition.participants[0]?.state}
           name="state"
           onChange={(e) => updatePetition(e.target)}
+          disabled={disableInputs}
         />
         <Input
           crossOrigin
@@ -159,6 +171,7 @@ export function Perfil() {
             })
             debouncedFindAddressByZipCode(e.target.value.replace(/\D/g, ""))
           }}
+          disabled={disableInputs}
         />
         {/* <div className="flex col-span-2 justify-end items-center">
           <Button

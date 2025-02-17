@@ -12,7 +12,10 @@ const DAYS = [
 ];
 
 export function Disponibilidade() {
-  const { petition, updatePetition } = usePetitionFormStore();
+  const { petition, updatePetition, mode } = usePetitionFormStore();
+  const statusIsCreated = petition?.status === "CREATED";
+  const isAnalyst = mode === "analyst";
+  const disableInputs = isAnalyst && statusIsCreated;
 
   return (
     <div className="flex flex-col col-span-1 gap-2">
@@ -48,6 +51,7 @@ export function Disponibilidade() {
             availability={petition?.participants[0]?.availability?.find((a) => {
               return a.weekDay === day.weekday;
             })}
+            disabled={disableInputs}
           />
         </div>
       ))}
@@ -62,8 +66,9 @@ interface PeriodosProps {
     afternoon: boolean;
     evening: boolean;
   };
+  disabled?: boolean;
 }
-function Periodos({ onChange, availability }: PeriodosProps) {
+function Periodos({ onChange, availability, disabled = false }: PeriodosProps) {
   return (
     <div className="flex items-center justify-between gap-5">
       <Checkbox
@@ -73,6 +78,7 @@ function Periodos({ onChange, availability }: PeriodosProps) {
         crossOrigin
         onChange={() => onChange("morning")}
         checked={availability?.morning}
+        disabled={disabled}
       />
       <Checkbox
         containerProps={{ className: "p-0 m-3 !rounded-none" }}
@@ -81,6 +87,7 @@ function Periodos({ onChange, availability }: PeriodosProps) {
         crossOrigin
         onChange={() => onChange("afternoon")}
         checked={availability?.afternoon}
+        disabled={disabled}
       />
       <Checkbox
         containerProps={{ className: "p-0 m-3 !rounded-none" }}
@@ -89,6 +96,7 @@ function Periodos({ onChange, availability }: PeriodosProps) {
         crossOrigin
         onChange={() => onChange("evening")}
         checked={availability?.evening}
+        disabled={disabled}
       />
     </div>
   );
