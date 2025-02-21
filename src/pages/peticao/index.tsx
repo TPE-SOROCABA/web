@@ -158,7 +158,6 @@ function Petitions({ petitions }: { petitions: IPetition[] }) {
 }
 
 function PetitionRow({ petition }: { petition: IPetition }) {
-  const { mode } = usePetitionStore();
   const router = useNavigate();
 
   const buttonLabel = () => {
