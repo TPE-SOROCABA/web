@@ -27,7 +27,6 @@ export function HandlerTabs() {
   const disableInputs = isAnalyst && statusIsCreated;
 
   const birthDate = petition?.participants[0]?.birthDate;
-  console.log("birthDate", birthDate);  
   const dateBirth = dayjs(birthDate);
   const age = dayjs().diff(dateBirth, "year");
   return (

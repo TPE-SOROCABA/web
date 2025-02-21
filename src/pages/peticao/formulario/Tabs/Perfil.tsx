@@ -71,7 +71,9 @@ export function Perfil() {
   }
 
   const maxOfYearByAge = dayjs().subtract(14, "year").format("YYYY-MM-DD")
-  const maxOfBaptismDate = petition.participants[0]?.baptismDate ? dayjs(petition.participants[0]?.baptismDate).format("YYYY-MM-DD") : maxOfYearByAge
+  const hasBaptismDate = !!petition.participants[0]?.baptismDate
+  const diffsFromBaptismDateToTodyIsMoreThan14Years = dayjs().diff(dayjs(petition.participants[0]?.baptismDate), "year") > 14
+  const maxOfBaptismDate = hasBaptismDate && diffsFromBaptismDateToTodyIsMoreThan14Years ? dayjs(petition.participants[0]?.baptismDate).format("YYYY-MM-DD") : maxOfYearByAge
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 space-y-2 gap-4">
