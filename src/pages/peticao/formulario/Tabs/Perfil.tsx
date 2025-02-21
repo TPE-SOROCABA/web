@@ -59,10 +59,19 @@ export function Perfil() {
       toast.error("Data de nascimento não pode ser maior que a data atual");
       return;
     }
+    const baptismDate = petition.participants[0]?.baptismDate
+    const baptismDateFormatted = dayjs(baptismDate)
+    if (date.isAfter(baptismDateFormatted)) {
+      toast.error("Data de nascimento não pode ser depois da data de batismo");
+      return;
+    }
+
+
     updatePetition({ name: "birthDate", value: date.format("YYYY-MM-DD") });
   }
 
-
+  const maxOfYearByAge = dayjs().subtract(14, "year").format("YYYY-MM-DD")
+  const maxOfBaptismDate = petition.participants[0]?.baptismDate ? dayjs(petition.participants[0]?.baptismDate).format("YYYY-MM-DD") : maxOfYearByAge
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 space-y-2 gap-4">
@@ -100,7 +109,7 @@ export function Perfil() {
           value={formatDateToInput(
             petition.participants[0]?.birthDate as any as string
           )}
-          max={dayjs().subtract(14, "year").format("YYYY-MM-DD")}
+          max={maxOfBaptismDate}
           name="birthDate"
           onChange={updateBirthDate}
           type="date"
@@ -194,6 +203,6 @@ export function Perfil() {
 }
 
 const formatDateToInput = (date: string) => {
-  if (!date) return "";
-  return new Date(date).toISOString().split("T")[0];
+  if (!date || date === "Invalid Date") return "";
+  return new Date(date)?.toISOString()?.split("T")[0];
 };

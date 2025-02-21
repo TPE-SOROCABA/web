@@ -108,6 +108,14 @@ export function Congregacao() {
 
   const updateBaptismDate = (date: string) => {
     const rawBirthDate = petition.participants[0]?.birthDate;
+    if (!rawBirthDate || (rawBirthDate as any) === "Invalid Date") {
+      updatePetition({
+        name: "baptismDate",
+        value: date,
+      });
+      return;
+    }
+
     const birthDate = dayjs(rawBirthDate);
     const baptismDate = dayjs(date);
     const baptismDateIsBeforeBirthDate = baptismDate.isBefore(birthDate);
@@ -223,11 +231,11 @@ export function Congregacao() {
                 value.id as string
               )
                 ? petition.participants[0]?.languages.filter(
-                    (lang) => lang !== value.id
-                  )
+                  (lang) => lang !== value.id
+                )
                 : petition.participants[0]?.languages.concat(
-                    value.id as string
-                  ),
+                  value.id as string
+                ),
             });
           }}
           disabled={disableInputs}
