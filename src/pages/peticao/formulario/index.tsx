@@ -1,13 +1,14 @@
 import { Button, Checkbox } from "@material-tailwind/react";
 import { ImageFiles } from "../../../components";
 import { BoxScreen } from "../../../components/box";
-import { useCookies, useToast } from "../../../lib";
+import { useProfile, useToast } from "../../../lib";
 import { PetitionFormProvider } from "./store";
 import { usePetitionFormStore } from "./store/useContextForm";
 import { HandlerTabs } from "./Tabs";
 import { useState } from "react";
 import { useHttp } from "../useHttpDev";
 import { useNavigate } from "react-router-dom";
+import { IPetition } from "../types";
 
 export function FormularioPeticao() {
   return (
@@ -16,17 +17,38 @@ export function FormularioPeticao() {
     </PetitionFormProvider>
   );
 }
+
+interface ToRenderProps {
+  statusIsCreated: boolean;
+  petition: IPetition;
+}
+const ToRender = ({ statusIsCreated, petition }: ToRenderProps) => {
+  const { isCoordinator } = useProfile();
+  if (isCoordinator && statusIsCreated) {
+    return <Files />
+  }
+  const contents = [petition?.publicUrl];
+  if (isCoordinator) {
+    contents.push(petition?.privateUrl);
+  }
+  return (
+    <>
+      <HandlerTabs />
+      <File contents={contents} />
+    </>
+  )
+}
+
 const ShowData = () => {
-  const cookie = useCookies();
-  const token = cookie.decodeToken();
-  const mode = token?.profile === "COORDINATOR" ? "coordinator" : "analyst";
   const [checkedConfirmation, setCheckedConfirmation] = useState(false);
   const { petition, retryUploadImage, retryUpload } = usePetitionFormStore();
+  const { isCoordinator,  mode } = useProfile();
+  const statusIsCreated = petition?.status === "CREATED";
   const http = useHttp();
   const toast = useToast();
   const router = useNavigate();
 
-  const disableSaveButton = mode === "coordinator" && !checkedConfirmation;
+  const disableSaveButton = isCoordinator && !checkedConfirmation;
 
   const changeToWaitingInformation = async () => {
     if (mode !== "coordinator" || !petition?.id) return;
@@ -99,29 +121,11 @@ const ShowData = () => {
     router("/peticao");
   };
 
-  const statusIsCreated = petition?.status === "CREATED";
-  const isCoordinator = mode === "coordinator";
 
-  const ToRender = () => {
-    if (isCoordinator && statusIsCreated) {
-      return <Files />
-    }
-    const contents = [petition?.publicUrl];
-    if (isCoordinator) {
-      contents.push(petition?.privateUrl);
-    }
-
-    return (
-      <>
-        <HandlerTabs />
-        <File contents={contents} />
-      </>
-    )
-  }
   return (
     <BoxScreen showBreadcrumbs background={!statusIsCreated || statusIsCreated && !isCoordinator}>
       <div className="grid grid-cols-2 gap-8">
-        <ToRender />
+        <ToRender statusIsCreated={statusIsCreated} petition={petition} />
       </div>
       <div className="grid grid-cols-2 gap-8">
         <span className={`${mode === "analyst" || !statusIsCreated ? "invisible" : ""}`}>
