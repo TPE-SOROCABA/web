@@ -26,7 +26,9 @@ export function HandlerTabs() {
   const isAnalyst = mode === "analyst";
   const disableInputs = isAnalyst && statusIsCreated;
 
-  const dateBirth = dayjs(petition?.participants[0]?.birthDate);
+  const birthDate = petition?.participants[0]?.birthDate;
+  console.log("birthDate", birthDate);  
+  const dateBirth = dayjs(birthDate);
   const age = dayjs().diff(dateBirth, "year");
   return (
     <div className="flex flex-col col-span-1 gap-8">
@@ -47,7 +49,7 @@ export function HandlerTabs() {
         </div>
 
 
-        <span className="text-lg font-bold underline text-gray-700" hidden={age > 16}>
+        <span className="text-lg font-bold underline text-gray-700" hidden={age > 16 || !birthDate}>
           Menor de Idade
         </span>
       </div>

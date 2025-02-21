@@ -257,6 +257,6 @@ export function Congregacao() {
 }
 
 const formatDateToInput = (date: string) => {
-  if (!date) return "";
+  if (!date || date === "Invalid Date") return "";
   return new Date(date).toISOString().split("T")[0];
 };
