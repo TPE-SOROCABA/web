@@ -130,7 +130,6 @@ function AddPetitionButton() {
 }
 
 function Petitions({ petitions }: { petitions: IPetition[] }) {
-  const { mode } = usePetitionStore();
   const petitionsSorted = petitions.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   return (
     <div className="w-full flex flex-col">
@@ -141,7 +140,7 @@ function Petitions({ petitions }: { petitions: IPetition[] }) {
         <div className={`col-span-2`}>Nome</div>
         <div className="col-span-3">Protocolo</div>
         <div className={`col-span-2`}>
-          {mode === "analyst" ? "Status" : "Mensagem de erro"}
+          Status
         </div>
         <div className="col-span-2">
           Data e Hora
@@ -213,7 +212,7 @@ function PetitionRow({ petition }: { petition: IPetition }) {
       <div className="col-span-1">
         {statusIcon[petition.status]}
       </div>
-      <div className={`col-span-2`}>
+      <div className={`col-span-2 truncate max-w-[100%]`} title={petition?.participants[0]?.name || "- - -"}>
         {petition?.participants[0]?.name || "- - -"}
       </div>
       <div className="col-span-3">{petition.protocol}</div>
