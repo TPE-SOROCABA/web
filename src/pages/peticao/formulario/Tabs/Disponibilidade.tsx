@@ -1,4 +1,4 @@
-import { Checkbox, Switch } from "@material-tailwind/react";
+import { Checkbox, /*Switch*/ } from "@material-tailwind/react";
 import { usePetitionFormStore } from "../store/useContextForm";
 
 const DAYS = [
@@ -60,23 +60,23 @@ export function Disponibilidade() {
   );
 }
 
-interface SwitchInputProps {
-  checked: boolean;
-  onChange: (value: boolean) => void;
-  label: string;
-}
-function SwitchInput({ checked, onChange, label }: SwitchInputProps) {
-  return (
-    <div className="flex items-center gap-2 w-full border border-red-500">
-      <label htmlFor={label}>{label}</label>
-      <Switch crossOrigin id={label} className="w-12 h-6 bg-primary-500" checked={checked} onChange={(event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        onChange(event.target.checked);
-      }}  />
-    </div>
-  )
-}
+// interface SwitchInputProps {
+//   checked: boolean;
+//   onChange: (value: boolean) => void;
+//   label: string;
+// }
+// function SwitchInput({ checked, onChange, label }: SwitchInputProps) {
+//   return (
+//     <div className="flex items-center gap-2 w-full border border-red-500">
+//       <label htmlFor={label}>{label}</label>
+//       <Switch crossOrigin id={label} className="w-12 h-6 bg-primary-500" checked={checked} onChange={(event) => {
+//         event.preventDefault();
+//         event.stopPropagation();
+//         onChange(event.target.checked);
+//       }}  />
+//     </div>
+//   )
+// }
 
 interface PeriodosProps {
   onChange: (value: string) => void;
