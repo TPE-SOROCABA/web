@@ -37,7 +37,7 @@ export function Perfil() {
   const findAddressByZipCode = async (zipCode: string) => {
     const { data, status } = await axios.get(`https://viacep.com.br/ws/${zipCode}/json/`);
     if (status > 299) return;
-    const { logradouro,  localidade, uf } = data;
+    const { logradouro, localidade, uf } = data;
     updatePetition({
       name: "address",
       value: logradouro,
@@ -120,15 +120,17 @@ export function Perfil() {
           <Option value="SINGLE">Solteiro</Option>
         </Select>
         <Select
-          label="Sexo"
+          label="Gênero"
           placeholder={"Selecione"}
           containerProps={{ className: "col-span-1" }}
           value={
-            petition.participants[0]?.sex === "MALE" ? "masculino" : "feminino"
+            petition.participants[0]?.sex === "MALE" ? "masculino" : petition.participants[0]?.sex === "FEMALE" ? "feminino" : "nao-declarado"
           }
           onChange={(value) => updateGender(value ?? "")}
           disabled={disableInputs}
+          defaultValue="nao-declarado"
         >
+          <Option value="nao-declarado" defaultValue="nao-declarado" disabled>Não Declarado</Option>
           <Option value="masculino">Masculino</Option>
           <Option value="feminino">Feminino</Option>
         </Select>

@@ -67,7 +67,7 @@ const ShowData = () => {
   };
 
   const updatePetition = async () => {
-    if (mode !== "analyst" || !petition?.id) return;
+    if (!petition?.id) return;
     let participantId = petition?.participants[0]?.id;
 
     try {
@@ -112,7 +112,7 @@ const ShowData = () => {
   };
 
   const submit = async () => {
-    return mode === "coordinator"
+    return isCoordinator && statusIsCreated
       ? changeToWaitingInformation()
       : updatePetition();
   };
