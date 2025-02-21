@@ -201,7 +201,7 @@ export function Congregacao() {
           label="Atualmente serve como"
           placeholder={"Selecione"}
           containerProps={{ className: "col-span-1" }}
-          value={petition.participants[0]?.attributions[0]}
+          value={petition?.participants[0]?.attributions?.[0]}
           onChange={(value) => updateAttribution(value ?? "")}
           disabled={disableInputs}
         >
