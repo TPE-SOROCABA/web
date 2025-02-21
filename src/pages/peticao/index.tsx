@@ -131,24 +131,25 @@ function AddPetitionButton() {
 
 function Petitions({ petitions }: { petitions: IPetition[] }) {
   const { mode } = usePetitionStore();
+  const petitionsSorted = petitions.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   return (
     <div className="w-full flex flex-col">
       <div className="grid grid-cols-12 gap-4 w-full items-end text-center text-lg font-semibold text-primary-800">
         <div className="col-span-1">
           <FileIcon size={40} className="invisible" />
         </div>
-        <div className={`col-span-${mode === "analyst" ? 2 : 3}`}>Nome</div>
+        <div className={`col-span-2`}>Nome</div>
         <div className="col-span-3">Protocolo</div>
-        <div className={`col-span-${mode === "analyst" ? 2 : 3}`}>
+        <div className={`col-span-2`}>
           {mode === "analyst" ? "Status" : "Mensagem de erro"}
         </div>
-        <div className="col-span-2" hidden={mode !== "analyst"}>
-          Data
+        <div className="col-span-2">
+          Data e Hora
         </div>
         <div className="col-span-2"></div>
       </div>
       <div className="w-full flex flex-col gap-4">
-        {petitions.map((petition) => (
+        {petitionsSorted.map((petition) => (
           <PetitionRow key={petition.id} petition={petition} />
         ))}
       </div>
@@ -213,15 +214,15 @@ function PetitionRow({ petition }: { petition: IPetition }) {
       <div className="col-span-1">
         {statusIcon[petition.status]}
       </div>
-      <div className={`col-span-${mode === "analyst" ? 2 : 3}`}>
+      <div className={`col-span-2`}>
         {petition?.participants[0]?.name || "- - -"}
       </div>
       <div className="col-span-3">{petition.protocol}</div>
-      <div className={`col-span-${mode === "analyst" ? 2 : 3} ${statusColor[petition.status]}`}>
+      <div className={`col-span-2 ${statusColor[petition.status]}`}>
         {status[petition.status] || "- - -"}
       </div>
-      <div className="col-span-2 text-center" hidden={mode !== "analyst"}>
-        {new Date(petition.createdAt).toLocaleDateString()}
+      <div className="col-span-2 text-center">
+        {new Date(petition.createdAt).toLocaleDateString() + " " + new Date(petition.createdAt).toLocaleTimeString()}
       </div>
       <div className="col-span-2">
         <Button
