@@ -1,5 +1,6 @@
 export interface IPetition {
   id: string;
+  name: string;
   protocol: string;
   status: string;
   publicUrl: string;

@@ -213,7 +213,7 @@ function PetitionRow({ petition }: { petition: IPetition }) {
         {statusIcon[petition.status]}
       </div>
       <div className={`col-span-2 truncate max-w-[100%]`} title={petition?.participants[0]?.name || "- - -"}>
-        {petition?.participants[0]?.name || "- - -"}
+        {petition?.name || "- - -"}
       </div>
       <div className="col-span-3">{petition.protocol}</div>
       <div className={`col-span-2 ${statusColor[petition.status]}`}>
