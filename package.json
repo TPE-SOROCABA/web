@@ -1,7 +1,7 @@
 {
   "name": "web",
   "private": true,
-  "version": "1.1.9",
+  "version": "1.1.10",
   "type": "module",
   "node": "18.16.0",
   "scripts": {
@@ -9,8 +9,11 @@
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "deploy:dev": "sls deploy -s dev -c sls-dev.yml --verbose",
+    "remove:dev": "sls remove -s dev -c sls-dev.yml --verbose",
     "deploy:prod": "sls deploy -s prod -c sls-prod.yml --verbose",
+    "remove:prod": "sls remove -s prod -c sls-prod.yml --verbose",
     "deploy:hmg": "sls deploy -s hmg -c sls-hmg.yml --verbose",
+    "remove:hmg": "sls remove -s hmg -c sls-hmg.yml --verbose",
     "preview": "vite preview"
   },
   "dependencies": {

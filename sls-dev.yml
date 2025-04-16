@@ -13,12 +13,13 @@ custom:
         - run
         - build
     distribution:
-      acmCertificateArn: arn:aws:acm:us-east-1:533267195262:certificate/9ed0ac04-b0dd-43bd-9e01-149625496d05
+      acmCertificateArn: arn:aws:acm:us-east-1:533267195262:certificate/97ae7e98-3544-4bfc-8bd3-5da9505f450f
       dnsName: dev.tpedigital.com.br # Route53 record value
       hostedZoneName: tpedigital.com.br # Route53 Hosted Zone Name
 
 provider:
   name: aws
+  profile: tpe
   runtime: nodejs20.x
   region: ${env:AWS_REGION, 'us-east-1'}
   stage: ${opt:stage}
